@@ -1,36 +1,24 @@
-'use client';
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
-import Image from "next/image";
-
-import ArtistForm from "./ArtistForm";
-import CollectorForm from "./CollectorForm";
+import { cookies } from 'next/headers';
+import AuthSection from './AuthSection';
 import Link  from "next/link";
+import Image from 'next/image';
+import ThemeToggle from "@/components/ThemeToggle";
 
-
-
-export default function AuthPage() {
-    const searchParams = useSearchParams();
-    const [accType, setAccType] = useState(searchParams.get('acc_type') || 'collector');
-
+export default async function AuthPage(){
+    const cookieStore = await cookies();
+    const error = cookieStore.get('errors')?.value;
 
     return (
-        <main className="flex flex-col min-h-screen justify-center items-center">
+        <main className="flex flex-col min-h-screen max-w-7xl mx-auto justify-center items-center bg-white dark:bg-dark-background text-black dark:text-dark-text">
+            <div className="absolute top-8 right-8">
+                <ThemeToggle className="w-8 h-8" />
+            </div>
             <Link href="/">
-                <Image src="/logo.png" width={100} height={100} alt="Logo" />
+                <Image src="/logo.png" width={80} height={80} alt="Logo" />
             </Link>
 
-            <div className=" w-[70%] mx-auto rounded-lg shadow-lg p-12">
-                <section className="relative bg-red-400 flex w-48 mx-auto justify-between rounded-full cursor-pointer">
-                    <input type="radio" id="artist" name="options" className="sr-only" checked={accType === 'artist'} onChange={() => setAccType('artist')} />
-                    <input type="radio" id="collector" name="options" className="sr-only peer" checked={accType === 'collector'} onChange={() => setAccType('collector')} />
-                    <label htmlFor="artist" className="z-10 px-6 py-3 text-white peer-checked:text-black">Artist</label>
-                    <label htmlFor="collector" className="z-10 px-6 py-3 peer-checked:text-white">Collector</label>
-                    <div className="bg-red-900  px-12 py-6 rounded-full absolute left-0 transition-transform duration-300 translate-x-0 peer-checked:translate-x-full"></div>
-                </section>
-                <section className="mt-4">
-                    {accType == 'artist' ? <ArtistForm /> : <CollectorForm />}
-                </section>
+            <div className="w-full max-w-xl mx-auto rounded-2xl shadow-2xl p-6 mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+               <AuthSection error={error || ""} />
             </div>
         </main>
     );

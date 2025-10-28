@@ -20,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased`}
+        className={`${inter.className} antialiased h-screen bg-white text-black dark:bg-dark-background dark:text-dark-text`}
       >
-        {children}
+        <div className="animate-fade-in h-full">
+          {children}
+        </div>
       </body>
     </html>
   );

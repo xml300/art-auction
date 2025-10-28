@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "artworkId": 1,
+        "bidderId": 102,
+        "bidAmount": 1750,
+        "bidTime": 1731600000000
+    },
+    {
+        "id": 2,
+        "artworkId": 3,
+        "bidderId": 102,
+        "bidAmount": 3500,
+        "bidTime": 1731400000000
+    },
+    {
+        "id": 3,
+        "artworkId": 4,
+        "bidderId": 102,
+        "bidAmount": 650,
+        "bidTime": 1731900000000
+    }
+]

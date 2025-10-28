@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "name": "Create Artwork",
+        "slug": "create-artwork"
+    },
+    {
+        "id": 2,
+        "name": "Bid on Artwork",
+        "slug": "bid-artwork"
+    },
+    {
+        "id": 3,
+        "name": "Manage Users",
+        "slug": "manage-users"
+    },
+    {
+        "id": 4,
+        "name": "View Reports",
+        "slug": "view-reports"
+    }
+]

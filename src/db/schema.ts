@@ -1,5 +1,6 @@
 import { pgTable, integer, varchar, timestamp, primaryKey } from "drizzle-orm/pg-core";
 
+
 const timestamps = {
     createdAt: timestamp().defaultNow(),
     updatedAt: timestamp().defaultNow().$onUpdate(() => new Date())
@@ -18,6 +19,12 @@ const roles = pgTable('roles', {
     id: integer().primaryKey(),
     name: varchar({length: 50}).notNull(),
     description: varchar({length: 255}),
+    ...timestamps
+});
+
+const userRoles = pgTable('user_roles', {
+    userId: integer().references(() => users.id).notNull(),
+    roleId: integer().references(() => roles.id).notNull(),
     ...timestamps
 });
 
@@ -46,6 +53,7 @@ const artworks = pgTable('artworks', {
     currentBid: integer().default(0),
     auctionEndTime: timestamp().notNull(),
     artistId: integer().references(() => users.id).notNull(),
+    ownerId: integer().references(() => users.id),
     ...timestamps
 });
 
@@ -68,4 +76,4 @@ const bids = pgTable('bids', {
     ...timestamps
 });
 
-export { users, roles, permissions, rolePermissions, artworks, transactions, bids };
+export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids };

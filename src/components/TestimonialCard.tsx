@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { Star, StarOff } from "lucide-react";
-import { Long_Cang } from "next/font/google";
+import { Star } from "lucide-react";
 
 interface Testimonial {
     id: number;
@@ -15,18 +14,23 @@ interface Testimonial {
 
 export function TestimonialCard({ testimonial, key }: { testimonial: Testimonial, key: number | string }) {
     return (
-        <div key={key} className="rounded-md bg-gray-50 shadow-md text-black flex flex-col justify-center items-center px-4 py-2 pt-6">
-            <p className="flex mb-2">{[...Array(testimonial.rating)].map((_, i) => <Star key={i} />)}</p>
-            <p className="break-words italic text-base font-light">"{testimonial.comment}"</p>
-            <div className="flex gap-x-2 my-2">
-                <Image src={testimonial.image} alt={testimonial.name} width={40} height={40} className="rounded-full bg-black h-[40px]" />
-                <div className="text-left text-sm">
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="italic">{testimonial.position}</p>
+        <div key={key} className="rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col items-center text-center">
+            <div className="flex mb-4">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-6 h-6 fill-current text-yellow-400" />
+                ))}
+            </div>
+            <p className="text-lg italic text-gray-700 dark:text-gray-300 mb-4">&ldquo;{testimonial.comment}&rdquo;</p>
+            <div className="flex items-center gap-x-4 mt-auto">
+                <Image src={testimonial.image} alt={testimonial.name} width={56} height={56} className="rounded-full object-cover border-2 border-red-500" />
+                <div className="text-left">
+                    <p className="font-semibold text-gray-900 dark:text-white text-xl">{testimonial.name}</p>
+                    <p className="text-md text-gray-600 dark:text-gray-400">{testimonial.position}</p>
                 </div>
             </div>
-            <p className="text-xs text-right italic w-full">{new Date(testimonial.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                {new Date(testimonial.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
         </div>
     );
 }

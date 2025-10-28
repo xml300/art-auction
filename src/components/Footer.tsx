@@ -4,43 +4,43 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="text-center py-4 border-t shadow-md">
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <footer className="text-center py-4 border-t shadow-md bg-white dark:bg-dark-background dark:text-dark-text dark:border-dark-secondary animate-fade-in">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-2xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div className="text-left space-y-4">
-                        <Image src="/logo.png" alt="Logo" width={40} height={40} className="rounded-full" />
-                        <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> +234123456789</p>
-                        <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> artsy-auction@artsyl.com</p>
+                    <div className="text-left space-y-4 animate-fade-in">
+                        <Image src="/logo.png" alt="Logo" width={40} height={40} className="rounded-full animate-pulse" />
+                        <p className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"><Phone className="h-6 w-6" /> +234123456789</p>
+                        <p className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"><Mail className="h-6 w-6" /> artsy-auction@artsyl.com</p>
                     </div>
 
-                    <div className="text-left">
-                        <h3 className="font-bold text-lg mb-2">Navigation</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="/" className="hover:underline">Home</Link></li>
-                            <li><Link href="/about" className="hover:underline">About</Link></li>
-                            <li><Link href="/privacy" className="hover:underline">Privacy Policy</Link></li>
+                    <div className="text-left animate-fade-in">
+                        <h3 className="font-bold mb-4">Navigation</h3>
+                        <ul className="space-y-4 font-light">
+                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/" className="hover:underline">Home</Link></li>
+                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/about" className="hover:underline">About</Link></li>
+                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/privacy" className="hover:underline">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
-                    <div className="text-left">
-                        <h3 className="font-bold text-lg mb-2">Products</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="/auction" className="hover:underline">Auction</Link></li>
-                            <li><Link href="/showcase" className="hover:underline">Showcase</Link></li>
+                    <div className="text-left animate-fade-in">
+                        <h3 className="font-bold mb-4">Products</h3>
+                        <ul className="space-y-4 font-light">
+                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/dashboard" className="hover:underline">Auction</Link></li>
+                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/dashboard" className="hover:underline">Showcase</Link></li>
                         </ul>
                     </div>
 
-                    <div className="text-left">
-                        <h3 className="font-bold text-lg mb-2">Socials</h3>
-                        <ul className="space-y-2">
-                            <li>
+                    <div className="text-left animate-fade-in">
+                        <h3 className="font-bold mb-4">Socials</h3>
+                        <ul className="space-y-4 font-light">
+                            <li className="hover:scale-105 transition-transform duration-200">
                                 <a href="#" className="flex items-center gap-2 hover:underline">
-                                    <Facebook className="h-4 w-4" /> Facebook
+                                    <Facebook className="h-6 w-6" /> Facebook
                                 </a>
                             </li>
-                            <li>
+                            <li className="hover:scale-105 transition-transform duration-200">
                                 <a href="#" className="flex items-center gap-2 hover:underline">
-                                    <Instagram className="h-4 w-4" /> Instagram
+                                    <Instagram className="h-6 w-6" /> Instagram
                                 </a>
                             </li>
                         </ul>
@@ -48,13 +48,13 @@ export function Footer() {
                 </div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-4 mt-8">
-                <hr className="h-0.5 bg-black/10 my-4" />
-                <Link href="/privacy-terms" className="font-semibold hover:underline">
+            <hr className="my-12 h-0.5 bg-gray-200 dark:bg-dark-secondary" />
+
+            <div className="max-w-7xl mx-auto px-4 text-xl mb-2">
+                <Link href="/privacy-terms" className="  hover:underline">
                     Privacy Policy / Terms & Conditions
                 </Link>
-                <hr className="h-0.5 bg-black/10 my-4" />
-                <p className="font-light italic">&copy; 2025 Artsyl. All rights reserved.</p>
+                  <p className="font-light italic mt-12">&copy; 2025 Artsyl. All rights reserved.</p>
             </div>
         </footer>
     );

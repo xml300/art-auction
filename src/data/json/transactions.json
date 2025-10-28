@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "userId": 102,
+        "referenceNumber": "TXN001",
+        "description": "Bid on Sunset Over the Aegean",
+        "payType": "credit_card",
+        "amount": 1750,
+        "transactionTime": 1731600000000
+    },
+    {
+        "id": 2,
+        "userId": 102,
+        "referenceNumber": "TXN002",
+        "description": "Bid on The Silent Watcher",
+        "payType": "credit_card",
+        "amount": 3500,
+        "transactionTime": 1731400000000
+    }
+]

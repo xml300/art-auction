@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "Admin",
+        "description": "Administrator with full access",
+        "permissions": [1, 2, 3, 4]
+    },
+    {
+        "id": 2,
+        "name": "Artist",
+        "description": "Artist who can create and manage artworks",
+        "permissions": [1]
+    },
+    {
+        "id": 3,
+        "name": "Collector",
+        "description": "Collector who can bid on artworks",
+        "permissions": [2]
+    }
+]

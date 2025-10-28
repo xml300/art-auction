@@ -1,0 +1,54 @@
+[
+    {
+        "id": 101,
+        "username": "artist1",
+        "email": "artist1@example.com",
+        "password": "password123",
+        "surname": null,
+        "firstName": null,
+        "profilePicture": null,
+        "bio": null,
+        "roleId": 2,
+        "createdAt": 1697760000000,
+        "updatedAt": 1697760000000
+    },
+    {
+        "id": 102,
+        "username": "collector1",
+        "email": "collector1@example.com",
+        "password": "password123",
+        "surname": null,
+        "firstName": null,
+        "profilePicture": null,
+        "bio": null,
+        "roleId": 3,
+        "createdAt": 1697760000000,
+        "updatedAt": 1697760000000
+    },
+    {
+        "id": 103,
+        "username": "artist2",
+        "email": "artist2@example.com",
+        "password": "password123",
+        "surname": null,
+        "firstName": null,
+        "profilePicture": null,
+        "bio": null,
+        "roleId": 2,
+        "createdAt": 1697760000000,
+        "updatedAt": 1697760000000
+    },
+    {
+        "id": 104,
+        "username": "artist3",
+        "email": "artist3@example.com",
+        "password": "password123",
+        "surname": null,
+        "firstName": null,
+        "profilePicture": null,
+        "bio": null,
+        "roleId": 2,
+        "createdAt": 1697760000000,
+        "updatedAt": 1697760000000
+    }
+]
