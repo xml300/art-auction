@@ -6,21 +6,21 @@ export default function ProfileSettings() {
         <div className="p-12 w-full">
             <div className="flex mb-6">
                 <label htmlFor="profile_picture" className="relative group">
-                    <Image src="/logo.png" className="w-24 h-24 bg-black/10 rounded-lg" alt="Profile" />
+                    <Image src="/logo.png" width={80} height={80} className="w-24 h-24 bg-black/10 rounded-lg" alt="Profile" />
                     <div className="absolute top-0 z-20 w-24 h-24 hidden group-hover:flex justify-center items-center bg-black/20 rounded-lg">
                         <Camera className="text-white w-8 h-8" />
                     </div>
                 </label>
                 <input type="file" className="hidden" name="profile_picture" id="profile_picture" />
             </div>
-            <div className="flex gap-x-6 mb-4">
-                <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-4 w-full">
+                <div className="w-full">
                     <label htmlFor="surname" className="dark:text-white">Surname</label>
                     <input type="text" id="surname" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your surname" />
                 </div>
-                <div>
+                <div className="w-full">
                     <label htmlFor="first_name" className="dark:text-white">First Name</label>
-                    <input type="text" id="first_name" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-[125%]" placeholder="Enter your first name" />
+                    <input type="text" id="first_name" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your first name" />
                 </div>
             </div>
             <div className="flex flex-col mb-4">

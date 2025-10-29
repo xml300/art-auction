@@ -12,9 +12,9 @@ interface Testimonial {
 }
 
 
-export function TestimonialCard({ testimonial, key }: { testimonial: Testimonial, key: number | string }) {
+export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
     return (
-        <div key={key} className="rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col items-center text-center">
+        <div className="rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col items-center text-center">
             <div className="flex mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="w-6 h-6 fill-current text-yellow-400" />

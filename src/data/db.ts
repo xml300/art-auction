@@ -58,7 +58,7 @@ export interface CollectorProfile {
 export interface Activity {
     id: number;
     userId: number;
-    type: string;
+    type: "bid" | "won" | "watchlist_add";
     artworkTitle: string;
     amount?: number;
     date: number;
@@ -135,7 +135,7 @@ export function createUser(email: string, username: string, password: string, ro
         updatedAt: Date.now(),
     }
     users.push(user);
-    writeJSON('users', users);
+    writeJSON('users', JSON.stringify(users));
     return user;
 };
 
@@ -245,11 +245,22 @@ export function createArtwork(title: string, description: string, artistId: numb
         ownerId: null,
     }
     artworks.push(artwork);
-    writeJSON('artworks', artworks);
+    writeJSON('artworks', JSON.stringify(artworks));
     return artwork;
 }
 
-export function getArtworkById(id: number, options?: { withBids: boolean, withArtist: boolean }): Artwork {
+export function updateArtwork<K extends keyof Artwork>(id: number, update: { columnName: K, value: Artwork[K] }) {
+    const artworks: Artwork[] = readJSON('artworks');
+    const artworkIndex = artworks.findIndex(artwork => artwork.id === id);
+    if (artworkIndex === -1) {
+        throw new Error('Artwork not found');
+    }
+    artworks[artworkIndex][update.columnName] = update.value;
+    writeJSON('artworks', JSON.stringify(artworks));
+    return artworks[artworkIndex];
+}
+
+export function getArtworkById(id: number, options?: { withBids?: boolean, withArtist?: boolean }): Artwork {
     const artworks: Artwork[] = readJSON('artworks');
     const resArtwork = artworks.filter(artwork => artwork.id === id)[0];
     if (options?.withBids) {
@@ -264,25 +275,27 @@ export function getArtworkById(id: number, options?: { withBids: boolean, withAr
     return resArtwork;
 }
 
-export function getArtworks(userId?: number, options?: { withBids?: boolean, withArtist?: boolean }): Artwork[] {
-    const artworks: Artwork[] = readJSON('artworks');
+export function getArtworks(userId?: number, options?: { withBids?: boolean, withArtist?: boolean, page?: number, limit?: number }): Artwork[] {
+    let artworks: Artwork[] = readJSON('artworks');
     if (options?.withBids) {
         artworks.forEach(artwork => {
             const bids: Bid[] = getBids(artwork.id);
             artwork.bids = bids;
         });
     }
-
     if (options?.withArtist) {
         artworks.forEach(artwork => {
             const artist = getUsers(artwork.artistId) as User;
             artwork.artist = artist;
         });
     }
-
     if (userId) {
-        const artwork = artworks.filter(artwork => artwork.ownerId === userId);
-        return artwork;
+        artworks = artworks.filter(artwork => artwork.ownerId === userId);
+    }
+    if (options?.page && options?.limit) {
+        const startIndex = (options.page - 1) * options.limit;
+        const endIndex = startIndex + options.limit;
+        return artworks.slice(startIndex, endIndex);
     }
     return artworks;
 }
@@ -290,6 +303,20 @@ export function getArtworks(userId?: number, options?: { withBids?: boolean, wit
 export function getBids(artworkId: number) {
     const bids: Bid[] = readJSON('bids');
     return bids.filter(bid => bid.artworkId === artworkId);
+}
+
+export function createBid(artworkId: number, bidderId: number, bidAmount: number): Bid {
+    const bids = readJSON('bids');
+    const bid: Bid = {
+        id: bids.length + 1,
+        artworkId,
+        bidderId,
+        bidAmount,
+        bidTime: Date.now(),
+    };
+    bids.push(bid);
+    writeJSON('bids', JSON.stringify(bids));
+    return bid;
 }
 
 export function getTransactions(userId?: number) {

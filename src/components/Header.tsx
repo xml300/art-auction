@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
@@ -14,10 +14,21 @@ export function Header() {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [isMobileMenuOpen]);
+
     return (
-        <header className="px-4 sm:px-6 lg:px-8 py-4 shadow-b-lg border-b-2 bg-white dark:bg-dark-background dark:border-dark-secondary animate-fade-in">
+        <header className="px-4 sm:px-6 lg:px-8 py-4 shadow-b-lg border-b-2 bg-white dark:bg-dark-background dark:border-dark-secondary">
             <nav className="flex justify-between items-center">
-                <div className="animate-bounce">
+                <div className="">
                     <Link href="/">
                         <Image
                             src="/logo.png"
@@ -50,9 +61,17 @@ export function Header() {
                 </div>
             </nav>
 
+            {/* Mobile Overlay */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                    onClick={toggleMobileMenu}
+                ></div>
+            )}
+
             {/* Mobile Navigation Menu */}
             <div
-                className={`fixed top-0 right-0 w-64 h-full bg-white dark:bg-dark-background shadow-lg z-30 transform transition-transform duration-300 ease-in-out lg:hidden ${
+                className={`fixed top-0 right-0 w-64 h-full bg-white dark:bg-dark-background shadow-lg z-50 transform transition-transform isolate duration-300 ease-in-out lg:hidden ${
                     isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
                 }`}
             >

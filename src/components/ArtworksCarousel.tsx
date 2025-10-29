@@ -19,10 +19,10 @@ export function ArtworkCarousel({artworks, className}: {artworks: Artwork[], cla
     };
 
     return (
-         <section className={`mx-auto flex overflow-hidden  w-[calc(100vw-36rem)] max-w-5xl mt-8 rounded-3xl relative ${className}`}>
+         <section className={`mx-auto flex overflow-hidden  max-w-5xl mt-8 rounded-3xl relative ${className}`}>
                 {artworks.slice(index, index + 1).map(artwork => (
                     <Link ref={linkRef} href={`/dashboard/my-artworks/${artwork.id}`} key={artwork.id} className="w-full h-[48rem] flex-shrink-0 cursor-pointer relative transition-transform">
-                        <Image src={artwork.imageUrl} alt={artwork.title} className="bg-black/60 h-full w-full" />
+                        <Image src={artwork.imageUrl} width={800} height={800} alt={artwork.title} className="bg-black/60 h-full w-full" />
                         <div className="absolute bottom-0 text-white p-6 bg-gradient-to-b from-transparent to-black w-full">
                             <h3 className="text-3xl font-semibold">{artwork.title}</h3>
                             <p className="text-xl">{artwork.description} </p>

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         return response;
     }
 
-    const role = getUserRole(user.roleId);
+    const role = getUserRole(user.id);
     const path = role.name === 'Artist' ? '/artist-dashboard' : '/dashboard'; 
     const response = NextResponse.redirect(new URL(path, request.url));
     response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {

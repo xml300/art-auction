@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
             { columnName: 'username', comparator: '=', value: username },
         ]);
         if (existingUsers.length > 0) {
-            const response = NextResponse.redirect(new URL('/auth?type=register', request.url));
+            const response = NextResponse.redirect(new URL('/auth', request.url));
             response.cookies.set('errors', 'Username already taken.', {
                 maxAge: 10,
                 path: '/',
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         });
         return response;
     } catch (error: unknown) {
-        const response = NextResponse.redirect(new URL('/auth?type=register', request.url));
+        const response = NextResponse.redirect(new URL('/auth', request.url));
         response.cookies.set('errors', (error as Error).message || 'Failed to create account.', {
             maxAge: 10,
             path: '/',

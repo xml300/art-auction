@@ -106,7 +106,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col bg-white dark:bg-dark-background text-black dark:text-dark-text">
       <Header />
       <section className="flex-1 my-6 px-4 sm:px-6 lg:px-8 gap-y-4">
-        <section id="hero" className="mb-24 sm:mb-32 relative bg-[url('https://images.unsplash.com/photo-1579783902671-9888277d9260?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
+        <section id="hero" className="mb-24 sm:mb-32 relative bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
           <div className="z-20 text-center max-w-4xl mx-auto">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight">Welcome to <span className="italic text-transparent bg-gradient-to-r from-red-800 to-red-200 bg-clip-text pr-4">Artsyl</span></h1>
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mt-4 italic">Your premier platform for luxury digital art auctions</p>

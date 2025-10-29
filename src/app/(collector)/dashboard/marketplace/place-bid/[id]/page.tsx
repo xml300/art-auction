@@ -11,13 +11,15 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
         <div className="container mx-auto p-6 dark:bg-dark-background dark:text-dark-text">
             <h1 className="text-4xl font-bold mb-8">Place Your Bid</h1>
 
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col xl:flex-row gap-8 w-full">
                 {/* Artwork Details Section */}
-                <div className="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                     <Image
                         src={artwork.imageUrl}
                         alt={artwork.title}
-                        className="w-full h-96 object-cover rounded-lg mb-6"
+                        width={800}
+                        height={800}
+                        className="w-full h-64 md:h-72 xl:h-96 object-cover rounded-lg mb-6"
                     />
                     <h2 className="text-3xl font-semibold mb-2">{artwork.title}</h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-4">{artwork.description}</p>

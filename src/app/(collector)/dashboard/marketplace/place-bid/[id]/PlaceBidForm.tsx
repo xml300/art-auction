@@ -58,7 +58,7 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ bidAmount }),
+                body: JSON.stringify({ amount: bidAmount }),
             });
 
             if (response.ok) {
@@ -104,9 +104,9 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
         }
     }, [cursorPosition, inputRef]);
     return (
-        <div className="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h2 className="text-3xl font-semibold mb-6">Your Bid</h2>
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+        <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+            <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white">Your Bid</h2>
+            <form className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
                 {error && (
                     <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
                         <strong className="font-bold">Error!</strong>
@@ -131,18 +131,18 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
                         value={formattedBidAmount}
                         onChange={handleBidChange}
                         placeholder={`Minimum bid: $${minBid.toLocaleString()}`}
-                        className="w-full p-3 border border-gray-300 rounded-lg text-lg text-center focus:ring-blue-500 focus:border-blue-500 dark:bg-dark-background dark:border-gray-600 dark:text-dark-text"
+                        className="w-full p-3 border border-gray-300 rounded-lg text-2xl text-center font-bold focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
                         required
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-4">
                     {predefinedOptions.map((option) => (
                         <button
                             key={option}
                             type="button"
                             onClick={() => handlePredefinedBid(option)}
-                            className="px-6 py-3 border border-gray-300 rounded-lg text-xl dark:border-gray-600 dark:text-dark-text dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors"
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-lg font-medium text-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
                         >
                             +${option}
                         </button>
@@ -151,12 +151,11 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
 
                 <button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-xl"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-75 text-xl"
                 >
                     Place Bid
                 </button>
-                {/* Placeholder for bid messages */}
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
                     You will be notified if you are outbid.
                 </p>
             </form>

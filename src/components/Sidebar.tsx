@@ -3,12 +3,22 @@
 import Link from "next/link";
 import { Home, ShoppingCart, User, Settings, UserCircle, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { X } from "lucide-react";
 
-export default function Sidebar() {
+interface SidebarProps {
+    onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
     const pathname = usePathname();
 
     return (
         <div className="h-full w-80 sm:w-96 lg:w-auto border-r-2 p-6 sm:p-8 lg:p-12 flex flex-col bg-white text-gray-900 dark:bg-dark-background dark:text-dark-text border-gray-200 dark:border-gray-700">
+            <div className="lg:hidden flex justify-end mb-4">
+                <button onClick={onClose} className="text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform duration-200">
+                    <X size={28} />
+                </button>
+            </div>
             <div className="text-black dark:text-dark-text">
                 <h2 className="text-3xl text-center">Artsyl</h2>
                 <p className="text-lg italic text-center mt-2 font-light">Pursuing your passion for art</p>

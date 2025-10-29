@@ -1,5 +1,5 @@
 import { ArtworkCarousel } from "@/components/ArtworksCarousel";
-import { ArtworkCard } from "@/components/ArtworkCard";
+import PaginatedArtworks from "@/components/PaginatedArtworks";
 import { getArtworks } from "@/data/db";
 
 export default function MyArtworksPage() {
@@ -10,15 +10,15 @@ export default function MyArtworksPage() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in">My Artworks</h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 animate-fade-in-delay-1">Explore and manage your personal collection of digital art.</p>
 
-            <div className="animate-fade-in-delay-1">
+            <div className="animate-fade-in-delay-1 !mb-36">
                 <ArtworkCarousel artworks={artworks} />
             </div>
 
-            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fade-in-delay-2">
-                {artworks.map((artwork, index) => (
-                    <ArtworkCard key={artwork.id} artwork={artwork} index={index} />
-                ))}
-            </section>
+           <div className="mt-8">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold animate-fade-in">All Artworks</h2>
+                <p className="text-md text-gray-600 dark:text-gray-300 animate-fade-in-delay-1">Browse through your entire collection.</p>
+            </div>
+            <PaginatedArtworks artworks={artworks} />
         </div>
     );
 }

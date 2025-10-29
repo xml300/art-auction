@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { Globe } from "lucide-react";
+import EmptyState from "./EmptyState";
+import { Activity } from "@/data/db";
 
-interface Activity {
-    id: number;
-    type: "bid" | "won" | "watchlist_add";
-    artworkTitle: string;
-    amount?: number;
-    date: string;
-}
 
 interface ActivityFeedProps {
     activity: Activity[];
@@ -36,7 +31,7 @@ export default function ActivityFeed({ activity, emptyMessage }: ActivityFeedPro
                     </div>
                 ))
             ) : (
-                <p className="text-center text-gray-500 dark:text-gray-400">{emptyMessage}</p>
+                <EmptyState iconSrc="/globe.svg" title="No Activity" message={emptyMessage} />
             )}
         </div>
     );

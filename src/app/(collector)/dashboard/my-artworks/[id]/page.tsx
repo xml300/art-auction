@@ -1,23 +1,10 @@
 "use client";
 
+import LoadingSpinner from '@/components/LoadingSpinner';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-
-interface Artwork {
-    id: string;
-    title: string;
-    description: string;
-    imageUrl: string;
-    startingBid: number;
-    currentBid: number;
-    auctionEndTime: string;
-    artistId: number;
-    ownerId: number | null;
-    createdAt: string;
-    updatedAt: string;
-    status: string;
-}
+import { useEffect, useState } from 'react';
+import { Artwork } from '@/data/db';
 
 export default function ArtworkDetailPage() {
     const params = useParams();
@@ -27,79 +14,20 @@ export default function ArtworkDetailPage() {
     const [error, setError] = useState<string | null>(null);
 
     
-    const allArtworks: Artwork[] = useMemo(() => ([
-        {
-            "id": "1",
-            "title": "Sunset Over the Aegean",
-            "description": "A vibrant oil painting capturing the mesmerizing colors of a sunset reflecting on the sea. Painted in 2023.",
-            "imageUrl": "https://example.com/images/sunset_aegean.jpg",
-            "startingBid": 1500,
-            "currentBid": 1750,
-            "auctionEndTime": "2025-11-15T18:00:00Z",
-            "artistId": 101,
-            "ownerId": 102,
-            "createdAt": "2025-10-20T10:30:00Z",
-            "updatedAt": "2025-10-22T14:45:10Z",
-            "status": "Owned"
-        },
-        {
-            "id": "2",
-            "title": "Urban Dreams",
-            "description": "Abstract acrylic on canvas, exploring the chaotic beauty of city life and its hidden narratives.",
-            "imageUrl": "https://example.com/images/urban_dreams.jpg",
-            "startingBid": 800,
-            "currentBid": 800,
-            "auctionEndTime": "2025-11-10T20:00:00Z",
-            "artistId": 103,
-            "ownerId": null,
-            "createdAt": "2025-10-18T09:15:00Z",
-            "updatedAt": "2025-10-18T09:15:00Z",
-            "status": "On Auction"
-        },
-        {
-            "id": "3",
-            "title": "The Silent Watcher",
-            "description": "A striking bronze sculpture of an owl perched on a branch, symbolizing wisdom and mystery.",
-            "imageUrl": "https://example.com/images/silent_watcher_sculpture.jpg",
-            "startingBid": 3000,
-            "currentBid": 3500,
-            "auctionEndTime": "2025-11-12T17:30:00Z",
-            "artistId": 104,
-            "ownerId": 104,
-            "createdAt": "2025-10-15T16:00:00Z",
-            "updatedAt": "2025-10-21T11:20:30Z",
-            "status": "Owned"
-        },
-        {
-            "id": "4",
-            "title": "Ephemeral Bloom",
-            "description": "Delicate watercolor painting of a cherry blossom branch, capturing a fleeting moment of spring.",
-            "imageUrl": "https://example.com/images/ephemeral_bloom.jpg",
-            "startingBid": 500,
-            "currentBid": 650,
-            "auctionEndTime": "2025-11-18T19:00:00Z",
-            "artistId": 101,
-            "ownerId": null,
-            "createdAt": "2025-10-21T11:05:00Z",
-            "updatedAt": "2025-10-23T09:00:00Z",
-            "status": "On Auction"
-        }
-    ]), []);
-
+ 
     useEffect(() => {
-        if (id) {
-            const foundArtwork = allArtworks.find(artwork => artwork.id === id);
-            if (foundArtwork) {
-                setArtwork(foundArtwork);
-            } else {
-                setError("Artwork not found.");
-            }
+        fetch(`/api/artworks/${id}`)
+        .then(res => res.json())
+        .then(json => {
+            setArtwork(json.artwork);
             setLoading(false);
-        }
-    }, [id, allArtworks]);
+        })
+        setError("");
+    }, [id]);
+
 
     if (loading) {
-        return <div className="text-center text-xl mt-12">Loading artwork details...</div>;
+        return <LoadingSpinner />;
     }
 
     if (error) {
@@ -126,6 +54,8 @@ export default function ArtworkDetailPage() {
                     <Image
                         src={artwork.imageUrl}
                         alt={artwork.title}
+                        width={800}
+                        height={800}
                         className="w-full h-auto object-cover rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
                     />
                 </div>
@@ -136,7 +66,7 @@ export default function ArtworkDetailPage() {
                     <div className="space-y-4 animate-fade-in-delay-3">
                         <div>
                             <p className="text-sm text-gray-500 dark:text-gray-400">Status:</p>
-                            <p className="text-lg sm:text-xl font-semibold">{artwork.status}</p>
+                            <p className="text-lg sm:text-xl font-semibold">{artwork.ownerId != null ? "Owned" : "On Auction"}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-500 dark:text-gray-400">Current Bid:</p>
@@ -160,7 +90,7 @@ export default function ArtworkDetailPage() {
                         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors hover:scale-105  duration-200 flex-1 sm:flex-none">
                             View Certificate
                         </button>
-                        {artwork.status === "Owned" && (
+                        {artwork.ownerId != null && (
                             <button className="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors hover:scale-105 duration-200 flex-1 sm:flex-none">
                                 List for Resale
                             </button>

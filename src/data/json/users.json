@@ -50,5 +50,14 @@
         "roleId": 2,
         "createdAt": 1697760000000,
         "updatedAt": 1697760000000
+    },
+    {
+        "id": 5,
+        "email": "jiebenchim@gmail.com",
+        "username": "Flow",
+        "password": "3f78e64f5219610fd5916311c896d0ac7b2e97a7f5f67e22790f7cb26383bd41",
+        "roleId": 2,
+        "createdAt": 1761692515044,
+        "updatedAt": 1761692515044
     }
 ]

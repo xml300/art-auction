@@ -5,20 +5,9 @@ import ProfileHeader from "@/components/ProfileHeader";
 import StatsCard from "@/components/StatsCard";
 import ArtworkGrid from "@/components/ArtworkGrid";
 import ActivityFeed from "@/components/ActivityFeed";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { Activity, Artwork } from "@/data/db";
 
-interface Activity {
-    id: number;
-    type: "bid" | "won" | "watchlist_add";
-    artworkTitle: string;
-    amount?: number;
-    date: string;
-}
-
-interface ArtworkSummary {
-    id: string;
-    title: string;
-    imageUrl: string;
-}
 
 interface CollectorProfile {
     name: string;
@@ -35,8 +24,8 @@ interface CollectorProfile {
         auctionsWon: number;
         watchlistItems: number;
     };
-    ownedArtworks: ArtworkSummary[];
-    watchlist: ArtworkSummary[];
+    ownedArtworks: Artwork[];
+    watchlist: Artwork[];
     activity: Activity[];
 }
 
@@ -56,72 +45,8 @@ export default function ProfilePage() {
                 }
                 const data = await response.json();
                 setCollectorProfile(data);
-
-                
-                // const placeholderData: CollectorProfile = {
-                //     name: "Jane Doe",
-                //     username: "janedoe_collector",
-                //     profilePicture: "/images/avatars/sarah-chen.jpg",
-                //     bio: "Passionate art collector with a keen eye for contemporary digital art and NFTs. Always looking for unique pieces to add to my collection.",
-                //     socialMedia: {
-                //         twitter: "https://twitter.com/janedoe_art",
-                //         instagram: "https://instagram.com/janedoe_collection",
-                //     },
-                //     stats: {
-                //         artworksOwned: 5,
-                //         totalSpent: 25000,
-                //         auctionsWon: 3,
-                //         watchlistItems: 8,
-                //     },
-                //     ownedArtworks: [
-                //         {
-                //             "id": "1",
-                //             "title": "Sunset Over the Aegean",
-                //             "imageUrl": "https://example.com/images/sunset_aegean.jpg",
-                //         },
-                //         {
-                //             "id": "3",
-                //             "title": "The Silent Watcher",
-                //             "imageUrl": "https://example.com/images/silent_watcher_sculpture.jpg",
-                //         },
-                //     ],
-                //     watchlist: [
-                //         {
-                //             "id": "2",
-                //             "title": "Urban Dreams",
-                //             "imageUrl": "https://example.com/images/urban_dreams.jpg",
-                //         },
-                //         {
-                //             "id": "4",
-                //             "title": "Ephemeral Bloom",
-                //             "imageUrl": "https://example.com/images/ephemeral_bloom.jpg",
-                //         },
-                //     ],
-                //     activity: [
-                //         {
-                //             id: 1,
-                //             type: "bid",
-                //             artworkTitle: "Sunset Over the Aegean",
-                //             amount: 1750,
-                //             date: "2025-10-22T14:45:10Z",
-                //         },
-                //         {
-                //             id: 2,
-                //             type: "won",
-                //             artworkTitle: "The Silent Watcher",
-                //             amount: 3500,
-                //             date: "2025-11-12T17:30:00Z",
-                //         },
-                //         {
-                //             id: 3,
-                //             type: "watchlist_add",
-                //             artworkTitle: "Urban Dreams",
-                //             date: "2025-10-18T09:15:00Z",
-                //         },
-                //     ]
-                // };
-                // setCollectorProfile(placeholderData);
-            } catch (err: unknown) {
+                console.log(data);    
+             } catch (err: unknown) {
                 setError((err as Error).message);
             } finally {
                 setLoading(false);
@@ -132,7 +57,7 @@ export default function ProfilePage() {
     }, []);
 
     if (loading) {
-        return <div className="container mx-auto p-4 sm:p-6 lg:p-8 text-center">Loading profile...</div>;
+        return <LoadingSpinner />;
     }
 
     if (error) {

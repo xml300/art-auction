@@ -1,38 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ListFilter, MinusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import { Artwork } from "@/data/db";
 
+
+const ARTWORKS_PER_PAGE = 6;
+
 export default function MarketplacePage() {
     const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [filteredArtworks, setFilteredArtworks] = useState<Artwork[]>([]);
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-    // const [filterArtistName, setFilterArtistName] = useState("");
     const [searchFilter, setSearchFilter] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 10; 
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        fetch('/api/artworks?artist=true').then(res => res.json()).then(json => {
+        const fetchArtworks = async () => {
+            const res = await fetch(`/api/artworks?artist=true&page=${currentPage}&limit=${ARTWORKS_PER_PAGE}`);
+            const json = await res.json();
             setArtworks(json.artworks);
             setFilteredArtworks(json.artworks);
-        });
-    }, []);
+            setTotalPages(json.totalPages);
+        };
+        fetchArtworks();
+    }, [currentPage]);
 
     useEffect(() => {
-        if(searchFilter == ""){
+        if (searchFilter == "") {
             setFilteredArtworks(artworks);
             return;
         }
-        const newArtworks = artworks.filter((artwork) =>{
+        const newArtworks = artworks.filter((artwork) => {
             return (artwork.artist?.username.toLowerCase().includes(searchFilter.toLowerCase()) ||
-            artwork.title.toLowerCase().includes(searchFilter.toLowerCase())
-        );
+                artwork.title.toLowerCase().includes(searchFilter.toLowerCase())
+            );
         })
         setFilteredArtworks(newArtworks);
     }, [searchFilter, artworks]);
@@ -43,12 +49,35 @@ export default function MarketplacePage() {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        
-        console.log(`Fetching data for page ${page}`);
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchFilter(e.target.value);
+    }
+
+    const handleFilterSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const artistName = formData.get("artist_name")?.toString() || "";
+        const minBid = parseInt(formData.get("min_bid")?.toString()|| "0");
+        const maxBid = parseInt(formData.get("max_bid")?.toString()|| "0");
+        const minEndTime = Date.parse(formData.get("min_end_time")?.toString() || "");
+        const maxEndTime = Date.parse(formData.get("max_end_time")?.toString() || "");
+
+
+        const newArtworks = artworks.filter((artwork) => {
+            const nameCondition =  artwork.artist?.username.toLowerCase().includes(artistName.toLowerCase());
+            const bidCondition = (minBid === maxBid && maxBid === 0) ? true : (artwork.currentBid >= minBid && artwork.currentBid <= maxBid);
+            const dateCondition = (minEndTime === maxEndTime && maxEndTime === 0) ? true : (artwork.auctionEndTime > minEndTime && artwork.auctionEndTime < maxEndTime);
+
+            return (
+                nameCondition &&
+                bidCondition &&
+                dateCondition
+            );
+        })
+        setFilteredArtworks(newArtworks);
     }
 
     return (
@@ -56,12 +85,12 @@ export default function MarketplacePage() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in">Marketplace</h1>
 
             {/* Search and Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delay-1">
+            <div className="flex flex-col sm:flex-row gap-4 ">
                 <input
                     type="search"
                     name=""
                     id=""
-                    className="border-2 border-black flex-1 p-3 sm:p-4 rounded-lg text-base sm:text-lg dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200"
+                    className="animate-fade-in-delay-1 border-2 border-black flex-1 p-3 sm:p-4 rounded-lg text-base sm:text-lg dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200"
                     placeholder="Search by artist or artwork"
                     onChange={handleSearchChange}
                 />
@@ -74,35 +103,68 @@ export default function MarketplacePage() {
                     </button>
                     <div
                         className={cn(
-                            "absolute right-0 top-full max-w-xl bg-white shadow-md border p-4 sm:p-8 flex-col dark:bg-dark-background dark:text-dark-text dark:border-gray-700 animate-fade-in z-[999]",
+                            "rounded-xl absolute right-0 top-[120%] w-96 bg-white shadow-xl border border-gray-200 p-6 flex-col dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 animate-fade-in animate-duration z-50",
                             isFilterMenuOpen ? "flex" : "hidden"
                         )}
                     >
-                    <form action="">
-                        <div className="flex flex-col mb-4">
-                            <label htmlFor="artist_name">Artist Name</label>
-                            <input type="text" name="artist_name" id="artist_name" className="border border-black p-2 rounded-md dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200" placeholder="Enter artist name" />
-                        </div>
-                        <div className="flex flex-col mb-4">
-                            <label htmlFor="">Current Bid</label>
-                            <div className="flex gap-2 sm:gap-4 items-center">
-                                <input type="text" name="min_bid" id="min_bid" className="border-2 border-black rounded-md p-2 flex-1 dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200" placeholder="$0.00" />
-                                <MinusIcon className="w-4 h-4" />
-                                <input type="text" name="max_bid" id="max_bid" className="border-2 border-black rounded-md p-2 flex-1 dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200" placeholder="$10,000.00" />
+                        <form onSubmit={handleFilterSubmit} className="space-y-5">
+                            <div>
+                                <label htmlFor="artist_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Artist Name</label>
+                                <input
+                                    type="text"
+                                    name="artist_name"
+                                    id="artist_name"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    placeholder="Enter artist name"
+                                />
                             </div>
-                        </div>
-                        <div className="flex flex-col mb-4">
-                            <label htmlFor="">Auction Ends</label>
-                            <div className="flex gap-2 sm:gap-4 items-center">
-                                <input type="date" name="min_end_time" id="min_end_time" className="border-2 border-black p-2 rounded-md flex-1 dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200" />
-                                <MinusIcon className="w-4 h-4" />
-                                <input type="date" name="max_end_time" id="max_end_time" className="border-2 border-black p-2 rounded-md flex-1 dark:bg-dark-background dark:border-gray-400 hover:scale-105 transition-transform duration-200" />
+                            <div>
+                                <label htmlFor="" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Bid</label>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="text"
+                                        name="min_bid"
+                                        id="min_bid"
+                                        className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                        placeholder="$0.00"
+                                        onChange={(e) => (document.querySelector('#max_bid') as HTMLInputElement).value = e.target.value}
+                                    />
+                                    <MinusIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                    <input
+                                        type="text"
+                                        name="max_bid"
+                                        id="max_bid"
+                                        className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                        placeholder="$10,000.00"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" className="mt-4 sm:mt-8 flex items-center justify-center bg-black text-white px-6 py-2 rounded-lg w-full gap-2 hover:scale-105 transition-transform duration-200">
-                            <ListFilter className="w-4 h-4" />Filter
-                        </button>
-                    </form>
+                            <div className="pr-6">
+                                <label htmlFor="" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Auction Ends</label>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="date"
+                                        name="min_end_time"
+                                        id="min_end_time"
+                                        className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                        onChange={(e) => (document.querySelector('#max_end_time') as HTMLInputElement).value = e.target.value}
+                                    />
+                                    <MinusIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                    <input
+                                        type="date"
+                                        name="max_end_time"
+                                        id="max_end_time"
+                                        className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                className="mt-6 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-75 font-semibold text-lg gap-2"
+                            >
+                                <ListFilter className="w-5 h-5" />Filter
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
