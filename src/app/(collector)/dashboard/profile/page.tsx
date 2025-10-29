@@ -134,7 +134,7 @@ export default function ProfilePage() {
 
     return (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 animate-fade-in">Collector Profile</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8  ">Collector Profile</h1>
 
             <div className="mb-6 sm:mb-8 border-b border-gray-200 dark:border-gray-700 animate-fade-in-delay-1">
                 <nav className="-mb-px flex flex-wrap gap-2 sm:gap-4 lg:space-x-8" aria-label="Tabs">

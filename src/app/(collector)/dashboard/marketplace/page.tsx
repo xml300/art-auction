@@ -103,7 +103,7 @@ export default function MarketplacePage() {
                     </button>
                     <div
                         className={cn(
-                            "rounded-xl absolute right-0 top-[120%] w-96 bg-white shadow-xl border border-gray-200 p-6 flex-col dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 animate-fade-in animate-duration z-50",
+                            "rounded-xl absolute right-0 top-[120%] w-full sm:w-96 bg-white shadow-xl border border-gray-200 p-6 flex-col dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 animate-fade-in animate-duration z-50",
                             isFilterMenuOpen ? "flex" : "hidden"
                         )}
                     >

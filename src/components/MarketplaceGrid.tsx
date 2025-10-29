@@ -4,9 +4,11 @@ import { Artwork } from "@/data/db";
 import EmptyState from "./EmptyState";
 
 export function MarketplaceGrid({ artworks }: { artworks: Artwork[] }) {
+    const marketArtworks = artworks.filter(artwork => artwork.ownerId == null);
+
     return (
         <section className="mb-12 mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
-            {artworks.map(artwork => {
+            {marketArtworks.map(artwork => {
                 return (
                     <div key={artwork.id} className={` rounded-lg shadow-lg hover:scale-105 transition-transform duration-300`}>
                         <div className="flex flex-col gap-6 relative group">

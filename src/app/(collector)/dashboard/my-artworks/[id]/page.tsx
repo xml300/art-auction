@@ -49,18 +49,18 @@ export default function ArtworkDetailPage() {
         <div className="container mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 animate-fade-in">{artwork.title}</h1>
 
-            <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 animate-fade-in-delay-1">
-                <div className="w-full lg:w-1/2">
+            <div className="flex flex-col xl:flex-row gap-6 sm:gap-8 animate-fade-in-delay-1">
+                <div className="w-full xl:w-1/2">
                     <Image
                         src={artwork.imageUrl}
                         alt={artwork.title}
                         width={800}
                         height={800}
-                        className="w-full h-auto object-cover rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
+                        className="w-full h-64 sm:h-96 object-cover rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
                     />
                 </div>
 
-                <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6">
+                <div className="w-full xl:w-1/2 space-y-4 sm:space-y-6">
                     <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg animate-fade-in-delay-2">{artwork.description}</p>
 
                     <div className="space-y-4 animate-fade-in-delay-3">
@@ -86,7 +86,7 @@ export default function ArtworkDetailPage() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in-delay-4">
+                    <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3 sm:gap-4 animate-fade-in-delay-4">
                         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors hover:scale-105  duration-200 flex-1 sm:flex-none">
                             View Certificate
                         </button>

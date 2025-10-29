@@ -1,1 +1,48 @@
-[{"id":1,"artworkId":1,"bidderId":102,"bidAmount":1750,"bidTime":1731600000000},{"id":2,"artworkId":3,"bidderId":102,"bidAmount":3500,"bidTime":1731400000000},{"id":3,"artworkId":4,"bidderId":102,"bidAmount":650,"bidTime":1731900000000},{"id":4,"artworkId":3,"bidAmount":3501,"bidTime":1761699120985},{"id":5,"artworkId":3,"bidAmount":3501,"bidTime":1761699368327},{"id":6,"artworkId":3,"bidAmount":3751,"bidTime":1761699403935}]
+[
+    {
+        "id": 1,
+        "artworkId": 1,
+        "bidderId": 102,
+        "bidAmount": 1750,
+        "bidTime": 1731600000000
+    },
+    {
+        "id": 2,
+        "artworkId": 3,
+        "bidderId": 102,
+        "bidAmount": 3500,
+        "bidTime": 1731400000000
+    },
+    {
+        "id": 3,
+        "artworkId": 4,
+        "bidderId": 102,
+        "bidAmount": 650,
+        "bidTime": 1731900000000
+    },
+    {
+        "id": 4,
+        "artworkId": 3,
+        "bidAmount": 3501,
+        "bidTime": 1761699120985
+    },
+    {
+        "id": 5,
+        "artworkId": 3,
+        "bidAmount": 3501,
+        "bidTime": 1761699368327
+    },
+    {
+        "id": 6,
+        "artworkId": 3,
+        "bidAmount": 3751,
+        "bidTime": 1761699403935
+    },
+    {
+        "id": 7,
+        "artworkId": 1,
+        "bidderId": 5,
+        "bidAmount": 2101,
+        "bidTime": 1761747066416
+    }
+]

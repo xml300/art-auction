@@ -5,7 +5,7 @@ import { SwitchThemeToggle } from "@/components/ThemeToggle";
 import { LogOut, UserCircle, Menu, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
     children,
@@ -13,6 +13,13 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }>) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [profilePicture, setProfilePicture] = useState<string>("/null");
+
+    useEffect(() => {
+        fetch('/api/profile')
+        .then(res => res.json())
+        .then(json => setProfilePicture(json.profilePicture))
+    }, []);
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -46,7 +53,7 @@ export default function DashboardLayout({
 
                     <div className="group relative">
                         <Image
-                            src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            src={profilePicture}
                             className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black dark:bg-white hover:scale-110 transition-transform duration-200"
                             width={100}
                             height={100}

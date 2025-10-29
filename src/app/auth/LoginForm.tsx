@@ -1,10 +1,21 @@
 "use client"; 
 import Link from "next/link";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function LoginForm({ error }: { error?: string }){
     const [showPassword, setShowPassword] = useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    useEffect(() => {
+        const validateForm = () => {
+            const isValid = username.trim() !== "" && password.trim() !== "";
+            setIsFormValid(isValid);
+        };
+        validateForm();
+    }, [username, password]);
 
     return (
         <form className="text-lg mt-4 space-y-4" action="/api/auth/login" method="post">
@@ -34,6 +45,8 @@ export default function LoginForm({ error }: { error?: string }){
                         autoComplete="username"
                         className="w-full text-lg rounded-lg p-3 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                         required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
 
@@ -51,6 +64,8 @@ export default function LoginForm({ error }: { error?: string }){
                             autoComplete="current-password"
                             className="w-full text-lg rounded-lg p-3 pr-10 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                             required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
                             type="button"
@@ -62,11 +77,11 @@ export default function LoginForm({ error }: { error?: string }){
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between !mt-2">
-                    <label className="flex items-center">
+                <div className="flex items-center justify-end !mt-2">
+                    {/* <label className="flex items-center">
                         <input type="checkbox" name="remember" className="mr-2 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500" />
                         <span className="">Remember me</span>
-                    </label>
+                    </label> */}
                     <Link href="/auth/forgot-password" className=" text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
                         Forgot password?
                     </Link>
@@ -76,7 +91,12 @@ export default function LoginForm({ error }: { error?: string }){
             <div className="pt-4">
                 <button
                     type="submit"
-                    className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className={`w-full py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        isFormValid
+                            ? "bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white transform hover:scale-105 focus:ring-red-500"
+                            : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                    }`}
+                    disabled={!isFormValid}
                 >
                     Sign In
                 </button>

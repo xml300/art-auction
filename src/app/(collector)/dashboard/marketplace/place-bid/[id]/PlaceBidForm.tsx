@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/data/db"; 
 
 export function PlaceBidForm({artwork} : {artwork: Artwork}) {
     const minBid = artwork.currentBid + 1;
@@ -105,6 +105,7 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
     }, [cursorPosition, inputRef]);
     return (
         <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+            
             <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white">Your Bid</h2>
             <form className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
                 {error && (

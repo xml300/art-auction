@@ -18,9 +18,9 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 dark:text-white animate-fade-in">Settings</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 dark:text-white">Settings</h1>
 
-            <section className="flex flex-col lg:flex-row rounded-lg shadow-lg border border-gray-400 dark:border-gray-600 dark:bg-gray-800 animate-fade-in-delay-1">
+            <section className="flex flex-col lg:flex-row rounded-lg shadow-lg border border-gray-400 dark:border-gray-600 dark:bg-gray-800 animate-fade-in">
                 {/* Tabs */}
                 <div className="border-b lg:border-b-0 lg:border-r-2 border-gray-400 dark:border-gray-600 p-4 lg:p-6">
                     <ul className="flex justify-center lg:flex-col space-x-4 lg:space-x-0 lg:space-y-8">
@@ -37,7 +37,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 animate-fade-in-delay-2">
+                <div className="flex-1 animate-fade-in-delay-1">
                     {/* Render only the active tab's content */}
                     {children && (children as ReactNode[])[activeTab]}
                 </div>

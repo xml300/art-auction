@@ -1,6 +1,7 @@
-import { getArtworks } from "@/data/db";
+import { getArtworks, getUsersProfile } from "@/data/db";
 import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
+import EmptyState from "@/components/EmptyState";
 import {
     ImageIcon,
     DollarSign,
@@ -13,8 +14,9 @@ import {
 } from "lucide-react";
 
 
-export default function DashboardPage(){
-    const artworks = getArtworks();
+export default function DashboardPage() {
+    const userProfile = getUsersProfile(5); // Using static user ID 1 for demonstration
+    const artworks = getArtworks(); // This will be replaced with userProfile.ownedArtworks
     return (
         <div className="space-y-24">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in !-my-12">Collector Dashboard</h1>
@@ -22,7 +24,7 @@ export default function DashboardPage(){
             {/*Statistics*/}
             <div>
                 <h2 className="text-xl sm:text-2xl font-semibold mb-6 animate-fade-in-delay-1">Statistics Overview</h2>
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                     {/* Artworks Owned */}
                     <div className="group relative bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-fade-in-delay-1 border border-blue-200/50 dark:border-blue-800/50">
                         <div className="flex items-center justify-between mb-4">
@@ -30,7 +32,7 @@ export default function DashboardPage(){
                                 <ImageIcon className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-blue-900 dark:text-blue-100">5</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-blue-900 dark:text-blue-100">{userProfile.stats.artworksOwned}</div>
                                 <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">Artworks</div>
                             </div>
                         </div>
@@ -47,7 +49,7 @@ export default function DashboardPage(){
                                 <DollarSign className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">$25K</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">${userProfile.stats.totalSpent}</div>
                                 <div className="text-xs text-green-600 dark:text-green-400 font-medium">Total</div>
                             </div>
                         </div>
@@ -64,7 +66,7 @@ export default function DashboardPage(){
                                 <Award className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-purple-900 dark:text-purple-100">3</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-purple-900 dark:text-purple-100">{userProfile.stats.auctionsWon}</div>
                                 <div className="text-xs text-purple-600 dark:text-purple-400 font-medium">Won</div>
                             </div>
                         </div>
@@ -81,7 +83,7 @@ export default function DashboardPage(){
                                 <Heart className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-orange-900 dark:text-orange-100">8</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-orange-900 dark:text-orange-100">{userProfile.stats.watchlistItems}</div>
                                 <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">Items</div>
                             </div>
                         </div>
@@ -98,7 +100,7 @@ export default function DashboardPage(){
                                 <Target className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-red-900 dark:text-red-100">12</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-red-900 dark:text-red-100">{userProfile.stats.activeBids}</div>
                                 <div className="text-xs text-red-600 dark:text-red-400 font-medium">Active</div>
                             </div>
                         </div>
@@ -115,7 +117,7 @@ export default function DashboardPage(){
                                 <TrendingUp className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">$1.6K</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">${userProfile.stats.avgBidAmount}</div>
                                 <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Average</div>
                             </div>
                         </div>
@@ -132,7 +134,7 @@ export default function DashboardPage(){
                                 <Clock className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-lg sm:text-xl font-bold text-teal-900 dark:text-teal-100">2.5</div>
+                                <div className="text-lg sm:text-xl font-bold text-teal-900 dark:text-teal-100">{userProfile.stats.memberSince}</div>
                                 <div className="text-xs text-teal-600 dark:text-teal-400 font-medium">Years</div>
                             </div>
                         </div>
@@ -149,7 +151,7 @@ export default function DashboardPage(){
                                 <Activity className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-pink-900 dark:text-pink-100">20%</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-pink-900 dark:text-pink-100">{userProfile.stats.successRate}%</div>
                                 <div className="text-xs text-pink-600 dark:text-pink-400 font-medium">Rate</div>
                             </div>
                         </div>
@@ -164,9 +166,16 @@ export default function DashboardPage(){
             {/*My Artworks*/}
             <div className="hidden lg:block">
                 <h2 className="text-xl sm:text-2xl font-semibold animate-fade-in-delay-2">My Artworks</h2>
-                <div className="animate-fade-in-delay-3">
-                    <ArtworkCarousel artworks={artworks} />
-                </div>
+                {userProfile.ownedArtworks.length === 0 ? (
+                    <EmptyState
+                        title="No Artworks Yet"
+                        message="It looks like you haven't added any artworks to your collection. Start exploring the marketplace to find your next masterpiece!"
+                        iconSrc="/globe.svg" // Assuming you have an appropriate icon
+                    />
+                ) : (
+                    <div className="animate-fade-in-delay-3">
+                        <ArtworkCarousel artworks={userProfile.ownedArtworks} />
+                    </div>)}
             </div>
 
             {/*Marketplace*/}

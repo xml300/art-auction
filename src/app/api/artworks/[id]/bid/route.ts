@@ -11,7 +11,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     try {
         const payload = jwt.verify(authCookie, process.env.JWT_SECRET_KEY || '') as jwt.JwtPayload;
-        const user = getUsers(payload.id) as User;
+        const user = getUsers(payload.userId) as User;
         if (!user) {
             return NextResponse.json({ message: 'User not found' }, { status: 400 });
         }

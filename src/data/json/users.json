@@ -52,12 +52,53 @@
         "updatedAt": 1697760000000
     },
     {
+        "0": {
+            "columnName": "profilePicture",
+            "value": ""
+        },
+        "1": {
+            "columnName": "surname",
+            "value": "Jim"
+        },
+        "2": {
+            "columnName": "firstName",
+            "value": "Jeff"
+        },
+        "3": {
+            "columnName": "username",
+            "value": "Flow"
+        },
+        "4": {
+            "columnName": "email",
+            "value": "jiebenchim@gmail.com"
+        },
+        "5": {
+            "columnName": "bio"
+        },
         "id": 5,
         "email": "jiebenchim@gmail.com",
         "username": "Flow",
         "password": "3f78e64f5219610fd5916311c896d0ac7b2e97a7f5f67e22790f7cb26383bd41",
         "roleId": 2,
         "createdAt": 1761692515044,
-        "updatedAt": 1761692515044
+        "updatedAt": 1761745798823,
+        "name": "",
+        "firstName": "Jeff",
+        "surname": "Jim",
+        "profilePicture": "/uploads/logo.jpg",
+        "socialMedia": {
+            "twitter": "https://twitter.com/janedoe_art",
+            "instagram": "https://instagram.com/janedoe_collection"
+        },
+        "stats": {
+            "artworksOwned": 0,
+            "totalSpent": 0,
+            "auctionsWon": 0,
+            "watchlistItems": 0
+        },
+        "ownedArtworks": [],
+        "watchlist": [],
+        "activity": [],
+        "first_name": "Flow"
     }
 ]

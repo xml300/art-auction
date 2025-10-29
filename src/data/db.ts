@@ -37,6 +37,9 @@ export interface User {
 export interface CollectorProfile {
     name: string;
     username: string;
+    firstName: string;
+    surname: string;
+    email: string;
     profilePicture: string;
     bio: string;
     socialMedia: {
@@ -48,6 +51,10 @@ export interface CollectorProfile {
         totalSpent: number;
         auctionsWon: number;
         watchlistItems: number;
+        activeBids: number;
+        avgBidAmount: number;
+        memberSince: number; // In years
+        successRate: number; // Percentage
     };
     ownedArtworks: Artwork[];
     watchlist: Artwork[];
@@ -139,6 +146,42 @@ export function createUser(email: string, username: string, password: string, ro
     return user;
 };
 
+export function updateUser<K extends keyof User>(id: number, updates: {columnName: K, value: User[K]}[]): User | undefined {
+    const users: User[] = readJSON('users');
+    const userIndex = users.findIndex(user => user.id === id);
+
+    if (userIndex === -1) {
+        return undefined;
+    }
+
+    const updatedUser = { 
+        ...users[userIndex], 
+        updatedAt: Date.now() 
+    };
+
+    for(const update of updates){
+        updatedUser[update.columnName] = update.value;
+    }
+
+    users[userIndex] = updatedUser;
+    writeJSON('users', JSON.stringify(users));
+    return updatedUser;
+}
+
+export function updatePassword(id: number, newPassword: string): User | undefined {
+    const users: User[] = readJSON('users');
+    const userIndex = users.findIndex(user => user.id === id);
+
+    if (userIndex === -1) {
+        return undefined;
+    }
+
+    const updatedUser = { ...users[userIndex], password: hashValue(newPassword), updatedAt: Date.now() };
+    users[userIndex] = updatedUser;
+    writeJSON('users', JSON.stringify(users));
+    return updatedUser;
+}
+
 export function getUsersQuery(where: { columnName: string, comparator: '=' | '<' | '>', value: string }[]) {
     const users: User[] = readJSON('users');
     return users.filter(user => {
@@ -178,9 +221,31 @@ export function getUsersProfile(userId: number) {
     const activity = getActivity(userId);
     const transactions = getTransactions(userId);
     
+    const allBids = readJSON('bids') as Bid[];
+    const userBids = allBids.filter(bid => bid.bidderId === userId);
+    const allArtworks = readJSON('artworks') as Artwork[];
+
+    const activeBidsCount = userBids.filter(bid => {
+        const artwork = allArtworks.find(art => art.id === bid.artworkId);
+        return artwork && artwork.auctionEndTime > Date.now();
+    }).length;
+
+    const totalBidAmount = userBids.reduce((acc, bid) => acc + bid.bidAmount, 0);
+    const avgBidAmount = userBids.length > 0 ? totalBidAmount / userBids.length : 0;
+
+    const memberSinceYears = (Date.now() - user.createdAt) / (1000 * 60 * 60 * 24 * 365);
+
+    const uniqueBiddedArtworks = new Set(userBids.map(bid => bid.artworkId));
+    const totalAuctionsParticipated = uniqueBiddedArtworks.size;
+    const successRate = totalAuctionsParticipated > 0 ? (ownedArtworks.length / totalAuctionsParticipated) * 100 : 0;
+
+
     const profileData: CollectorProfile = {
         name: `${user.firstName || ''} ${user.surname || ''}`.trim(),
         username: user.username,
+        firstName: user.firstName || "",
+        surname: user.surname || "",
+        email: user.email,
         profilePicture: user.profilePicture || "/images/avatars/default.jpg",
         bio: user.bio || "No bio provided.",
         socialMedia: {
@@ -192,6 +257,10 @@ export function getUsersProfile(userId: number) {
             totalSpent:     transactions.reduce((acc, tran) => tran.amount + acc, 0), 
             auctionsWon: ownedArtworks.length, 
             watchlistItems: watchlist.length,
+            activeBids: activeBidsCount,
+            avgBidAmount: parseFloat(avgBidAmount.toFixed(2)),
+            memberSince: parseFloat(memberSinceYears.toFixed(1)),
+            successRate: parseFloat(successRate.toFixed(1)),
         },
         ownedArtworks: ownedArtworks,
         watchlist: watchlist,

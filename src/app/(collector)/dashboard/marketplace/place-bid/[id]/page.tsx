@@ -1,5 +1,7 @@
 import { getArtworkById } from '@/data/db';
 import { PlaceBidForm } from './PlaceBidForm';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 import Image from 'next/image';
 
@@ -9,7 +11,10 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
 
     return (
         <div className="container mx-auto p-6 dark:bg-dark-background dark:text-dark-text">
-            <h1 className="text-4xl font-bold mb-8">Place Your Bid</h1>
+            <Link href="/dashboard/marketplace" className="font-bold">
+            <ArrowLeft className="w-12 h-12 text-gray-600 backdrop-blur-lg bg-white dark:bg-black/60 shadow-lg dark:text-gray-300 hover:scale-110 transition-transform duration-200 mb-4 p-2 rounded-full" />
+            </Link>
+            <h1 className="text-4xl font-bold mb-8 mt-12">Place Your Bid</h1>
 
             <div className="flex flex-col xl:flex-row gap-8 w-full">
                 {/* Artwork Details Section */}

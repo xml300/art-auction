@@ -2,11 +2,31 @@
 
 import Link from "next/link";
 import { Eye, EyeOff, User, Lock, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function RegisterForm({ error }: { error?: string }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [accountType, setAccountType] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    useEffect(() => {
+        const validateForm = () => {
+            const isValid =
+                accountType !== "" &&
+                username.trim() !== "" &&
+                email.trim() !== "" &&
+                password.trim() !== "" &&
+                confirmPassword.trim() !== "" &&
+                password === confirmPassword;
+            setIsFormValid(isValid);
+        };
+        validateForm();
+    }, [accountType, username, email, password, confirmPassword]);
 
     return (
         <form className="text-lg mt-4 space-y-4" action="/api/auth/register" method="post">
@@ -34,6 +54,8 @@ export default function RegisterForm({ error }: { error?: string }) {
                         autoComplete="accountType"
                         className="w-full text-lg rounded-lg p-3 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                         required
+                        value={accountType}
+                        onChange={(e) => setAccountType(e.target.value)}
                     >
                         <option value="">Select Account Type</option>
                         {/* <option value="1">Artist</option> */}
@@ -54,6 +76,8 @@ export default function RegisterForm({ error }: { error?: string }) {
                         autoComplete="username"
                         className="w-full text-lg rounded-lg p-3 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                         required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
 
@@ -70,6 +94,8 @@ export default function RegisterForm({ error }: { error?: string }) {
                         autoComplete="email"
                         className="w-full text-lg rounded-lg p-3 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                         required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -87,6 +113,8 @@ export default function RegisterForm({ error }: { error?: string }) {
                             autoComplete="new-password"
                             className="w-full text-lg rounded-lg p-3 pr-10 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                             required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
                             type="button"
@@ -112,6 +140,8 @@ export default function RegisterForm({ error }: { error?: string }) {
                             autoComplete="new-password"
                             className="w-full text-lg rounded-lg p-3 pr-10 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                             required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                         <button
                             type="button"
@@ -123,7 +153,7 @@ export default function RegisterForm({ error }: { error?: string }) {
                     </div>
                 </div>
 
-                <div className="flex items-center !mt-2">
+                {/* <div className="flex items-center !mt-2">
                     <input type="checkbox" name="terms" id="terms" className="mt-1 mr-2 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500" required />
                     <label htmlFor="terms" className="">
                         I agree to the{' '}
@@ -135,13 +165,18 @@ export default function RegisterForm({ error }: { error?: string }) {
                             Privacy Policy
                         </Link>
                     </label>
-                </div>
+                </div> */}
             </div>
 
             <div className="pt-4">
                 <button
                     type="submit"
-                    className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className={`w-full py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        isFormValid
+                            ? "bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white transform hover:scale-105 focus:ring-red-500"
+                            : "bg-gray-300  dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                    }`}
+                    disabled={!isFormValid}
                 >
                     Create Account
                 </button>

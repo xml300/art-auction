@@ -1,0 +1,52 @@
+import { hashValue, updatePassword } from "@/data/db";
+import { NextRequest, NextResponse } from "next/server";
+import { getUsers } from "@/data/db";
+import { User } from "@/data/db";
+import { getSession } from "@/lib/auth";
+
+export async function POST(request: NextRequest) {
+    const [payload, error] = await getSession();
+    const redirectURL = new URL('/dashboard/settings', request.nextUrl.origin)
+
+    if (error || payload === null) {
+        const response = NextResponse.redirect(redirectURL);
+        response.cookies.set('errors', error || "", {
+            maxAge: 10,
+            path: '/',
+        });
+        return response;
+    }
+
+    const userId = payload.userId;
+    const body = await request.formData();
+    const currentPassword = body.get('current_password')?.toString() || '';
+    const newPassword = body.get('new_password')?.toString() || '';
+
+    const user = getUsers(userId) as User;
+
+    if (!user || hashValue(currentPassword) !== user.password) {
+        const response = NextResponse.redirect(redirectURL);
+        response.cookies.set('errors', 'Invalid current password', {
+            maxAge: 10,
+            path: '/',
+        });
+        return response;
+    }
+
+    const updatedUser = updatePassword(userId, newPassword);
+
+    if (updatedUser) {
+        const response = NextResponse.redirect(redirectURL);
+        response.cookies.set('success', "Password updated successfully", {
+            maxAge: 10,
+            path: '/',
+        });
+        return response;
+    }
+    const response = NextResponse.redirect(redirectURL);
+    response.cookies.set('errors', "User not found or password update failed", {
+        maxAge: 10,
+        path: '/',
+    });
+    return response;
+}
