@@ -82,7 +82,7 @@ export default function LoginForm({ error }: { error?: string }){
                         <input type="checkbox" name="remember" className="mr-2 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500" />
                         <span className="">Remember me</span>
                     </label> */}
-                    <Link href="/auth/forgot-password" className=" text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                    <Link href="" className=" text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
                         Forgot password?
                     </Link>
                 </div>
@@ -105,7 +105,7 @@ export default function LoginForm({ error }: { error?: string }){
             <div className="text-center pt-2">
                 <p className=" text-gray-600 dark:text-gray-400">
                     Don&apos;t have an account?{' '}
-                    <Link href="/auth/register" className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors">
+                    <Link href="/auth" className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors">
                         Sign up
                     </Link>
                 </p>

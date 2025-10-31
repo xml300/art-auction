@@ -107,13 +107,13 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col bg-white dark:bg-dark-background text-black dark:text-dark-text">
       <Header />
       <section className="flex-1 my-6 px-4 sm:px-6 lg:px-8 gap-y-4">
-        <section id="hero" className="mb-24 sm:mb-32 relative bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
+        <section id="hero" className="mb-24 sm:mb-32 relative rounded-3xl bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
           <div className="z-20 text-center max-w-4xl mx-auto">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight">Welcome to <span className="italic text-transparent bg-gradient-to-r from-red-800 to-red-200 bg-clip-text pr-4">Artsyl</span></h1>
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mt-4 italic">Your premier platform for luxury digital art auctions</p>
             <Link href="/auth" className="mt-8 inline-block bg-red-700 hover:bg-red-600 text-white text-md sm:text-lg md:text-xl px-8 py-3 sm:px-10 sm:py-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">Explore Artworks</Link>
           </div>
-          <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/50"></div>
+          <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/50 rounded-3xl"></div>
         </section>
         <section id="about" className="text-center shadow-md py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-background opacity-0 animate-fade-in-delay-1">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -155,7 +155,7 @@ export default async function Home() {
                 </li>
               </ul>
               <div>
-                <Link href="/about" className="rounded-full bg-red-700 px-8 py-3 text-white text-lg sm:text-xl">Learn More</Link>
+                <Link href="" className="rounded-full bg-red-700 px-8 py-3 text-white text-lg sm:text-xl">Learn More</Link>
               </div>
             </div>
           </div>

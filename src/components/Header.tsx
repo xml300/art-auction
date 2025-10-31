@@ -35,6 +35,7 @@ export function Header() {
                             alt="Artsyl Logo"
                             width={50}
                             height={50}
+                            className="rounded-full"
                         />
                     </Link>
                 </div>
@@ -43,7 +44,7 @@ export function Header() {
                 <ul className="hidden lg:flex gap-4 items-center justify-center text-lg text-black dark:text-dark-text animate-fade-in">
                     <li className="flex items-center justify-center"><ThemeToggle className="w-8 h-8" /></li>
                     <li className="hover:scale-105 transition-transform duration-200"><Link href="/">Home</Link></li>
-                    <li className="hover:scale-105 transition-transform duration-200"><Link href="/about">About</Link></li>
+                    <li className="hover:scale-105 transition-transform duration-200"><Link href="">About</Link></li>
                     <li className="ml-2 group relative hover:scale-105 transition-transform duration-200">
                         <Link href="/auth" className="block rounded-full bg-red-700 px-6 py-2 text-white">Sign Up</Link>
                     </li>
@@ -89,7 +90,7 @@ export function Header() {
                             <Link href="/" onClick={toggleMobileMenu}>Home</Link>
                         </li>
                         <li className="hover:bg-red-800 w-full text-center p-2 rounded-lg hover:scale-105 transition-transform duration-200">
-                            <Link href="/about" onClick={toggleMobileMenu}>About</Link>
+                            <Link href="/" onClick={toggleMobileMenu}>About</Link>
                         </li>
                     </div>
                     <li className="flex gap-x-4">
