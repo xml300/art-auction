@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         }
     })
     const paymentData = await response.json();
-    const transaction = getTransactionByReference(reference || "");
+    const transaction = await getTransactionByReference(reference || "");
 
     if (paymentData.data.status !== 'success' && paymentData.data.amount * 0.01 !== transaction?.amount) {
         const response = NextResponse.redirect(redirectUrl);
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         updateTransaction(transaction.id, [
             {columnName: 'status', value: 'completed'}
         ]);
-        const user = getUsers(transaction.userId) as User;
+        const user = await getUsers(transaction.userId) as User;
         updateUser(transaction.userId, [
             {columnName: 'wallet', value: user.wallet + transaction.amount}
         ]);

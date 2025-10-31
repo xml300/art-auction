@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const currentPassword = body.get('current_password')?.toString() || '';
     const newPassword = body.get('new_password')?.toString() || '';
 
-    const user = getUsers(userId) as User;
+    const user = await getUsers(userId) as User;
 
     if (!user || hashValue(currentPassword) !== user.password) {
         const response = NextResponse.redirect(redirectURL);
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         return response;
     }
 
-    const updatedUser = updatePassword(userId, newPassword);
+    const updatedUser = await updatePassword(userId, newPassword);
 
     if (updatedUser) {
         const response = NextResponse.redirect(redirectURL);

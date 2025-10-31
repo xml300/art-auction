@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, { params }: {params: Promise<{id
     const searchParams = request.nextUrl.searchParams;
     const withArtist = searchParams.get('artist') === "true";
     const id = parseInt((await params).id);
-    const artwork = getArtworkById(id, { withArtist });
+    const artwork = await getArtworkById(id, { withArtist });
 
     return NextResponse.json({artwork: artwork});
 }

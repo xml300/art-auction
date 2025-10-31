@@ -2,9 +2,11 @@ import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import PaginatedArtworks from "@/components/PaginatedArtworks";
 import { getArtworks } from "@/data/db";
 import EmptyState from "@/components/EmptyState";
+import { getSession } from "@/lib/auth";
 
-export default function MyArtworksPage() {
-    const artworks = getArtworks(5);
+export default async function MyArtworksPage() {
+    const [session, error] = await getSession();
+    const artworks = await getArtworks(session?.userId);
 
     return (
         <div className="space-y-8">

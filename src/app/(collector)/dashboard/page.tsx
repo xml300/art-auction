@@ -19,9 +19,9 @@ function formatAmount(amount: number){
 }
 
 
-export default function DashboardPage() {
-    const userProfile = getUsersProfile(5); // Using static user ID 1 for demonstration
-    const artworks = getArtworks(); // This will be replaced with userProfile.ownedArtworks
+export default async function DashboardPage() {
+    const userProfile = await getUsersProfile(5); // Using static user ID 1 for demonstration
+    const artworks = await getArtworks(); // This will be replaced with userProfile.ownedArtworks
     return (
         <div className="space-y-24">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in !-my-12">Collector Dashboard</h1>

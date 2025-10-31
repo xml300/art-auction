@@ -1,13 +1,17 @@
-import { readFileSync, writeFileSync } from "fs";
 import { hash } from "crypto";
+import { readFile, writeFile } from "@/lib/fileSys";
+import { memoize, invalidateCacheByPrefix } from "@/lib/memoize";
 
-function readJSON(tableName: string) {
-    const content = readFileSync(`./src/data/json/${tableName.toLowerCase()}.json`, 'utf-8');
-    return JSON.parse(content);
-}
+const readJSON = memoize(async (tableName: string) => {
+    const content = await readFile(`/json/${tableName.toLowerCase()}.json`);
+    return content;
+}, (tableName: string) => `json-${tableName.toLowerCase()}`);
 
 function writeJSON(tableName: string, json: string) {
-    writeFileSync(`./src/data/json/${tableName.toLowerCase()}.json`, json);
+    const file = new File([json], `${tableName.toLowerCase()}.json`, {type: 'application/json'});
+    writeFile(file);
+    invalidateCacheByPrefix(`json-${tableName.toLowerCase()}`);
+    console.log(file);
 }
 
 
@@ -16,9 +20,6 @@ enum Roles {
     Artist,
     Collector
 }
-
-
-
 
 export interface User {
     id: number;
@@ -136,8 +137,8 @@ export function hashValue(str: string) {
     return hash('sha256', str + "1djfdsnfjr3");
 }
 
-export function createUser(email: string, username: string, password: string, roleId: Roles): User {
-    const users = readJSON('users');
+export async function createUser(email: string, username: string, password: string, roleId: Roles) {
+    const users = await readJSON('users');
     const user: User = {
         id: users.length + 1,
         email,
@@ -153,8 +154,8 @@ export function createUser(email: string, username: string, password: string, ro
     return user;
 };
 
-export function updateUser<K extends keyof User>(id: number, updates: { columnName: K, value: User[K] }[]): User | undefined {
-    const users: User[] = readJSON('users');
+export async function updateUser<K extends keyof User>(id: number, updates: { columnName: K, value: User[K] }[]): Promise<User | undefined> {
+    const users: User[] = await readJSON('users');
     const userIndex = users.findIndex(user => user.id === id);
 
     if (userIndex === -1) {
@@ -175,8 +176,8 @@ export function updateUser<K extends keyof User>(id: number, updates: { columnNa
     return updatedUser;
 }
 
-export function updatePassword(id: number, newPassword: string): User | undefined {
-    const users: User[] = readJSON('users');
+export async function updatePassword(id: number, newPassword: string): Promise<User | undefined> {
+    const users: User[] = await readJSON('users');
     const userIndex = users.findIndex(user => user.id === id);
 
     if (userIndex === -1) {
@@ -189,8 +190,8 @@ export function updatePassword(id: number, newPassword: string): User | undefine
     return updatedUser;
 }
 
-export function getUsersQuery(where: { columnName: string, comparator: '=' | '<' | '>', value: string }[]) {
-    const users: User[] = readJSON('users');
+export async function getUsersQuery(where: { columnName: string, comparator: '=' | '<' | '>', value: string }[]) {
+    const users: User[] = await readJSON('users');
     return users.filter(user => {
         const conditions = where.map(obj => {
             if (user[obj.columnName as keyof User] === undefined) {
@@ -213,24 +214,24 @@ export function getUsersQuery(where: { columnName: string, comparator: '=' | '<'
     });
 }
 
-export function getUsers(id?: number): User | User[] {
-    const users = readJSON('users');
+export async function getUsers(id?: number): Promise<User | User[]> {
+    const users = await readJSON('users');
     if (id) {
         return users.filter((user: User) => user.id === id)[0];
     }
     return users;
 }
 
-export function getUsersProfile(userId: number) {
-    const user = getUsers(userId) as User;
-    const ownedArtworks = getArtworks(userId);
-    const watchlist = getWatchlist(userId);
-    const activity = getActivity(userId);
-    const { transactions } = getTransactions(userId); // Destructure to get the transactions array
+export async function getUsersProfile(userId: number) {
+    const user = await getUsers(userId) as User;
+    const ownedArtworks = await getArtworks(userId);
+    const watchlist = await getWatchlist(userId);
+    const activity = await getActivity(userId);
+    const { transactions } = await getTransactions(userId); // Destructure to get the transactions array
 
-    const allBids = readJSON('bids') as Bid[];
+    const allBids = await readJSON('bids') as Bid[];
     const userBids = allBids.filter(bid => bid.bidderId === userId);
-    const allArtworks = readJSON('artworks') as Artwork[];
+    const allArtworks = await readJSON('artworks') as Artwork[];
 
     const activeBidsCount = userBids.filter(bid => {
         const artwork = allArtworks.find(art => art.id === bid.artworkId);
@@ -277,39 +278,39 @@ export function getUsersProfile(userId: number) {
     return profileData;
 }
 
-function getRole(id: number) {
-    const roles: Role[] = readJSON('roles');
+async function getRole(id: number) {
+    const roles: Role[] = await readJSON('roles');
     return roles.filter(role => role.id === id)[0];
 }
 
-function getRolePermissions(id: number): NullablePermission[] {
-    const role: Role = getRole(id);
-    const permissions = getPermissions() as Permission[];
+async function getRolePermissions(id: number): Promise<NullablePermission[]> {
+    const role: Role = await getRole(id);
+    const permissions = await getPermissions() as Permission[];
     return role.permissions ? role.permissions.map(permId => permissions.find(permission => permission.id === permId) || null) : [];
 }
 
-export function getUserRole(userId: number): Role {
-    const user = getUsers(userId) as User;
-    const role = getRole(user.roleId) as Role;
+export async function getUserRole(userId: number): Promise<Role> {
+    const user = await getUsers(userId) as User;
+    const role = await getRole(user.roleId) as Role;
     return role;
 }
 
-export function getPermissions(id?: number) {
-    const permissions: Permission[] = readJSON('permissions');
+export async function getPermissions(id?: number) {
+    const permissions: Permission[] = await readJSON('permissions');
     if (id) {
         return permissions.filter(permission => permission.id === id)[0]
     }
     return permissions;
 }
 
-export function getUserPermissions(userId: number): NullablePermission[] {
-    const user = getUsers(userId) as User;
-    const permissions: NullablePermission[] = getRolePermissions(user.roleId);
+export async function getUserPermissions(userId: number): Promise<NullablePermission[]> {
+    const user = await getUsers(userId) as User;
+    const permissions: NullablePermission[] = await getRolePermissions(user.roleId);
     return permissions;
 }
 
-export function createArtwork(title: string, description: string, artistId: number, imageUrl: string, startingBid: number, auctionEndTime: Date, medium: string, dimensions: string, year: number): Artwork {
-    const artworks = readJSON('artworks');
+export async function createArtwork(title: string, description: string, artistId: number, imageUrl: string, startingBid: number, auctionEndTime: Date, medium: string, dimensions: string, year: number): Promise<Artwork> {
+    const artworks = await readJSON('artworks');
     const artwork: Artwork = {
         id: artworks.length + 1,
         title,
@@ -329,33 +330,33 @@ export function createArtwork(title: string, description: string, artistId: numb
     return artwork;
 }
 
-export function updateArtwork<K extends keyof Artwork>(id: number, update: { columnName: K, value: Artwork[K] }) {
-    const artworks: Artwork[] = readJSON('artworks');
+export async function updateArtwork<K extends keyof Artwork>(id: number, update: { columnName: K, value: Artwork[K] }) {
+    const artworks: Artwork[] = await readJSON('artworks');
     const artworkIndex = artworks.findIndex(artwork => artwork.id === id);
     if (artworkIndex === -1) {
         throw new Error('Artwork not found');
     }
     artworks[artworkIndex][update.columnName] = update.value;
-    writeJSON('artworks', JSON.stringify(artworks));
+    await writeJSON('artworks', JSON.stringify(artworks));
     return artworks[artworkIndex];
 }
 
-export function getArtworkById(id: number, options?: { withBids?: boolean, withArtist?: boolean }): Artwork {
-    const artworks: Artwork[] = readJSON('artworks');
+export async function getArtworkById(id: number, options?: { withBids?: boolean, withArtist?: boolean }): Promise<Artwork | undefined> {
+    const artworks: Artwork[] = await readJSON('artworks');
     const resArtwork = artworks.filter(artwork => artwork.id === id)[0];
     if (options?.withBids) {
-        const bids: Bid[] = getBids(resArtwork.id);
+        const bids: Bid[] = await getBids(resArtwork.id);
         resArtwork.bids = bids;
 
     }
     if (options?.withArtist) {
-        const artist = getUsers(resArtwork.artistId) as User;
+        const artist = await getUsers(resArtwork.artistId) as User;
         resArtwork.artist = artist;
     }
     return resArtwork;
 }
 
-export function getArtworks(userId?: number, options?: {
+export async function getArtworks(userId?: number, options?: {
     withBids?: boolean,
     withArtist?: boolean,
     page?: number,
@@ -366,19 +367,19 @@ export function getArtworks(userId?: number, options?: {
     maxBid?: number,
     minEndTime?: number,
     maxEndTime?: number
-}): Artwork[] {
-    let artworks: Artwork[] = readJSON('artworks');
+}): Promise<Artwork[]> {
+    let artworks: Artwork[] = await readJSON('artworks');
 
     if (options?.withBids) {
-        artworks.forEach(artwork => {
-            const bids: Bid[] = getBids(artwork.id);
+        artworks.forEach(async(artwork) => {
+            const bids: Bid[] = await getBids(artwork.id);
             artwork.bids = bids;
         });
     }
 
     if (options?.withArtist) {
-        artworks.forEach(artwork => {
-            const artist = getUsers(artwork.artistId) as User;
+        artworks.forEach(async (artwork) => {
+            const artist = await getUsers(artwork.artistId) as User;
             artwork.artist = artist;
         });
     }
@@ -427,8 +428,8 @@ export function getArtworks(userId?: number, options?: {
     return artworks;
 }
 
-export function getBids<K extends keyof Bid>(artworkId: number, options?:{sortBy?: K, sortOrder?: 'asc' | 'desc', where?: {columnName: K, value: Bid[K]}[]}) {
-    let bids: Bid[] = readJSON('bids');
+export async function getBids<K extends keyof Bid>(artworkId: number, options?:{sortBy?: K, sortOrder?: 'asc' | 'desc', where?: {columnName: K, value: Bid[K]}[]}) {
+    let bids: Bid[] = await readJSON('bids');
      if (options && options.sortBy) {
         bids = bids.sort((a, b) => {
             if (options.sortOrder === 'asc' && options.sortBy) {
@@ -446,8 +447,8 @@ export function getBids<K extends keyof Bid>(artworkId: number, options?:{sortBy
     return bids.filter(bid => bid.artworkId === artworkId);
 }
 
-export function getBidsByUser<K extends keyof Bid>(bidderId: number, options?: { sortBy?: keyof Bid, sortOrder?: 'asc' | 'desc', where?:{columnName: K, value: Bid[K]}[] }): Bid[] {
-    let bids: Bid[] = readJSON('bids');
+export async function getBidsByUser<K extends keyof Bid>(bidderId: number, options?: { sortBy?: keyof Bid, sortOrder?: 'asc' | 'desc', where?:{columnName: K, value: Bid[K]}[] }): Promise<Bid[]> {
+    let bids: Bid[] = await readJSON('bids');
     if (options && options.sortBy) {
         bids = bids.sort((a, b) => {
             if (options.sortOrder === 'asc' && options.sortBy) {
@@ -466,8 +467,8 @@ export function getBidsByUser<K extends keyof Bid>(bidderId: number, options?: {
     return bids.filter(bid => bid.bidderId === bidderId);
 }
 
-export function createBid(artworkId: number, bidderId: number, bidAmount: number): Bid {
-    const bids = readJSON('bids');
+export async function createBid(artworkId: number, bidderId: number, bidAmount: number): Promise<Bid> {
+    const bids = await readJSON('bids');
     const bid: Bid = {
         id: bids.length + 1,
         artworkId,
@@ -480,8 +481,8 @@ export function createBid(artworkId: number, bidderId: number, bidAmount: number
     return bid;
 }
 
-export function updateTransaction<K extends keyof Transaction>(id: number, updates: {columnName: K, value: Transaction[K]}[]){
-    const transactions: Transaction[] = readJSON('transactions');
+export async function updateTransaction<K extends keyof Transaction>(id: number, updates: {columnName: K, value: Transaction[K]}[]){
+    const transactions: Transaction[] = await readJSON('transactions');
     const transaction = transactions.find(tx => tx.id === id);
     if (!transaction) return;
 
@@ -492,8 +493,8 @@ export function updateTransaction<K extends keyof Transaction>(id: number, updat
     writeJSON('transactions', JSON.stringify(transactions));
 }
 
-export function getTransactions(userId?: number, options?: { sortBy?: keyof Transaction, sortOrder?: 'asc' | 'desc', page?: number, limit?: number }): { transactions: Transaction[], totalCount: number } {
-    let transactions: Transaction[] = readJSON('transactions');
+export async function getTransactions(userId?: number, options?: { sortBy?: keyof Transaction, sortOrder?: 'asc' | 'desc', page?: number, limit?: number }): Promise<{ transactions: Transaction[], totalCount: number }> {
+    let transactions: Transaction[] = await readJSON('transactions');
     if (userId) {
         transactions = transactions.filter(transaction => transaction.userId === userId);
     }
@@ -518,13 +519,13 @@ export function getTransactions(userId?: number, options?: { sortBy?: keyof Tran
     return { transactions, totalCount };
 }
 
-export function getTransactionByReference(referenceNumber: string): Transaction | undefined {
-    const transactions: Transaction[] = readJSON('transactions');
+export async function getTransactionByReference(referenceNumber: string): Promise<Transaction | undefined> {
+    const transactions: Transaction[] = await readJSON('transactions');
     return transactions.find(transaction => transaction.referenceNumber === referenceNumber);
 }
 
-export function createTransaction(userId: number, referenceNumber: string, description: string, payType: string, amount: number, status: string): Transaction {
-    const transactions = readJSON('transactions');
+export async function createTransaction(userId: number, referenceNumber: string, description: string, payType: string, amount: number, status: string): Promise<Transaction> {
+    const transactions = await readJSON('transactions');
     const transaction: Transaction = {
         id: transactions.length + 1,
         userId,
@@ -541,14 +542,14 @@ export function createTransaction(userId: number, referenceNumber: string, descr
 }
 
 
-export function getWatchlist(userId: number): Artwork[] {
-    const watchlistItems: Watchlist[] = readJSON('watchlist');
+export async function getWatchlist(userId: number): Promise<Artwork[]> {
+    const watchlistItems: Watchlist[] = await readJSON('watchlist');
     const userWatchlist = watchlistItems.filter(item => item.userId === userId);
-    const artworks: Artwork[] = readJSON('artworks');
+    const artworks: Artwork[] = await readJSON('artworks');
     return userWatchlist.map(item => artworks.find(artwork => artwork.id === item.artworkId)).filter(Boolean) as Artwork[];
 }
 
-export function getActivity(userId: number): Activity[] {
-    const activities: Activity[] = readJSON('activities');
+export async function getActivity(userId: number): Promise<Activity[]> {
+    const activities: Activity[] = await readJSON('activities');
     return activities.filter(activity => activity.userId === userId);
 }

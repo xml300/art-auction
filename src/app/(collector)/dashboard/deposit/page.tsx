@@ -15,8 +15,8 @@ async function getInitialData() {
     }
 
     const userId = payload.userId;
-    const profileData = getUsersProfile(userId) as CollectorProfile;
-    const { transactions, totalCount } = getTransactions(userId, { sortBy: 'transactionTime', sortOrder: 'desc', page: 1, limit: 10 }); // Fetch initial paginated data
+    const profileData = await getUsersProfile(userId) as CollectorProfile;
+    const { transactions, totalCount } = await getTransactions(userId, { sortBy: 'transactionTime', sortOrder: 'desc', page: 1, limit: 10 }); // Fetch initial paginated data
 
     return {
         walletBalance: profileData.wallet,

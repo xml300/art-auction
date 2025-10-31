@@ -10,17 +10,17 @@ export async function GET(request: NextRequest){
     if(error || session == null){
         return NextResponse.json({message: "User unauthorized"}, {status: 401});
     }
-    const user = getUsers(session!.userId) as User;
+    const user = await getUsers(session!.userId) as User;
     if(artworkId){
         const artId = parseInt(artworkId);
-        const bid = getBids(artId, {sortBy: 'bidTime', sortOrder: 'desc', where: [
+        const bid = (await getBids(artId, {sortBy: 'bidTime', sortOrder: 'desc', where: [
             {columnName: 'bidderId', value: user.id}
-        ]}).at(0);
+        ]})).at(0);
         if(!bid){
             return NextResponse.json({message: 'Bid not found'}, {status: 404})
         }
         return NextResponse.json(bid);
     }
-    const bids = getBids(user.id);   
+    const bids = await getBids(user.id);   
     return NextResponse.json(bids);
 }

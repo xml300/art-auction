@@ -4,10 +4,10 @@ import { getSession } from "@/lib/auth";
 import { writeFileSync } from "fs";
 
 
-function closeAuction(){
-    const artworks = getArtworks().filter(artwork => artwork.auctionEndTime < Date.now());
+async function closeAuction(){
+    const artworks = (await getArtworks()).filter(artwork => artwork.auctionEndTime < Date.now());
     for(const artwork of artworks){
-        const bids = getBids(artwork.id).sort((a, b) => {
+        const bids = (await getBids(artwork.id)).sort((a, b) => {
             return a.bidAmount < b.bidAmount ? 1 : -1;
         });
         if(bids.length == 0){
@@ -33,7 +33,7 @@ export async function GET() {
 
     closeAuction();
 
-    const user = getUsersProfile(payload.userId);
+    const user = await getUsersProfile(payload.userId);
     if (user) {
         return NextResponse.json(user);
     }
@@ -76,10 +76,11 @@ export async function POST(request: NextRequest) {
     const email = body.get('email')?.toString();
     const bio = body.get('about_yout')?.toString();
 
-    const savedPath = await saveFile(profilePicture);
+    // const savedPath = await saveFile(profilePicture);
+    const savedPath = "/logo.png"
 
 
-    const updatedUser = updateUser(userId, [
+    const updatedUser = await updateUser(userId, [
         { columnName: 'profilePicture', value: savedPath },
         { columnName: 'surname', value: surname },
         { columnName: 'firstName', value: firstName },

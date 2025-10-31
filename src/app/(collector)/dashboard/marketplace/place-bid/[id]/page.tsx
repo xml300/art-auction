@@ -5,12 +5,19 @@ import { ArrowLeft } from 'lucide-react';
 
 import Image from 'next/image';
 import { cookies } from 'next/headers';
+import EmptyState from '@/components/EmptyState';
 
 export default async function PlaceBidPage({params}: {params: Promise<{id: string}>}) {
     const id = parseInt((await params).id); 
-    const artwork = getArtworkById(id, {withArtist: true});
+    const artwork = await getArtworkById(id, {withArtist: true});
     const cookie = await cookies();
     const errors = cookie.get('errors')?.value;
+
+    if(!artwork){
+        return <EmptyState
+        title='No such artwork exists'
+        message='Please go back and try again.' />
+    }
 
     return (
         <div className="container mx-auto p-6  dark:bg-dark-background dark:text-dark-text">

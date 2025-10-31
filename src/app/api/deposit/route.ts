@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const currentUser = getUsers(userId) as User;
+        const currentUser = await getUsers(userId) as User;
         if (!currentUser) {
             const response = NextResponse.redirect(redirectUrl);
             response.cookies.set('errors', 'User not found', {

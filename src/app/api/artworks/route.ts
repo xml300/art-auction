@@ -23,8 +23,8 @@ export async function GET(request: NextRequest){
         maxEndTime 
     };
 
-    const allArtworks = getArtworks(undefined, filterOptions);
-    const paginatedArtworks = getArtworks(undefined, { ...filterOptions, page, limit });
+    const allArtworks = await getArtworks(undefined, filterOptions);
+    const paginatedArtworks = await getArtworks(undefined, { ...filterOptions, page, limit });
 
     return NextResponse.json({
         artworks: paginatedArtworks,

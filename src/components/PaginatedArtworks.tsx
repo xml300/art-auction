@@ -26,7 +26,7 @@ export default function PaginatedArtworks({ artworks }: PaginatedArtworksProps) 
     return (
         <>
             
-            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fade-in-delay-2 mt-8">
+            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6 animate-fade-in-delay-2 mt-8">
                 {currentArtworks.map((artwork, index) => (
                     <ArtworkCard key={artwork.id} artwork={artwork} index={index} />
                 ))}

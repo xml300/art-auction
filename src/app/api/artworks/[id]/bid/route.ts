@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
 
-    const user = getUsers(payload.userId) as User;
+    const user = await getUsers(payload.userId) as User;
     if (!user) {
         const response = NextResponse.redirect(redirectUrl);
         response.cookies.set('errors', 'User not found', {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
         return response;
     }
-    const artwork = getArtworkById(artworkId);
+    const artwork = await getArtworkById(artworkId);
     if (!artwork) {
         const response = NextResponse.redirect(redirectUrl);
         response.cookies.set('errors', 'Artwork not found', {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
         return response;
     }
-    const bid = getBidsByUser(user.id, { sortBy: 'bidTime', sortOrder: 'desc', where: [{ columnName: 'artworkId', value: artworkId }] }).at(0);
+    const bid = (await getBidsByUser(user.id, { sortBy: 'bidTime', sortOrder: 'desc', where: [{ columnName: 'artworkId', value: artworkId }] })).at(0);
     let amount = bidAmount;
     if (bid) {
         amount = amount - bid.bidAmount;

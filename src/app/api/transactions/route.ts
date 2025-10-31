@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-    const { transactions, totalCount } = getTransactions(payload.userId, { sortBy: 'transactionTime', sortOrder: 'desc', page, limit });
+    const { transactions, totalCount } = await getTransactions(payload.userId, { sortBy: 'transactionTime', sortOrder: 'desc', page, limit });
 
     return NextResponse.json({ transactions, totalCount });
 }

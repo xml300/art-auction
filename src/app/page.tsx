@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getArtworks } from "@/data/db";
 
-export default function Home() {
+export default async function Home() {
   const testimonials = [
     {
       "id": 1,
@@ -101,7 +101,7 @@ export default function Home() {
       "position": "Operations Manager, Aero Dynamics"
     }
   ];
-  const artworks = getArtworks();
+  const artworks = await getArtworks();
 
   return (
     <main className="min-h-screen flex flex-col bg-white dark:bg-dark-background text-black dark:text-dark-text">
