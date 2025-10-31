@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username')?.toString();
     const password = formData.get('password')?.toString();
 
-    return NextResponse.json(request);
+    return NextResponse.json({request: request.url, url: request.nextUrl.origin});
 
     // if (!username || !password) {
     //     const response = NextResponse.redirect(new URL('/auth', request.url));
