@@ -56,7 +56,7 @@ async function saveFile(file: File){
 
 export async function POST(request: NextRequest) {
     const [payload, error] = await getSession();
-    const redirectURL = new URL('/dashboard/settings',"https://art-auction--hosting-72ffb.us-east4.hosted.app/");
+    const redirectURL = new URL('/dashboard/settings',process.env.SITE_BASE_URL || "");
 
     if (error || payload === null) {
         const response = NextResponse.redirect(redirectURL);

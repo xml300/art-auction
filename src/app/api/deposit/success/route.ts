@@ -6,7 +6,7 @@ import { User } from "@/data/db";
 export async function GET(request: NextRequest) {
     const [payload, error] = await getSession();
     const reference = request.nextUrl.searchParams.get('reference');
-    const redirectUrl = new URL('/dashboard/deposit', "https://art-auction--hosting-72ffb.us-east4.hosted.app/");
+    const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
 
     if (error || payload === null) {
         const response = NextResponse.redirect(redirectUrl);

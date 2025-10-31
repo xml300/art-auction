@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
-    const Url = "https://art-auction--hosting-72ffb.us-east4.hosted.app/";
+    const Url = process.env.SITE_BASE_URL || "";
 
     if (!accountType || !username || !email || !password) {
         const response = NextResponse.redirect(new URL('/auth', Url));
