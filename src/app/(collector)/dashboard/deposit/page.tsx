@@ -1,15 +1,14 @@
 import { CollectorProfile, getUsersProfile, getTransactions } from "@/data/db";
 import { getSession } from "@/lib/auth"; 
-import { redirect } from "next/navigation";
 import ClientDepositPage from "./ClientDepositPage"; // A new client component to hold client-side logic
 import { cookies } from "next/headers";
  
 async function getInitialData() {
     const [payload, error] = await getSession();
 
-    if (error || payload === null) {
-        redirect('/auth'); // Redirect to login if not authenticated
-    }
+    // if (error || payload === null) {
+    //     redirect('/auth'); // Redirect to login if not authenticated
+    // }
 
     const userId = payload.userId;
     const profileData = getUsersProfile(userId) as CollectorProfile;
