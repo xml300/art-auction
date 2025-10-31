@@ -8,9 +8,10 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
+    const Url = "https://art-auction--hosting-72ffb.us-east4.hosted.app/";
 
     if (!accountType || !username || !email || !password) {
-        const response = NextResponse.redirect(new URL('/auth?type=register', request.url));
+        const response = NextResponse.redirect(new URL('/auth', Url));
         response.cookies.set('errors', 'All fields are required.', {
             maxAge: 10, 
             path: '/',
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
             { columnName: 'username', comparator: '=', value: username },
         ]);
         if (existingUsers.length > 0) {
-            const response = NextResponse.redirect(new URL('/auth', request.url));
+            const response = NextResponse.redirect(new URL('/auth', Url));
             response.cookies.set('errors', 'Username already taken.', {
                 maxAge: 10,
                 path: '/',
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
         const user = createUser(email, username, password, userType);
 
         const route = userType === 1 ? '/artist-dashboard' : '/dashboard';
-        const response = NextResponse.redirect(new URL(route, request.url));
+        const response = NextResponse.redirect(new URL(route, Url));
         response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
             maxAge: 1 * 60 * 60, 
             httpOnly: true,
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
         });
         return response;
     } catch (error: unknown) {
-        const response = NextResponse.redirect(new URL('/auth', request.url));
+        const response = NextResponse.redirect(new URL('/auth', Url));
         response.cookies.set('errors', (error as Error).message || 'Failed to create account.', {
             maxAge: 10,
             path: '/',

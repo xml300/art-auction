@@ -6,7 +6,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const [payload, error] = await getSession();
     const artworkId = parseInt((await params).id);
     const formData = await request.formData();
-    const redirectUrl = new URL("/dashboard/marketplace/place-bid/" + artworkId, request.nextUrl.origin);
+    const redirectUrl = new URL("/dashboard/marketplace/place-bid/" + artworkId, "https://art-auction--hosting-72ffb.us-east4.hosted.app/");
 
     if (!formData.has('bidAmount')) {
         const response = NextResponse.redirect(redirectUrl);
