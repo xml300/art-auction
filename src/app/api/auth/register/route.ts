@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     try {
         const userType = parseInt(accountType);
         
-        const existingUsers = getUsersQuery([
+        const existingUsers = await getUsersQuery([
             { columnName: 'username', comparator: '=', value: username },
         ]);
         if (existingUsers.length > 0) {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
             return response;
         }
 
-        const user = createUser(email, username, password, userType);
+        const user = await createUser(email, username, password, userType);
 
         const route = userType === 1 ? '/artist-dashboard' : '/dashboard';
         const response = NextResponse.redirect(new URL(route, Url));

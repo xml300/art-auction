@@ -6,6 +6,19 @@ import { getSession } from "@/lib/auth";
 
 export default async function MyArtworksPage() {
     const [session, error] = await getSession();
+    if (error || session === null) {
+        return (
+            <div className="space-y-8">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in">My Artworks</h1>
+                <p className="text-lg text-gray-600 dark:text-gray-300 animate-fade-in-delay-1">Explore and manage your personal collection of digital art.</p>
+                <EmptyState
+                    title="Not Logged In"
+                    message="Please log in to view your artworks."
+                    iconSrc="/globe.svg" // Assuming you have an appropriate icon
+                />
+            </div>
+        );
+    }
     const artworks = await getArtworks(session?.userId);
 
     return (

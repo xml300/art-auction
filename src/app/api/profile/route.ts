@@ -1,7 +1,6 @@
-import { getArtworks, getBids, getUsersProfile, hashValue, updateArtwork, updateUser } from "@/data/db";
+import { getArtworks, getBids, getUsersProfile, updateArtwork, updateUser } from "@/data/db";
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { writeFileSync } from "fs";
+import { getSession } from "@/lib/auth"; 
 
 
 async function closeAuction(){
@@ -45,14 +44,14 @@ export async function GET() {
     return response;
 }
 
-async function saveFile(file: File){
-    if(file.size <= 0){
-        return "";
-    }
-    const filename = hashValue(Array.from({length: 10}).map(() => Math.random() * 500 + 100).join('')) + file.name.split('.').at(-1);
-    writeFileSync(`./public/uploads/${filename}`, Buffer.from(await file.arrayBuffer()));
-    return `/uploads/${filename}`;
-}
+// async function saveFile(file: File){
+//     if(file.size <= 0){
+//         return "";
+//     }
+//     const filename = hashValue(Array.from({length: 10}).map(() => Math.random() * 500 + 100).join('')) + file.name.split('.').at(-1);
+//     writeFileSync(`./public/uploads/${filename}`, Buffer.from(await file.arrayBuffer()));
+//     return `/uploads/${filename}`;
+// }
 
 export async function POST(request: NextRequest) {
     const [payload, error] = await getSession();
@@ -69,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     const userId = payload.userId;
     const body = await request.formData();
-    const profilePicture = body.get('profile_picture') as unknown as File;
+    // const profilePicture = body.get('profile_picture') as unknown as File;
     const surname = body.get('surname')?.toString();
     const firstName = body.get('first_name')?.toString();
     const userName = body.get('username')?.toString();
