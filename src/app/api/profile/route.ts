@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const redirectURL = new URL('/dashboard/settings',process.env.SITE_BASE_URL || "");
 
     if (error || payload === null) {
-        const response = NextResponse.redirect(redirectURL);
+        const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('errors', error || "", {
             maxAge: 10,
             path: '/',
@@ -89,14 +89,14 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (updatedUser) {
-        const response = NextResponse.redirect(redirectURL);
+        const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('success', "Profile updated successfully", {
             maxAge: 10,
             path: '/',
         });
         return response;
     }
-    const response = NextResponse.redirect(redirectURL);
+    const response = NextResponse.redirect(redirectURL, {status: 303});
     response.cookies.set('errors', "User not found or update failed", {
         maxAge: 10,
         path: '/',

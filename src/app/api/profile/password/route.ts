@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const redirectURL = new URL('/dashboard/settings', process.env.SITE_BASE_URL || "");
 
     if (error || payload === null) {
-        const response = NextResponse.redirect(redirectURL);
+        const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('errors', error || "", {
             maxAge: 10,
             path: '/',
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const user = await getUsers(userId) as User;
 
     if (!user || hashValue(currentPassword) !== user.password) {
-        const response = NextResponse.redirect(redirectURL);
+        const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('errors', 'Invalid current password', {
             maxAge: 10,
             path: '/',
@@ -36,14 +36,14 @@ export async function POST(request: NextRequest) {
     const updatedUser = await updatePassword(userId, newPassword);
 
     if (updatedUser) {
-        const response = NextResponse.redirect(redirectURL);
+        const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('success', "Password updated successfully", {
             maxAge: 10,
             path: '/',
         });
         return response;
     }
-    const response = NextResponse.redirect(redirectURL);
+    const response = NextResponse.redirect(redirectURL, {status: 303});
     response.cookies.set('errors', "User not found or password update failed", {
         maxAge: 10,
         path: '/',

@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const [session, error] = await getSession();
     const redirectUrl = new URL('/dashboard/deposit', req.nextUrl.origin);
     if (error || !session) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Unauthorized', {
             maxAge: 10,
             path: '/'
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const amount = parseInt(formData.get('amount')!.toString());
 
     if (typeof amount !== "number" || amount <= 0) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Invalid deposit amount', {
             maxAge: 10,
             path: '/'
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     try {
         const currentUser = await getUsers(userId) as User;
         if (!currentUser) {
-            const response = NextResponse.redirect(redirectUrl);
+            const response = NextResponse.redirect(redirectUrl, {status: 303});
             response.cookies.set('errors', 'User not found', {
                 maxAge: 10,
                 path: '/'
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         });
         const paymentData = await response.json();
         if (paymentData.status === false) {
-            const response = NextResponse.redirect(redirectUrl);
+            const response = NextResponse.redirect(redirectUrl, {status: 303});
             response.cookies.set('errors', 'Payment initialization failed', {
                 maxAge: 10,
                 path: '/'
@@ -62,10 +62,10 @@ export async function POST(req: NextRequest) {
             return response;
         }
         createTransaction(userId, referenceNumber, `Deposit of $${amount.toFixed(2)}`, "Wallet Deposit", amount, "pending");
-        return NextResponse.redirect(paymentData.data.authorization_url);
+        return NextResponse.redirect(paymentData.data.authorization_url, {status: 303});
     } catch (error) {
         console.error("API Deposit error:", error);
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Internal server error', {
             maxAge: 10,
             path: '/'

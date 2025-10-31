@@ -9,7 +9,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const redirectUrl = new URL("/dashboard/marketplace/place-bid/" + artworkId, process.env.SITE_BASE_URL || "");
 
     if (!formData.has('bidAmount')) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Bid amount is required', {
             maxAge: 10,
             path: '/'
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const bidAmount = parseFloat(formData.get("bidAmount")!.toString().replace(/[^0-9\.]/g, ""));
 
     if (error || payload === null) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'User unauthorized', {
             maxAge: 10,
             path: '/'
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const user = await getUsers(payload.userId) as User;
     if (!user) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'User not found', {
             maxAge: 10,
             path: '/'
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
     if (isNaN(artworkId) || !bidAmount) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Invalid request data', {
             maxAge: 10,
             path: '/'
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
     const artwork = await getArtworkById(artworkId);
     if (!artwork) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Artwork not found', {
             maxAge: 10,
             path: '/'
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     if (bidAmount <= artwork.currentBid) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Bid amount must be higher than current bid', {
             maxAge: 10,
             path: '/'
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     if (amount > user.wallet) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Insufficient funds in your auction deposit', {
             maxAge: 10,
             path: '/'
@@ -81,6 +81,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     createBid(artworkId, user.id, bidAmount);
     updateArtwork(artworkId, { columnName: 'currentBid', value: bidAmount });
     updateUser(user.id, [{columnName: 'wallet', value: user.wallet - amount}])
-    const resp = NextResponse.redirect(redirectUrl);
+    const resp = NextResponse.redirect(redirectUrl, {status: 303});
     return resp;
 }

@@ -9,10 +9,11 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username')?.toString();
     const password = formData.get('password')?.toString();
     const Url = process.env.SITE_BASE_URL || "";
+    const redirectUrl = new URL('/auth', Url);
 
 
     if (!username || !password) {
-        const response = NextResponse.redirect(new URL('/auth', Url));
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Username and password are required.', {
             maxAge: 10, 
             path: '/',
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     ]))[0];
 
     if (!user) {
-        const response = NextResponse.redirect(new URL('/auth', Url));
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Invalid username or password.', {
             maxAge: 10, 
             path: '/',
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const role = await getUserRole(user.id);
     const path = role.name === 'Artist' ? '/artist-dashboard' : '/dashboard';
-    const response = NextResponse.redirect(new URL(path, Url));
+    const response = NextResponse.redirect(new URL(path, Url), {status: 303});
     response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
         maxAge: 1 * 60 * 60, 
         httpOnly: true,

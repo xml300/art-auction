@@ -3,7 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 export default function middleware(request: NextRequest) {
     const authCookie = request.cookies.get("auth");
     if(!authCookie){
-        return NextResponse.redirect(new URL("/auth", process.env.SITE_BASE_URL || ""));
+        return NextResponse.redirect(new URL("/auth", process.env.SITE_BASE_URL || ""), {status: 303});
     }
     return NextResponse.next();
 }

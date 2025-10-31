@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
 
     if (error || payload === null) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'User unauthorized', {
             maxAge: 10,
             path: '/'
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const transaction = await getTransactionByReference(reference || "");
 
     if (paymentData.data.status !== 'success' && paymentData.data.amount * 0.01 !== transaction?.amount) {
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Payment verification failed', {
             maxAge: 10,
             path: '/'
@@ -42,10 +42,10 @@ export async function GET(request: NextRequest) {
         updateUser(transaction.userId, [
             {columnName: 'wallet', value: user.wallet + transaction.amount}
         ]);
-        const response = NextResponse.redirect(redirectUrl);
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
         return response;
     }
-    const res = NextResponse.redirect(redirectUrl);
+    const res = NextResponse.redirect(redirectUrl, {status: 303});
     res.cookies.set('errors', 'Transaction not found', {
         maxAge: 10,
         path: '/'
