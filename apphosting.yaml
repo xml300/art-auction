@@ -8,46 +8,15 @@ runConfig:
   # memoryMiB: 512
 
 # Environment variables and secrets.
-# env:
-#   # Configure environment variables.
-#   # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
-#   - variable: MESSAGE
-#     value: Hello world!
-#     availability:
-#       - BUILD
-#       - RUNTIME
-#   - variable: JWT_SECRET_KEY
-#     value: your_jwt_secret
-#     availability:
-#       - BUILD
-#       - RUNTIME
-#   - variable:  PAYSTACK_SECRET_KEY
-#     value: sk_test_b567978111b93b5b6952ccb1bd43f74f4953f857
-#     availability:
-#       - BUILD
-#       - RUNTIME
-#   - variable: SITE_BASE_URL
-#     value: https://art-auction--hosting-72ffb.us-east4.hosted.app/
-#     availability:
-#       - BUILD
-#       - RUNTIME
-#   - variable: PROJECT_ID
-#     value: hosting-72ffb
-#     availability:
-#       - BUILD
-#       - RUNTIME
-#   - variable: STORAGE_BUCKET
-#     value: hosting-72ffb.firebasestorage.app
-#     availability:
-#       - BUILD
-#       - RUNTIME
-# PAYSTACK_SECRET_KEY="sk_test_b567978111b93b5b6952ccb1bd43f74f4953f857"
-# SITE_BASE_URL="https://art-auction--hosting-72ffb.us-east4.hosted.app/"
-# # SITE_BASE_URL="http://localhost:3000"
-# PROJECT_ID="hosting-72ffb"
-# STORAGE_BUCKET="hosting-72ffb.firebasestorage.app"
-
-  # Grant access to secrets in Cloud Secret Manager.
+env:
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
-  # - variable: MY_SECRET
-  #   secret: mySecretRef
+  - variable: SITE_BASE_URL
+    value: "https://art-auction--hosting-72ffb.us-east4.hosted.app/"
+  - variable: JWT_SECRET_KEY
+    secret: JWT_SECRET_KEY
+  - variable: PAYSTACK_SECRET_KEY
+    secret: PAYSTACK_SECRET_KEY
+  - variable: PROJECT_ID
+    secret: PROJECT_ID
+  - variable: STORAGE_BUCKET
+    secret: STORAGE_BUCKET

@@ -2,7 +2,7 @@
   "apphosting": [
     {
       "backendId": "art-auction",
-      "rootDir": ".",
+      "rootDir": "y",
       "ignore": [
         "node_modules",
         ".git",
@@ -10,11 +10,17 @@
         "firebase-debug.*.log",
         "functions"
       ],
-      "secrets": [
-        "JWT_SECRET_KEY",
-        "PAYSTACK_SECRET_KEY",
-        "PROJECT_ID",
-        "STORAGE_BUCKET"
+      "alwaysDeployFromSource": true
+    },
+    {
+      "backendId": "art-auction",
+      "rootDir": ".",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
       ],
       "alwaysDeployFromSource": true
     }
