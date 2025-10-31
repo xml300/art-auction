@@ -5,12 +5,13 @@ import { Artwork } from '@/data/db';
 interface ArtworkCardProps {
     artwork: Artwork;
     index: number;
+    owned?: boolean;
 }
 
-export default function ArtworkCard({ artwork, index }: ArtworkCardProps) {
+export default function ArtworkCard({ artwork, index, owned }: ArtworkCardProps) {
     return (
         <Link
-            href={`/dashboard/my-artworks/${artwork.id}`}
+            href={(owned || owned===undefined) ? `/dashboard/my-artworks/${artwork.id}` : `/dashboard/marketplace/place-bid/${artwork.id}`}
             key={artwork.id}
             className="w-full h-96 cursor-pointer rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 relative group"
             style={{ animationDelay: `${index * 0.1}s` }}

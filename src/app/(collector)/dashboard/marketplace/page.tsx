@@ -11,37 +11,40 @@ import { Artwork } from "@/data/db";
 const ARTWORKS_PER_PAGE = 6;
 
 export default function MarketplacePage() {
-    const [artworks, setArtworks] = useState<Artwork[]>([]);
     const [filteredArtworks, setFilteredArtworks] = useState<Artwork[]>([]);
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [searchFilter, setSearchFilter] = useState("");
+    const [artistName, setArtistName] = useState("");
+    const [minBid, setMinBid] = useState(0);
+    const [maxBid, setMaxBid] = useState(0);
+    const [minEndTime, setMinEndTime] = useState(0);
+    const [maxEndTime, setMaxEndTime] = useState(0);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchArtworks = async () => {
-            const res = await fetch(`/api/artworks?artist=true&page=${currentPage}&limit=${ARTWORKS_PER_PAGE}`);
+            const params = new URLSearchParams({
+                artist: "true",
+                page: currentPage.toString(),
+                limit: ARTWORKS_PER_PAGE.toString(),
+            });
+
+            if (searchFilter) params.set("searchQuery", searchFilter);
+            if (artistName) params.set("artistName", artistName);
+            if (minBid) params.set("minBid", minBid.toString());
+            if (maxBid) params.set("maxBid", maxBid.toString());
+            if (minEndTime) params.set("minEndTime", minEndTime.toString());
+            if (maxEndTime) params.set("maxEndTime", maxEndTime.toString());
+
+            const res = await fetch(`/api/artworks?${params.toString()}`);
             const json = await res.json();
-            setArtworks(json.artworks);
             setFilteredArtworks(json.artworks);
             setTotalPages(json.totalPages);
         };
         fetchArtworks();
-    }, [currentPage]);
-
-    useEffect(() => {
-        if (searchFilter == "") {
-            setFilteredArtworks(artworks);
-            return;
-        }
-        const newArtworks = artworks.filter((artwork) => {
-            return (artwork.artist?.username.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                artwork.title.toLowerCase().includes(searchFilter.toLowerCase())
-            );
-        })
-        setFilteredArtworks(newArtworks);
-    }, [searchFilter, artworks]);
+    }, [currentPage, searchFilter, artistName, minBid, maxBid, minEndTime, maxEndTime]);
 
     const toggleFilterMenu = () => {
         setIsFilterMenuOpen(!isFilterMenuOpen);
@@ -59,25 +62,11 @@ export default function MarketplacePage() {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
-        const artistName = formData.get("artist_name")?.toString() || "";
-        const minBid = parseInt(formData.get("min_bid")?.toString()|| "0");
-        const maxBid = parseInt(formData.get("max_bid")?.toString()|| "0");
-        const minEndTime = Date.parse(formData.get("min_end_time")?.toString() || "");
-        const maxEndTime = Date.parse(formData.get("max_end_time")?.toString() || "");
-
-
-        const newArtworks = artworks.filter((artwork) => {
-            const nameCondition =  artwork.artist?.username.toLowerCase().includes(artistName.toLowerCase());
-            const bidCondition = (minBid === maxBid && maxBid === 0) ? true : (artwork.currentBid >= minBid && artwork.currentBid <= maxBid);
-            const dateCondition = (minEndTime === maxEndTime && maxEndTime === 0) ? true : (artwork.auctionEndTime > minEndTime && artwork.auctionEndTime < maxEndTime);
-
-            return (
-                nameCondition &&
-                bidCondition &&
-                dateCondition
-            );
-        })
-        setFilteredArtworks(newArtworks);
+        setArtistName(formData.get("artist_name")?.toString() || "");
+        setMinBid(parseInt(formData.get("min_bid")?.toString()|| "0"));
+        setMaxBid(parseInt(formData.get("max_bid")?.toString()|| "0"));
+        setMinEndTime(Date.parse(formData.get("min_end_time")?.toString() || ""));
+        setMaxEndTime(Date.parse(formData.get("max_end_time")?.toString() || ""));
     }
 
     return (

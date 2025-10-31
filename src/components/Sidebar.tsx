@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, ShoppingCart, User, Settings, UserCircle, LogOut } from "lucide-react";
+import { Home, ShoppingCart, User, Settings, UserCircle, LogOut, DollarSign } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 
@@ -38,6 +38,11 @@ export default function Sidebar({ onClose }: SidebarProps) {
                     <li>
                         <Link href="/dashboard/my-artworks" onClick={onClose} className={`flex gap-2 text-xl hover:bg-red-200 dark:hover:bg-red-700 p-3 rounded-lg ${pathname === "/dashboard/my-artworks" ? "bg-red-200 dark:bg-red-700" : ""}`}>
                             <User />My Artworks
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/dashboard/deposit" onClick={onClose} className={`flex gap-2 text-xl hover:bg-red-200 dark:hover:bg-red-700 p-3 rounded-lg ${pathname === "/dashboard/deposit" ? "bg-red-200 dark:bg-red-700" : ""}`}>
+                            <DollarSign />Deposit
                         </Link>
                     </li>
                     <li>

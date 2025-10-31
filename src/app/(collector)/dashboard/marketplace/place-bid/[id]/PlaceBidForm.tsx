@@ -1,17 +1,26 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Artwork } from "@/data/db"; 
+import { Artwork } from "@/data/db";
 
-export function PlaceBidForm({artwork} : {artwork: Artwork}) {
-    const minBid = artwork.currentBid + 1;
+export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: string }) {
+    const minBid = (artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid) + 1;
+    const [currentBid, setCurrentBid] = useState(0);
     const [bidAmount, setBidAmount] = useState<number>(minBid);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(errors);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+    const [walletBalance, setWalletBalance] = useState<number>(0);
     const router = useRouter();
 
+    useEffect(() => {
+        fetch('/api/profile')
+        .then(res => res.json())
+        .then(json => {
+            setWalletBalance(json.wallet)
+        })
+    }, []);
 
     const parseNumber = (str: string) => {
         const cleaned = str.replace(/[^0-9.]/g, '');
@@ -21,15 +30,12 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
     const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         const newCursorPosition = e.target.selectionStart;
-
         const oldFormattedValue = formattedBidAmount;
-        // const oldRawValue = parseNumber(oldFormattedValue);
-
         const newRawValue = parseNumber(inputValue);
 
         setBidAmount(newRawValue);
 
-        
+
         if (inputRef.current && newCursorPosition !== null) {
             const numNonDigitsOld = (oldFormattedValue.slice(0, newCursorPosition).match(/[^0-9.]/g) || []).length;
             const numNonDigitsNew = (inputValue.slice(0, newCursorPosition).match(/[^0-9.]/g) || []).length;
@@ -39,55 +45,34 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
 
     const handlePredefinedBid = (amount: number) => {
         setBidAmount(prevAmount => prevAmount + amount);
-        setCursorPosition(null); 
+        setCursorPosition(null);
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
         setError(null);
         setSuccessMessage(null);
 
         if (bidAmount < minBid) {
             setError(`Bid amount must be at least $${minBid.toLocaleString()}.`);
+            event.preventDefault();
             return;
         }
 
-        try {
-            const response = await fetch(`/api/artworks/${artwork.id}/bid`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ amount: bidAmount }),
-            });
-
-            if (response.ok) {
-                setSuccessMessage("Bid placed successfully!");
-                
-                router.refresh(); 
-            } else {
-                const errorData = await response.json();
-                setError(errorData.message || "Failed to place bid.");
-            }
-        } catch (err: unknown) {
-            setError((err as Error).message || "An unexpected error occurred.");
+        if (bidAmount > walletBalance) {
+            console.log(1)
+            setError("Insufficient funds. Please deposit more to your wallet.");
+            event.preventDefault();
+            router.push("/dashboard/deposit");
+            return;
         }
     };
 
-    
+
     const getPreiledBidOptions = (currentBid: number) => {
-        if (currentBid < 100) {
-            return [5, 10, 20, 50];
-        } else if (currentBid < 1000) {
-            return [25, 50, 100, 250];
-        } else if (currentBid < 5000) {
-            return [100, 250, 500, 1000];
-        } else {
-            return [250, 500, 1000, 2500];
-        }
+        return [0.05 * currentBid, 0.10 * currentBid, 0.25 * currentBid, 0.50 * currentBid].map(num => num > 10 ? Math.round(0.1 * num) * 10 : Math.round(num * 100) * 0.01);
     };
 
-    const predefinedOptions = useMemo(() => getPreiledBidOptions(artwork.currentBid), [artwork.currentBid]);
+    const predefinedOptions = useMemo(() => getPreiledBidOptions(artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid), [artwork.currentBid, artwork.startingBid]);
 
     const formattedBidAmount = useMemo(() => {
         return bidAmount.toLocaleString('en-US', {
@@ -103,17 +88,26 @@ export function PlaceBidForm({artwork} : {artwork: Artwork}) {
             inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
         }
     }, [cursorPosition, inputRef]);
+
+    useEffect(() => {
+        fetch(`/api/bid?artworkId=${artwork.id}`)
+        .then(res => res.json())
+        .then(json => {
+            setCurrentBid(json.bidAmount)
+        })
+    }, []);
+
     return (
         <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
-            
+            {currentBid > 0 && <div className="my-8 w-full flex justify-end">
+                <span className="text-xl font-extrabold bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-6 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">Your current bid: ${currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            </div>}
             <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white">Your Bid</h2>
-            <form className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
-                {error && (
-                    <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
-                        <strong className="font-bold">Error!</strong>
-                        <span className="block sm:inline"> {error}</span>
-                    </div>
-                )}
+            <form method="POST" action={`/api/artworks/${artwork.id}/bid`} className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
+                {error && (<div className={`bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
+                    <strong className="font-bold">Error!</strong>
+                    <span className="block sm:inline"> {error}</span>
+                </div>)}
                 {successMessage && (
                     <div className="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded relative" role="alert">
                         <strong className="font-bold">Success!</strong>

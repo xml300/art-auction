@@ -6,7 +6,7 @@ import { ArtworkCarousel } from '@/components/ArtworksCarousel';
 import { SendHorizonal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import artworks from '@/data/json/artworks.json';
+import { getArtworks } from "@/data/db";
 
 export default function Home() {
   const testimonials = [
@@ -101,6 +101,7 @@ export default function Home() {
       "position": "Operations Manager, Aero Dynamics"
     }
   ];
+  const artworks = getArtworks();
 
   return (
     <main className="min-h-screen flex flex-col bg-white dark:bg-dark-background text-black dark:text-dark-text">

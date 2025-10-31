@@ -1,40 +1,86 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createBid, getArtworkById, getUsers, User, updateArtwork } from '@/data/db';
-import * as jwt from 'jsonwebtoken';
+import { getArtworkById, getUsers, User, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/db';
+import { getSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const authCookie = request.cookies.get("auth")?.value || "";
+    const [payload, error] = await getSession();
     const artworkId = parseInt((await params).id);
-    const { amount } = await request.json();
+    const formData = await request.formData();
+    const redirectUrl = new URL("/dashboard/marketplace/place-bid/" + artworkId, request.nextUrl.origin);
 
-    console.log(artworkId, amount);
-
-    try {
-        const payload = jwt.verify(authCookie, process.env.JWT_SECRET_KEY || '') as jwt.JwtPayload;
-        const user = getUsers(payload.userId) as User;
-        if (!user) {
-            return NextResponse.json({ message: 'User not found' }, { status: 400 });
-        }
-        if (isNaN(artworkId) || !amount) {
-            return NextResponse.json({ message: 'Invalid request data' }, { status: 400 });
-        }
-        const artwork = getArtworkById(artworkId);
-        if (!artwork) {
-            return NextResponse.json({ message: 'Artwork not found' }, { status: 404 });
-        }
-
-        if (amount <= artwork.currentBid) {
-            return NextResponse.json({ message: 'Bid amount must be higher than current bid' }, { status: 400 });
-        }
-        const newBid = createBid(artworkId, user.id, amount);
-        updateArtwork(artworkId, {columnName: 'currentBid', value: amount});
-        return NextResponse.json(newBid, { status: 201 });
-    } catch (error) {
-        if ((error as jwt.TokenExpiredError).name === 'TokenExpiredError') {
-            console.error('Token has expired!')
-        } else if ((error as jwt.JsonWebTokenError).name === 'JsonWebTokenError') {
-            console.error('Token is invalid!');
-        }
-        return NextResponse.json({ message: 'User unauthorized' }, { status: 401 })
+    if (!formData.has('bidAmount')) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'Bid amount is required', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
     }
+    const bidAmount = parseFloat(formData.get("bidAmount")!.toString().replace(/[^0-9\.]/g, ""));
+
+    if (error || payload === null) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'User unauthorized', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+
+    const user = getUsers(payload.userId) as User;
+    if (!user) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'User not found', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+    if (isNaN(artworkId) || !bidAmount) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'Invalid request data', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+    const artwork = getArtworkById(artworkId);
+    if (!artwork) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'Artwork not found', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+
+    if (bidAmount <= artwork.currentBid) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'Bid amount must be higher than current bid', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+    const bid = getBidsByUser(user.id, { sortBy: 'bidTime', sortOrder: 'desc', where: [{ columnName: 'artworkId', value: artworkId }] }).at(0);
+    let amount = bidAmount;
+    if (bid) {
+        amount = amount - bid.bidAmount;
+    }
+
+    if (amount > user.wallet) {
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.set('errors', 'Insufficient funds in your auction deposit', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+    const reference = `BID-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    createTransaction(user.id, reference, 'bid', 'wallet', amount, 'completed');
+    const newBid = createBid(artworkId, user.id, bidAmount);
+    updateArtwork(artworkId, { columnName: 'currentBid', value: bidAmount });
+    updateUser(user.id, [{columnName: 'wallet', value: user.wallet - amount}])
+    const resp = NextResponse.redirect(redirectUrl);
+    return resp;
 }

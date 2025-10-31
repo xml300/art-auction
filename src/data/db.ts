@@ -24,12 +24,13 @@ export interface User {
     id: number;
     username: string;
     email: string;
-    password: string; 
+    password: string;
     surname?: string;
     firstName?: string;
     profilePicture?: string;
     bio?: string;
     roleId: Roles;
+    wallet: number;
     createdAt: number;
     updatedAt: number;
 };
@@ -41,6 +42,7 @@ export interface CollectorProfile {
     surname: string;
     email: string;
     profilePicture: string;
+    wallet: number;
     bio: string;
     socialMedia: {
         twitter?: string;
@@ -105,6 +107,9 @@ export interface Artwork {
     startingBid: number;
     currentBid: number;
     auctionEndTime: number;
+    medium: string;
+    dimensions: string;
+    year: number;
 }
 
 
@@ -123,6 +128,7 @@ export interface Transaction {
     description: string;
     payType: string;
     amount: number;
+    status: string;
     transactionTime: number;
 }
 
@@ -138,6 +144,7 @@ export function createUser(email: string, username: string, password: string, ro
         username,
         password: hashValue(password),
         roleId,
+        wallet: 0,
         createdAt: Date.now(),
         updatedAt: Date.now(),
     }
@@ -146,7 +153,7 @@ export function createUser(email: string, username: string, password: string, ro
     return user;
 };
 
-export function updateUser<K extends keyof User>(id: number, updates: {columnName: K, value: User[K]}[]): User | undefined {
+export function updateUser<K extends keyof User>(id: number, updates: { columnName: K, value: User[K] }[]): User | undefined {
     const users: User[] = readJSON('users');
     const userIndex = users.findIndex(user => user.id === id);
 
@@ -154,12 +161,12 @@ export function updateUser<K extends keyof User>(id: number, updates: {columnNam
         return undefined;
     }
 
-    const updatedUser = { 
-        ...users[userIndex], 
-        updatedAt: Date.now() 
+    const updatedUser = {
+        ...users[userIndex],
+        updatedAt: Date.now()
     };
 
-    for(const update of updates){
+    for (const update of updates) {
         updatedUser[update.columnName] = update.value;
     }
 
@@ -186,7 +193,7 @@ export function getUsersQuery(where: { columnName: string, comparator: '=' | '<'
     const users: User[] = readJSON('users');
     return users.filter(user => {
         const conditions = where.map(obj => {
-            if(user[obj.columnName as keyof User] === undefined){
+            if (user[obj.columnName as keyof User] === undefined) {
                 return false;
             }
 
@@ -219,8 +226,8 @@ export function getUsersProfile(userId: number) {
     const ownedArtworks = getArtworks(userId);
     const watchlist = getWatchlist(userId);
     const activity = getActivity(userId);
-    const transactions = getTransactions(userId);
-    
+    const { transactions } = getTransactions(userId); // Destructure to get the transactions array
+
     const allBids = readJSON('bids') as Bid[];
     const userBids = allBids.filter(bid => bid.bidderId === userId);
     const allArtworks = readJSON('artworks') as Artwork[];
@@ -228,7 +235,7 @@ export function getUsersProfile(userId: number) {
     const activeBidsCount = userBids.filter(bid => {
         const artwork = allArtworks.find(art => art.id === bid.artworkId);
         return artwork && artwork.auctionEndTime > Date.now();
-    }).length;
+    }).reduce((acc: Bid[], cur) => acc.find(bid => bid.artworkId === cur.artworkId) ? acc : [...acc, cur], []).length;
 
     const totalBidAmount = userBids.reduce((acc, bid) => acc + bid.bidAmount, 0);
     const avgBidAmount = userBids.length > 0 ? totalBidAmount / userBids.length : 0;
@@ -246,16 +253,17 @@ export function getUsersProfile(userId: number) {
         firstName: user.firstName || "",
         surname: user.surname || "",
         email: user.email,
-        profilePicture: user.profilePicture || "/images/avatars/default.jpg",
+        profilePicture: user.profilePicture || "/logo.png",
         bio: user.bio || "No bio provided.",
+        wallet: user.wallet,
         socialMedia: {
-            twitter: "https://twitter.com/janedoe_art", 
-            instagram: "https://instagram.com/janedoe_collection", 
+            twitter: "https://twitter.com/janedoe_art",
+            instagram: "https://instagram.com/janedoe_collection",
         },
         stats: {
             artworksOwned: ownedArtworks.length,
-            totalSpent:     transactions.reduce((acc, tran) => tran.amount + acc, 0), 
-            auctionsWon: ownedArtworks.length, 
+            totalSpent: transactions.filter((tran: Transaction) => tran.status == 'completed' && tran.description == 'bid').reduce((acc: number, tran: Transaction) => tran.amount + acc, 0),
+            auctionsWon: ownedArtworks.length,
             watchlistItems: watchlist.length,
             activeBids: activeBidsCount,
             avgBidAmount: parseFloat(avgBidAmount.toFixed(2)),
@@ -300,18 +308,21 @@ export function getUserPermissions(userId: number): NullablePermission[] {
     return permissions;
 }
 
-export function createArtwork(title: string, description: string, artistId: number, imageUrl: string, auctionEndTime: Date): Artwork {
+export function createArtwork(title: string, description: string, artistId: number, imageUrl: string, startingBid: number, auctionEndTime: Date, medium: string, dimensions: string, year: number): Artwork {
     const artworks = readJSON('artworks');
     const artwork: Artwork = {
-        id: 1,
+        id: artworks.length + 1,
         title,
         description,
         artistId,
         imageUrl,
-        startingBid: 0,
+        startingBid,
         currentBid: 0,
-        auctionEndTime: auctionEndTime.getUTCMilliseconds(),
+        auctionEndTime: auctionEndTime.getTime(),
         ownerId: null,
+        medium,
+        dimensions,
+        year,
     }
     artworks.push(artwork);
     writeJSON('artworks', JSON.stringify(artworks));
@@ -344,34 +355,115 @@ export function getArtworkById(id: number, options?: { withBids?: boolean, withA
     return resArtwork;
 }
 
-export function getArtworks(userId?: number, options?: { withBids?: boolean, withArtist?: boolean, page?: number, limit?: number }): Artwork[] {
+export function getArtworks(userId?: number, options?: {
+    withBids?: boolean,
+    withArtist?: boolean,
+    page?: number,
+    limit?: number,
+    searchQuery?: string,
+    artistName?: string,
+    minBid?: number,
+    maxBid?: number,
+    minEndTime?: number,
+    maxEndTime?: number
+}): Artwork[] {
     let artworks: Artwork[] = readJSON('artworks');
+
     if (options?.withBids) {
         artworks.forEach(artwork => {
             const bids: Bid[] = getBids(artwork.id);
             artwork.bids = bids;
         });
     }
+
     if (options?.withArtist) {
         artworks.forEach(artwork => {
             const artist = getUsers(artwork.artistId) as User;
             artwork.artist = artist;
         });
     }
+
     if (userId) {
         artworks = artworks.filter(artwork => artwork.ownerId === userId);
+    } else {
+        artworks = artworks.filter(artwork => artwork.ownerId === null);
     }
+
+    if (options?.searchQuery) {
+        artworks = artworks.filter(artwork =>
+            artwork.title.toLowerCase().includes(options.searchQuery!.toLowerCase()) ||
+            artwork.artist?.username.toLowerCase().includes(options.searchQuery!.toLowerCase())
+        );
+    }
+
+    if (options?.artistName) {
+        artworks = artworks.filter(artwork =>
+            artwork.artist?.username.toLowerCase().includes(options.artistName!.toLowerCase())
+        );
+    }
+
+    if (options?.minBid) {
+        artworks = artworks.filter(artwork => artwork.currentBid >= options.minBid! || artwork.startingBid >= options.minBid!);
+    }
+
+    if (options?.maxBid) {
+        artworks = artworks.filter(artwork => artwork.currentBid <= options.maxBid! || artwork.startingBid <= options.maxBid!);
+    }
+
+    if (options?.minEndTime) {
+        artworks = artworks.filter(artwork => artwork.auctionEndTime >= options.minEndTime!);
+    }
+
+    if (options?.maxEndTime) {
+        artworks = artworks.filter(artwork => artwork.auctionEndTime <= options.maxEndTime!);
+    }
+
     if (options?.page && options?.limit) {
         const startIndex = (options.page - 1) * options.limit;
         const endIndex = startIndex + options.limit;
         return artworks.slice(startIndex, endIndex);
     }
+
     return artworks;
 }
 
-export function getBids(artworkId: number) {
-    const bids: Bid[] = readJSON('bids');
+export function getBids<K extends keyof Bid>(artworkId: number, options?:{sortBy?: K, sortOrder?: 'asc' | 'desc', where?: {columnName: K, value: Bid[K]}[]}) {
+    let bids: Bid[] = readJSON('bids');
+     if (options && options.sortBy) {
+        bids = bids.sort((a, b) => {
+            if (options.sortOrder === 'asc' && options.sortBy) {
+                return a[options.sortBy] > b[options.sortBy] ? 1 : -1;
+            } else {
+                return a[options.sortBy as keyof Bid] < b[options.sortBy as keyof Bid] ? 1 : -1;
+            }
+        });
+    }
+   if(options && options.where){
+        for(const update of options.where){
+            bids = bids.filter(bid => bid[update.columnName] === update.value);
+        }
+    }
     return bids.filter(bid => bid.artworkId === artworkId);
+}
+
+export function getBidsByUser<K extends keyof Bid>(bidderId: number, options?: { sortBy?: keyof Bid, sortOrder?: 'asc' | 'desc', where?:{columnName: K, value: Bid[K]}[] }): Bid[] {
+    let bids: Bid[] = readJSON('bids');
+    if (options && options.sortBy) {
+        bids = bids.sort((a, b) => {
+            if (options.sortOrder === 'asc' && options.sortBy) {
+                return a[options.sortBy] > b[options.sortBy] ? 1 : -1;
+            } else {
+                return a[options.sortBy as keyof Bid] < b[options.sortBy as keyof Bid] ? 1 : -1;
+            }
+        });
+    }
+
+    if(options && options.where){
+        for(const update of options.where){
+            bids = bids.filter(bid => bid[update.columnName] === update.value);
+        }
+    }
+    return bids.filter(bid => bid.bidderId === bidderId);
 }
 
 export function createBid(artworkId: number, bidderId: number, bidAmount: number): Bid {
@@ -388,13 +480,66 @@ export function createBid(artworkId: number, bidderId: number, bidAmount: number
     return bid;
 }
 
-export function getTransactions(userId?: number) {
+export function updateTransaction<K extends keyof Transaction>(id: number, updates: {columnName: K, value: Transaction[K]}[]){
+    const transactions: Transaction[] = readJSON('transactions');
+    const transaction = transactions.find(tx => tx.id === id);
+    if (!transaction) return;
+
+    updates.forEach(update => {
+        transaction[update.columnName] = update.value;
+    });
+
+    writeJSON('transactions', JSON.stringify(transactions));
+}
+
+export function getTransactions(userId?: number, options?: { sortBy?: keyof Transaction, sortOrder?: 'asc' | 'desc', page?: number, limit?: number }): { transactions: Transaction[], totalCount: number } {
     let transactions: Transaction[] = readJSON('transactions');
     if (userId) {
         transactions = transactions.filter(transaction => transaction.userId === userId);
     }
-    return transactions;
+    if (options && options.sortBy) {
+        transactions = transactions.sort((a, b) => {
+            if (options.sortOrder === 'asc' && options.sortBy) {
+                return a[options.sortBy] > b[options.sortBy] ? 1 : -1;
+            } else {
+                return a[options.sortBy as keyof Transaction] < b[options.sortBy as keyof Transaction] ? 1 : -1;
+            }
+        });
+    }
+
+    const totalCount = transactions.length;
+
+    if (options?.page && options?.limit) {
+        const startIndex = (options.page - 1) * options.limit;
+        const endIndex = startIndex + options.limit;
+        transactions = transactions.slice(startIndex, endIndex);
+    }
+
+    return { transactions, totalCount };
 }
+
+export function getTransactionByReference(referenceNumber: string): Transaction | undefined {
+    const transactions: Transaction[] = readJSON('transactions');
+    return transactions.find(transaction => transaction.referenceNumber === referenceNumber);
+}
+
+export function createTransaction(userId: number, referenceNumber: string, description: string, payType: string, amount: number, status: string): Transaction {
+    const transactions = readJSON('transactions');
+    const transaction: Transaction = {
+        id: transactions.length + 1,
+        userId,
+        referenceNumber,
+        description,
+        payType,
+        amount,
+        status,
+        transactionTime: Date.now(),
+    };
+    transactions.push(transaction);
+    writeJSON('transactions', JSON.stringify(transactions));
+    return transaction;
+}
+
 
 export function getWatchlist(userId: number): Artwork[] {
     const watchlistItems: Watchlist[] = readJSON('watchlist');
@@ -404,6 +549,6 @@ export function getWatchlist(userId: number): Artwork[] {
 }
 
 export function getActivity(userId: number): Activity[] {
-    const activities: Activity[] = readJSON('activities'); 
+    const activities: Activity[] = readJSON('activities');
     return activities.filter(activity => activity.userId === userId);
 }

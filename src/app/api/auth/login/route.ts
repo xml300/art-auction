@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     ])[0];
 
     if (!user) {
-        const response = NextResponse.redirect(new URL('/auth?type=login', request.url));
+        const response = NextResponse.redirect(new URL('/auth', request.url));
         response.cookies.set('errors', 'Invalid username or password.', {
             maxAge: 10, 
             path: '/',

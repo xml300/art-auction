@@ -4,13 +4,16 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 import Image from 'next/image';
+import { cookies } from 'next/headers';
 
 export default async function PlaceBidPage({params}: {params: Promise<{id: string}>}) {
     const id = parseInt((await params).id); 
-    const artwork = getArtworkById(id);
+    const artwork = getArtworkById(id, {withArtist: true});
+    const cookie = await cookies();
+    const errors = cookie.get('errors')?.value;
 
     return (
-        <div className="container mx-auto p-6 dark:bg-dark-background dark:text-dark-text">
+        <div className="container mx-auto p-6  dark:bg-dark-background dark:text-dark-text">
             <Link href="/dashboard/marketplace" className="font-bold">
             <ArrowLeft className="w-12 h-12 text-gray-600 backdrop-blur-lg bg-white dark:bg-black/60 shadow-lg dark:text-gray-300 hover:scale-110 transition-transform duration-200 mb-4 p-2 rounded-full" />
             </Link>
@@ -35,7 +38,12 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
                         </div>
                         <div>
                             <p className="text-gray-500 dark:text-gray-400">Current Bid</p>
-                            <p className="font-medium">${artwork.currentBid.toLocaleString()}</p>
+                            { artwork.currentBid > 0 ? (
+                                <p className="font-medium">${artwork.currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                            ):(
+                                <p className="font-medium">${artwork.startingBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+
+                            )}
                         </div>
                         <div>
                             <p className="text-gray-500 dark:text-gray-400">Auction Ends</p>
@@ -45,7 +53,7 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
                 </div>
 
                 {/* Place Bid Form Section */}
-                <PlaceBidForm artwork={artwork} />
+                <PlaceBidForm artwork={artwork} errors={errors || ""} />
             </div>
         </div>
     );

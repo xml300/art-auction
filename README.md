@@ -2,6 +2,23 @@
 
 A modern, full-stack online platform for auctioning artwork, connecting artists with collectors through secure bidding and transactions.
 
+## Table of Contents
+
+- [Vision and Goals](#vision-and-goals)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [Database Schema](#database-schema)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [Screenshots](#screenshots)
+- [Contact](#contact)
+
 ## Vision and Goals
 
 Artsyl aims to revolutionize the art auction experience by providing a seamless, secure, and engaging platform for artists and collectors. Our goals include:
@@ -123,6 +140,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 This project is private and not licensed for public use.
 
+## Screenshots
+
+(Add screenshots of the application here)
+
 ## Contact
 
-For any inquiries or support, please contact us at [support@artsyl.com](mailto:support@artsyl.com).
+For any inquiries or support, please contact us at [support@artsyl.com](mailto:support@artsyl.com) or connect with us on social media.

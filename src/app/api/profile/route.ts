@@ -1,7 +1,23 @@
-import { getUsersProfile, hashValue, updateUser } from "@/data/db";
+import { getArtworks, getBids, getUsersProfile, hashValue, updateArtwork, updateUser } from "@/data/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { writeFileSync } from "fs";
+
+
+function closeAuction(){
+    const artworks = getArtworks().filter(artwork => artwork.auctionEndTime < Date.now());
+    for(const artwork of artworks){
+        const bids = getBids(artwork.id).sort((a, b) => {
+            return a.bidAmount < b.bidAmount ? 1 : -1;
+        });
+        if(bids.length == 0){
+            return;
+        }
+        const winningBid = bids.at(0);
+        updateArtwork(artwork.id, {columnName: 'ownerId', value: winningBid?.bidderId || null}); 
+    }
+}
+
 
 export async function GET() {
     const [payload, error] = await getSession();
@@ -14,6 +30,8 @@ export async function GET() {
         });
         return response;
     }
+
+    closeAuction();
 
     const user = getUsersProfile(payload.userId);
     if (user) {

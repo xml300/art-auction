@@ -14,6 +14,11 @@ import {
 } from "lucide-react";
 
 
+function formatAmount(amount: number){
+    return amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+
 export default function DashboardPage() {
     const userProfile = getUsersProfile(5); // Using static user ID 1 for demonstration
     const artworks = getArtworks(); // This will be replaced with userProfile.ownedArtworks
@@ -49,7 +54,7 @@ export default function DashboardPage() {
                                 <DollarSign className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">${userProfile.stats.totalSpent}</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">${formatAmount(userProfile.stats.totalSpent)}</div>
                                 <div className="text-xs text-green-600 dark:text-green-400 font-medium">Total</div>
                             </div>
                         </div>
@@ -117,7 +122,7 @@ export default function DashboardPage() {
                                 <TrendingUp className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">${userProfile.stats.avgBidAmount}</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">${formatAmount(userProfile.stats.avgBidAmount)}</div>
                                 <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Average</div>
                             </div>
                         </div>
@@ -182,7 +187,7 @@ export default function DashboardPage() {
             <div>
                 <h2 className="text-xl sm:text-2xl font-semibold animate-fade-in-delay-3">Marketplace</h2>
                 <div className="animate-fade-in-delay-4">
-                    <MarketplaceGrid artworks={artworks} />
+                    <MarketplaceGrid artworks={artworks} numArtworks={6} />
                 </div>
             </div>
         </div>
