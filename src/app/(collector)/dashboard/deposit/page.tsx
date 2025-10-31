@@ -6,9 +6,13 @@ import { cookies } from "next/headers";
 async function getInitialData() {
     const [payload, error] = await getSession();
 
-    // if (error || payload === null) {
-    //     redirect('/auth'); // Redirect to login if not authenticated
-    // }
+    if (error || payload === null) {
+        return {
+        walletBalance: 0,
+        transactions: [],
+        totalTransactions: 0,
+        };
+    }
 
     const userId = payload.userId;
     const profileData = getUsersProfile(userId) as CollectorProfile;
