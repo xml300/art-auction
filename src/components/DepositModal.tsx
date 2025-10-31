@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Transaction } from "@/data/db"; // Assuming Transaction interface is exported from db.ts
+import { useState } from "react"; 
 
 interface DepositModalProps {
     isOpen: boolean;
@@ -15,7 +14,7 @@ export default function DepositModal({
     const [amount, setAmount] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleDeposit = async (e: React.FormEvent) => {
+    const handleDeposit = async ( ) => {
         // e.preventDefault();
         setIsProcessing(true);
     };

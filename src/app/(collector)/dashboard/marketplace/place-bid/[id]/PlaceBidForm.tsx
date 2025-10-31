@@ -95,7 +95,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
         .then(json => {
             setCurrentBid(json.bidAmount)
         })
-    }, []);
+    }, [artwork.id]);
 
     return (
         <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">

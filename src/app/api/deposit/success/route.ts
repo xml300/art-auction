@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
         });
         return response;
     }
-    const user = getUsers(payload.userId) as User;
     const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
         method: "GET",
         headers: {

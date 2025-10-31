@@ -49,7 +49,7 @@ async function saveFile(file: File){
     if(file.size <= 0){
         return "";
     }
-    const filename = hashValue(Array.from({length: 10}).map((_) => Math.random() * 500 + 100).join('')) + file.name.split('.').at(-1);
+    const filename = hashValue(Array.from({length: 10}).map(() => Math.random() * 500 + 100).join('')) + file.name.split('.').at(-1);
     writeFileSync(`./public/uploads/${filename}`, Buffer.from(await file.arrayBuffer()));
     return `/uploads/${filename}`;
 }

@@ -78,7 +78,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
     const reference = `BID-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     createTransaction(user.id, reference, 'bid', 'wallet', amount, 'completed');
-    const newBid = createBid(artworkId, user.id, bidAmount);
+    createBid(artworkId, user.id, bidAmount);
     updateArtwork(artworkId, { columnName: 'currentBid', value: bidAmount });
     updateUser(user.id, [{columnName: 'wallet', value: user.wallet - amount}])
     const resp = NextResponse.redirect(redirectUrl);

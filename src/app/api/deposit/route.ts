@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { updateUser, createTransaction, getUsers } from "@/data/db";
+import { createTransaction, getUsers } from "@/data/db";
 import { User } from "@/data/db";
 
 export async function POST(req: NextRequest) {

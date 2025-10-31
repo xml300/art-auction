@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Transaction, CollectorProfile } from "@/data/db";
+import { useState, useEffect } from "react"; 
+import { Transaction } from "@/data/db";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import DepositModal from "@/components/DepositModal";
-
-
-interface UserProfile extends CollectorProfile { }
-
 import Pagination from "@/components/Pagination"; // Import Pagination component
 
 interface ClientDepositPageProps {
@@ -21,15 +16,14 @@ interface ClientDepositPageProps {
 
 export default function ClientDepositPage({ initialWalletBalance, initialTransactions, initialTotalTransactions, errors }: ClientDepositPageProps) {
     const [loading, setLoading] = useState(false);
-    const [walletBalance, setWalletBalance] = useState<number | null>(initialWalletBalance);
+    const [walletBalance] = useState<number | null>(initialWalletBalance);
     const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
     const [totalTransactions, setTotalTransactions] = useState<number>(initialTotalTransactions); // State for total transactions
     const [currentPage, setCurrentPage] = useState(1); // State for current page
     const transactionsPerPage = 10; // Number of transactions per page
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [error, setError] = useState<string | null>(errors);
-    const [success, setSuccess] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(errors); 
 
     const fetchTransactions = async (page: number) => {
         setLoading(true);
