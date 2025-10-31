@@ -93,8 +93,8 @@ export function Header() {
                         </li>
                     </div>
                     <li className="flex gap-x-4">
-                        <Link href="/auth?acc_type=login" className="block rounded-full bg-red-700 px-6 py-2 text-white text-lg hover:scale-105 transition-transform duration-200" onClick={toggleMobileMenu}>Sign In</Link>
-                        <Link href="/auth?acc_type=register" className="block rounded-full bg-red-700 px-6 py-2 text-white text-lg hover:scale-105 transition-transform duration-200" onClick={toggleMobileMenu}>Sign Up</Link>
+                        <Link href="/auth" className="block rounded-full bg-red-700 px-6 py-2 text-white text-lg hover:scale-105 transition-transform duration-200" onClick={toggleMobileMenu}>Sign In</Link>
+                        <Link href="/auth" className="block rounded-full bg-red-700 px-6 py-2 text-white text-lg hover:scale-105 transition-transform duration-200" onClick={toggleMobileMenu}>Sign Up</Link>
                     </li>
                 </ul>
             </div>
