@@ -1,43 +1,57 @@
-// Import the functions you need
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// Import your storage instance
-import { storage } from "./firebase"; // Adjust the path as needed
-import { FirebaseError } from "firebase/app";
+import { adminStorage } from "./firebaseAdmin";  
 
+const storageClient = adminStorage; 
 
 export async function writeFile(file: File) {
   if (!file) return;
-  const storageRef = ref(storage, `json/${file.name}`);
+  const fileBuffer = Buffer.from(await file.arrayBuffer());
+  const blob = storageClient.bucket().file(`json/${file.name}`);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+    metadata: {
+      contentType: file.type,
+    },
+  });
 
-  try {
-    const snapshot = await uploadBytes(storageRef, file);
-    console.log('Uploaded a blob or file!', snapshot);
-  } catch (error) {
-    console.error("Error uploading file:", error);
-  }
+  return new Promise((resolve, reject) => {
+    blobStream.on('error', (err) => {
+      console.error("Error uploading file:", err);
+      reject(err);
+    });
+
+    blobStream.on('finish', async () => {
+      console.log('Uploaded a blob or file!');
+      resolve(await blob.getSignedUrl({
+        action: 'read',
+        expires: '03-09-2491', 
+      }));
+    });
+
+    blobStream.end(fileBuffer);
+  });
 }
 
 export async function readFile(filePath: string) {
-  const fileRef = ref(storage, filePath);
-  
+  const file = storageClient.bucket().file(filePath);
   try {
-    const url = await getDownloadURL(fileRef);
+    const [exists] = await file.exists();
+    if (!exists) {
+      console.warn('File does not exist at path:', filePath);
+      return null;
+    }
+
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-09-2491',  
+    });
     const response = await fetch(url);
     const json = await response.json();
     return json;
   } catch (error) {
-    // Handle any errors
-    console.error("Error getting download URL:", error);
-    
-    // A common error is 'storage/object-not-found'
-    if ((error as FirebaseError).code === 'storage/object-not-found') {
-      console.warn('File does not exist at path:', filePath);
-    }
-    // Another common error is 'storage/unauthorized'
-    if ((error as FirebaseError).code === 'storage/unauthorized') {
+    console.error("Error getting download URL:", error); 
+    if (error instanceof Error && error.message.includes('unauthorized')) {
       console.warn('User does not have permission to access this file.');
     }
-    
     return null;
   }
 }

@@ -24,8 +24,6 @@ export default async function DashboardPage() {
     const artworks = await getArtworks(); // This will be replaced with userProfile.ownedArtworks
     return (
         <div className="space-y-24">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in !-my-12">Collector Dashboard</h1>
-
             {/*Statistics*/}
             <div>
                 <h2 className="text-xl sm:text-2xl font-semibold mb-6 animate-fade-in-delay-1">Statistics Overview</h2>

@@ -3,7 +3,7 @@ import { readFile, writeFile } from "@/lib/fileSys";
 import { memoize, invalidateCacheByPrefix } from "@/lib/memoize";
 
 const readJSON = memoize(async (tableName: string) => {
-    const content = await readFile(`/json/${tableName.toLowerCase()}.json`);
+    const content = await readFile(`json/${tableName.toLowerCase()}.json`);
     return content;
 }, (tableName: string) => `json-${tableName.toLowerCase()}`);
 
@@ -369,7 +369,7 @@ export async function getArtworks(userId?: number, options?: {
     maxEndTime?: number
 }): Promise<Artwork[]> {
     let artworks: Artwork[] = await readJSON('artworks');
-
+   
     if (options?.withBids) {
         artworks.forEach(async(artwork) => {
             const bids: Bid[] = await getBids(artwork.id);

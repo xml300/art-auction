@@ -14,6 +14,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "firebase": "^12.5.0",
+    "firebase-admin": "^13.5.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.545.0",
     "next": "15.5.5",
