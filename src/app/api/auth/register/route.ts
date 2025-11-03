@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         const user = await createUser(email, username, password, userType);
 
         const route = userType === 1 ? '/artist-dashboard' : '/dashboard';
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
+        const response = NextResponse.redirect(new URL(route, process.env.SITE_BASE_URL || ""), {status: 303});
         response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
             maxAge: 1 * 60 * 60, 
             httpOnly: true,
