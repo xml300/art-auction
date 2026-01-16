@@ -1,7 +1,6 @@
-import { hashValue, updatePassword } from "@/data/db";
+import { hashValue, updatePassword, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { getUsers } from "@/data/db";
-import { User } from "@/data/db";
+import { User } from "@/types";
 import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {

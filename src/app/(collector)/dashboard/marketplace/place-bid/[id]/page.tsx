@@ -1,4 +1,4 @@
-import { getArtworkById } from '@/data/db';
+import { getArtworkById } from '@/data/queries';
 import { PlaceBidForm } from './PlaceBidForm';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -18,6 +18,9 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
         title='No such artwork exists'
         message='Please go back and try again.' />
     }
+
+    
+
 
     return (
         <div className="container mx-auto p-6  dark:bg-dark-background dark:text-dark-text">

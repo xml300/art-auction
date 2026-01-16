@@ -6,7 +6,7 @@ import StatsCard from "@/components/StatsCard";
 import ArtworkGrid from "@/components/ArtworkGrid";
 import ActivityFeed from "@/components/ActivityFeed";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { Activity, Artwork } from "@/data/db";
+import { Activity, Artwork } from "@/types";
 
 
 interface CollectorProfile {

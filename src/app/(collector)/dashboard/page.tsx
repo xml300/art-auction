@@ -1,4 +1,4 @@
-import { getArtworks, getUsersProfile } from "@/data/db";
+import { getArtworks, getUsersProfile } from "@/data/queries";
 import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import EmptyState from "@/components/EmptyState";
@@ -12,6 +12,7 @@ import {
     Target,
     Activity
 } from "lucide-react";
+import { getSession } from "@/lib/auth";
 
 
 function formatAmount(amount: number){
@@ -20,8 +21,18 @@ function formatAmount(amount: number){
 
 
 export default async function DashboardPage() {
-    const userProfile = await getUsersProfile(5); // Using static user ID 1 for demonstration
+    const [session] = await getSession();
+    const userProfile = await getUsersProfile(session?.userId || null); // Using static user ID 1 for demonstration
     const artworks = await getArtworks(); // This will be replaced with userProfile.ownedArtworks
+
+    if(!userProfile){
+        return <EmptyState
+        title="User Not Found"
+        message="The user you are trying to access does not exist."
+        iconSrc={"/icons/user.svg"}
+        />
+    }
+
     return (
         <div className="space-y-24">
             {/*Statistics*/}

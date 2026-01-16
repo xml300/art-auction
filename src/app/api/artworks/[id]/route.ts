@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getArtworkById } from "@/data/db";
+import { getArtworkById } from "@/data/queries";
 
 export async function GET(request: NextRequest, { params }: {params: Promise<{id: string}>}) {
     const searchParams = request.nextUrl.searchParams;

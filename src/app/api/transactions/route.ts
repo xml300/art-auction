@@ -1,4 +1,4 @@
-import { getTransactions } from "@/data/db";
+import { getTransactions } from "@/data/queries";
 import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";

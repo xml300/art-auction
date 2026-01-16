@@ -1,4 +1,5 @@
-import { getBids, getUsers, User } from "@/data/db";
+import { getBids, getUsers } from "@/data/queries";
+import {User} from "@/types";
 import { getSession } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 

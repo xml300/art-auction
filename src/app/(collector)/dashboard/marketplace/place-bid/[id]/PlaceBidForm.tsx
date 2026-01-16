@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/types";
 
 export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: string }) {
-    const minBid = (artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid) + 1;
+    const minBid = (artwork.currentBid && artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid) + 1;
     const [currentBid, setCurrentBid] = useState(0);
     const [bidAmount, setBidAmount] = useState<number>(minBid);
     const [error, setError] = useState<string | null>(errors);
@@ -72,7 +72,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
         return [0.05 * currentBid, 0.10 * currentBid, 0.25 * currentBid, 0.50 * currentBid].map(num => num > 10 ? Math.round(0.1 * num) * 10 : Math.round(num * 100) * 0.01);
     };
 
-    const predefinedOptions = useMemo(() => getPreiledBidOptions(artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid), [artwork.currentBid, artwork.startingBid]);
+    const predefinedOptions = useMemo(() => getPreiledBidOptions((artwork.currentBid && artwork.currentBid > 0) ? artwork.currentBid : artwork.startingBid), [artwork.currentBid, artwork.startingBid]);
 
     const formattedBidAmount = useMemo(() => {
         return bidAmount.toLocaleString('en-US', {

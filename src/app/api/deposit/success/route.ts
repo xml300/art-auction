@@ -1,7 +1,7 @@
-import { getUsers, updateTransaction, getTransactionByReference, updateUser } from "@/data/db";
+import { getUsers, updateTransaction, getTransactionByReference, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { User } from "@/data/db";
+import { User } from "@/types";
 
 export async function GET(request: NextRequest) {
     const [payload, error] = await getSession();
@@ -16,17 +16,16 @@ export async function GET(request: NextRequest) {
         });
         return response;
     }
-    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+    const res = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         }
     })
-    const paymentData = await response.json();
+    const paymentData = await res.json();
     const transaction = await getTransactionByReference(reference || "");
-
-    if (paymentData.data.status !== 'success' && paymentData.data.amount * 0.01 !== transaction?.amount) {
+    if(!paymentData.data){
         const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Payment verification failed', {
             maxAge: 10,
@@ -34,21 +33,31 @@ export async function GET(request: NextRequest) {
         });
         return response;
     }
-    if (transaction) {
-        updateTransaction(transaction.id, [
-            {columnName: 'status', value: 'completed'}
-        ]);
-        const user = await getUsers(transaction.userId) as User;
-        updateUser(transaction.userId, [
-            {columnName: 'wallet', value: user.wallet + transaction.amount}
-        ]);
+
+    if(!transaction){
         const response = NextResponse.redirect(redirectUrl, {status: 303});
+        response.cookies.set('errors', 'Transaction not found', {
+            maxAge: 10,
+            path: '/'
+        });
         return response;
     }
-    const res = NextResponse.redirect(redirectUrl, {status: 303});
-    res.cookies.set('errors', 'Transaction not found', {
-        maxAge: 10,
-        path: '/'
+
+    if (paymentData.data.status !== 'success' && paymentData.data.amount * 0.01 !== transaction.finalAmount) {
+        const response = NextResponse.redirect(redirectUrl, {status: 303});
+        response.cookies.set('errors', 'Payment verification failed', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+    updateTransaction(transaction.id, {
+        status: 'completed'
     });
-    return res;
+    const user = await getUsers(transaction.buyerId) as User;
+    updateUser(transaction.buyerId, {
+            wallet: user.wallet + transaction.finalAmount
+        });
+    const response = NextResponse.redirect(redirectUrl, {status: 303});
+    return response;
 }

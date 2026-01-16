@@ -4,7 +4,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Artwork, User } from '@/data/db';
+import { Artwork, User } from '@/types';
 import { FaRegUserCircle } from 'react-icons/fa';
 import ArtworkCard from '@/components/ArtworkCard';
 

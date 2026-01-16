@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { createTransaction, getUsers } from "@/data/db";
-import { User } from "@/data/db";
+import { createTransaction, getUsers } from "@/data/queries";
+import { User } from "@/types";
 
 export async function POST(req: NextRequest) {
     const [session, error] = await getSession();

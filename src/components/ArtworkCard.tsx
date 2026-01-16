@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Artwork } from '@/data/db';
+import { Artwork } from '@/types';
 
 interface ArtworkCardProps {
     artwork: Artwork;

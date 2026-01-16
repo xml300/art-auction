@@ -1,4 +1,5 @@
-import { getArtworks } from "@/data/db";
+import PaginatedArtworks from "@/components/PaginatedArtworks";
+import { getArtworks } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest){
@@ -25,7 +26,8 @@ export async function GET(request: NextRequest){
 
     const allArtworks = await getArtworks(undefined, filterOptions);
     const paginatedArtworks = await getArtworks(undefined, { ...filterOptions, page, limit });
-
+    console.log(paginatedArtworks);
+   
     return NextResponse.json({
         artworks: paginatedArtworks,
         totalArtworks: allArtworks.length,

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/types";
 import EmptyState from "./EmptyState";
 
 export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[], numArtworks?: number }) {
@@ -15,10 +15,10 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                 return (
                     <div key={artwork.id} className={` rounded-lg shadow-lg hover:scale-105 transition-transform duration-300`}>
                         <div className="flex flex-col gap-6 relative group">
-                            {artwork.currentBid > 0 ?
+                            {artwork.currentBid ? artwork.currentBid > 0 ?
                                 <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.currentBid.toLocaleString()}</span> :
-                            <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.startingBid.toLocaleString()}</span>
-                            }
+                                <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.startingBid.toLocaleString()}</span>
+                            : <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.startingBid.toLocaleString()}</span>}
                             <div className="w-full">
                                 <Image
                                     src={artwork.imageUrl}
@@ -33,14 +33,16 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                                     {artwork.title}
                                 </h3>
                                 <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">
-                                    {artwork.description.length > 150 ? artwork.description.slice(0, 149) + '...' : artwork.description}
+                                    {artwork.description ? (artwork.description.length > 150 ? artwork.description.slice(0, 149) + '...' : artwork.description) : 'No description available'}
                                 </p>
                                 <div className="flex flex-col sm:flex-row justify-around w-full gap-4 py-3 border-t border-white/20">
                                     <div className="flex-1">
                                         <p className="text-xs sm:text-sm text-gray-400 mb-1">Current Bid</p>
-                                        {artwork.currentBid > 0 ? (
+                                        {artwork.currentBid ? (artwork.currentBid > 0 ? (
                                             <p className="text-lg sm:text-xl font-bold">${artwork.currentBid.toLocaleString()}</p>
                                         ) : (
+                                            <p className="text-lg sm:text-xl font-bold">${artwork.startingBid.toLocaleString()}</p>
+                                        )) : (
                                             <p className="text-lg sm:text-xl font-bold">${artwork.startingBid.toLocaleString()}</p>
                                         )}
                                     </div>

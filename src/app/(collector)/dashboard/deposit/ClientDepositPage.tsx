@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react"; 
-import { Transaction } from "@/data/db";
+import { useState, useEffect } from "react";
+import { Transaction } from "@/types";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import DepositModal from "@/components/DepositModal";
@@ -23,7 +23,7 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
     const transactionsPerPage = 10; // Number of transactions per page
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [error, setError] = useState<string | null>(errors); 
+    const [error, setError] = useState<string | null>(errors);
 
     const fetchTransactions = async (page: number) => {
         setLoading(true);
@@ -42,6 +42,7 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchTransactions(currentPage);
@@ -63,7 +64,7 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                     <div>
                         <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Current Balance</h2>
                         <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
-                            ${walletBalance !== null ? walletBalance.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "N/A"}
+                            ${walletBalance !== null ? walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "N/A"}
                         </p>
                         <p className="text-gray-500 dark:text-gray-400 mt-2">Funds available for bidding and purchases.</p>
                     </div>
@@ -115,20 +116,24 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {transactions.map((transaction) => (
                                         <tr key={transaction.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+
+
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                                {transaction.referenceNumber}
+                                                {transaction.transRef}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {transaction.description}
+                                                {transaction.description?.replaceAll(/([\d\.]+)/g, (match, p1: string) => {
+                                                    return parseFloat(p1).toLocaleString("en-US", { minimumFractionDigits: 2 });
+                                                })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {transaction.payType}
+                                                {transaction.type}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                ${transaction.amount.toFixed(2)}
+                                                ${transaction.finalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {new Date(transaction.transactionTime).toLocaleString()}
+                                                {transaction.transactionTime?.toLocaleString()}
                                             </td>
                                         </tr>
                                     ))}

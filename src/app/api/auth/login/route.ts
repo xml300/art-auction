@@ -1,4 +1,4 @@
-import { getUserRole, getUsersQuery, hashValue } from "@/data/db";
+import { getUserRole, getUsersQuery, hashValue } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import * as jwt from "jsonwebtoken";
 

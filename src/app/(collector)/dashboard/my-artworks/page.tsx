@@ -1,6 +1,6 @@
 import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import PaginatedArtworks from "@/components/PaginatedArtworks";
-import { getArtworks } from "@/data/db";
+import { getArtworks } from "@/data/queries";
 import EmptyState from "@/components/EmptyState";
 import { getSession } from "@/lib/auth";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ArtworkCard from "@/components/ArtworkCard";
 import Pagination from "@/components/Pagination";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/types";
 
 interface PaginatedArtworksProps {
     artworks: Artwork[];
@@ -11,8 +11,8 @@ interface PaginatedArtworksProps {
 
 export default function PaginatedArtworks({ artworks }: PaginatedArtworksProps) {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;  
-    
+    const itemsPerPage = 8;
+
     const indexOfLastArtwork = currentPage * itemsPerPage;
     const indexOfFirstArtwork = indexOfLastArtwork - itemsPerPage;
     const currentArtworks = artworks.slice(indexOfFirstArtwork, indexOfLastArtwork);
@@ -25,7 +25,7 @@ export default function PaginatedArtworks({ artworks }: PaginatedArtworksProps) 
 
     return (
         <>
-            
+
             <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6 animate-fade-in-delay-2 mt-8">
                 {currentArtworks.map((artwork, index) => (
                     <ArtworkCard key={artwork.id} artwork={artwork} index={index} />

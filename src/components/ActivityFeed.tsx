@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Globe } from "lucide-react";
 import EmptyState from "./EmptyState";
-import { Activity } from "@/data/db";
+import { Activity } from "@/types";
 
 
 interface ActivityFeedProps {
@@ -26,7 +26,7 @@ export default function ActivityFeed({ activity, emptyMessage }: ActivityFeedPro
                             {item.type === "watchlist_add" && (
                                 <p className="text-lg">Added <Link href={`/dashboard/marketplace/${item.artworkTitle}`} className="text-purple-600 hover:underline">{item.artworkTitle}</Link> to watchlist</p>
                             )}
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(item.date).toLocaleString()}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{item.createdAt.toLocaleString()}</p>
                         </div>
                     </div>
                 ))

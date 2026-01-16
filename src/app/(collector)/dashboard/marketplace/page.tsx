@@ -5,7 +5,7 @@ import { ListFilter, MinusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/types";
 
 
 const ARTWORKS_PER_PAGE = 6;

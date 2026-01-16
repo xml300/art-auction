@@ -1,4 +1,5 @@
-import { CollectorProfile, getUsersProfile, getTransactions } from "@/data/db";
+import { getUsersProfile, getTransactions } from "@/data/queries";
+import { CollectorProfile } from "@/types";
 import { getSession } from "@/lib/auth"; 
 import ClientDepositPage from "./ClientDepositPage"; // A new client component to hold client-side logic
 import { cookies } from "next/headers";

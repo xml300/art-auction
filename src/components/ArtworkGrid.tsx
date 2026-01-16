@@ -1,6 +1,6 @@
 import EmptyState from "./EmptyState";
 import ArtworkCard from "./ArtworkCard";
-import { Artwork } from "@/data/db";
+import { Artwork } from "@/types";
 
 
 interface ArtworkGridProps {

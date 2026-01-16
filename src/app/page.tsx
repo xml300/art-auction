@@ -6,7 +6,7 @@ import { ArtworkCarousel } from '@/components/ArtworksCarousel';
 import { SendHorizonal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getArtworks } from "@/data/db";
+import { getArtworks } from "@/data/queries";
 
 export default async function Home() {
   const testimonials = [
