@@ -205,23 +205,25 @@ export async function getArtworkById(id: number, options?: { withBids?: boolean,
         query = query.leftJoin(users, eq(users.id, artworks.artistId));
     }
 
-    const res = await query;
-    if (!res || res.length === 0) return undefined;
+    const rows = await query;
+    if (!rows || rows.length === 0) return undefined;
 
-    const firstRow = res[0];
+    const result = rows.reduce((acc: any, row: any) => {
+        const artwork = row.artworks;
+        const bid = row.bids;
+        const artist = row.users;
 
-    if (options?.withBids || options?.withArtist) {
-        const artwork = { ...firstRow.artworks };
-        if (options?.withBids) {
-            artwork.bids = firstRow.bids;
+        if (!acc) {
+            acc = { ...artwork };
+            if (options?.withArtist) acc.artist = artist;
+            if (options?.withBids) acc.bids = bid ? [bid] : [];
+        } else if (options?.withBids && bid) {
+            acc.bids.push(bid);
         }
-        if (options?.withArtist) {
-            artwork.artist = firstRow.users;
-        }
-        return artwork;
-    }
+        return acc;
+    }, null);
 
-    return firstRow;
+    return result;
 }
 
 //TODO
@@ -255,6 +257,9 @@ export async function getArtworks(userId?: number, options?: {
 
     if (options?.maxBid) {
         conditions.push(or(lte(artworks.currentBid, options.maxBid!), lte(artworks.startingBid, options.maxBid!)));
+    }
+
+    if (options?.minEndTime) {
         conditions.push(gte(artworks.auctionEndTime, new Date(options.minEndTime!)));
     }
 
@@ -282,14 +287,29 @@ export async function getArtworks(userId?: number, options?: {
     }
 
 
-    let artworks_ = await query.where(and(...conditions));
-    if (options?.withArtist) {
-        artworks_ = artworks_.map((artwork: any) => ({ ...artwork.artworks, artist: artwork.users }));
+    const rows = await query.where(and(...conditions));
+
+    if(!options?.withBids && !options?.withArtist){
+        return endIndex === -1 ? rows.slice(startIndex) : rows.slice(startIndex, endIndex);;
     }
 
-    if (options?.withBids) {
-        artworks_ = artworks_.map((artwork: any) => ({ ...artwork.artworks, bids: artworks_.bids }));
-    }
+    const aggregated = rows.reduce((acc: Map<number, any>, row: any) => {
+        const artwork = row.artworks;
+        const bid = row.bids;
+        const artist = row.users;
+
+        if (!acc.has(artwork.id)) {
+            const artworkItem = { ...artwork };
+            if (options?.withArtist) artworkItem.artist = artist;
+            if (options?.withBids) artworkItem.bids = bid ? [bid] : [];
+            acc.set(artwork.id, artworkItem);
+        } else if (options?.withBids && bid) {
+            acc.get(artwork.id).bids.push(bid);
+        }
+        return acc;
+    }, new Map<number, any>());
+
+    const artworks_: Artwork[] = Array.from(aggregated.values());
 
     return endIndex === -1 ? artworks_.slice(startIndex) : artworks_.slice(startIndex, endIndex);
 }
@@ -347,6 +367,9 @@ export async function createBid(artworkId: number, bidderId: number, bidAmount: 
         bidTime: new Date(),
     };
     const [newBid] = await db.insert(bids).values(bid).returning();
+    if (newBid) {
+        await db.update(artworks).set({ currentBid: bidAmount }).where(eq(artworks.id, artworkId));
+    }
     return newBid;
 }
 
@@ -401,7 +424,7 @@ export async function createTransaction(userId: number, referenceNumber: string,
 
 
 export async function getWatchlist(userId: number) {
-    const watchlistItems = await db.select().from(watchlists).fullJoin(artworks, eq(watchlists.artworkId, artworks.id)).where(eq(watchlists.userId, userId));
+    const watchlistItems = await db.select().from(watchlists).leftJoin(artworks, eq(watchlists.artworkId, artworks.id)).where(eq(watchlists.userId, userId));
     return watchlistItems;
 }
 

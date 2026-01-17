@@ -19,7 +19,7 @@ export default function AuthSection({error}: {error: string}) {
                 <div className={`bg-red-600 dark:bg-red-600 w-1/2 h-full rounded-full absolute left-0 top-0 transition-transform duration-300 ${accType === 'login' ? 'translate-x-0' : 'translate-x-full'}`}></div>
             </section>
             <section className="mt-4">
-                {accType === 'login' ? <LoginForm error={error} /> : <RegisterForm error={error} />}
+                {accType === 'login' ? <LoginForm error={error} setAccType={setAcctype} /> : <RegisterForm error={error} setAccType={setAcctype} />}
             </section>
         </>
     );

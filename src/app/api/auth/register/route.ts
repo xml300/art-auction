@@ -55,9 +55,9 @@ export async function POST(request: NextRequest) {
         });
         return response;
     } catch (error: unknown) {
-        console.log(error);
+        console.error(error);
         const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', (error as Error).message || 'Failed to create account.', {
+        response.cookies.set('errors', 'Failed to create account.', {
             maxAge: 10,
             path: '/',
         });

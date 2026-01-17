@@ -47,7 +47,8 @@ export default function ProfilePage() {
                 setCollectorProfile(data);
                 console.log(data);    
              } catch (err: unknown) {
-                setError((err as Error).message);
+                console.error("Error:", (err as Error).message);
+                setError("Failed to fetch profile data");
             } finally {
                 setLoading(false);
             }

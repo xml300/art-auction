@@ -1,0 +1,20 @@
+ALTER TABLE "activities" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "activities" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "artworks" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "artworks" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "bids" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "bids" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "permissions" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "permissions" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "role_permissions" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "role_permissions" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "roles" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "roles" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "transactions" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "transactions" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "user_roles" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "user_roles" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "users" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "users" RENAME COLUMN "updatedAt" TO "updated_at";--> statement-breakpoint
+ALTER TABLE "watchlists" RENAME COLUMN "createdAt" TO "created_at";--> statement-breakpoint
+ALTER TABLE "watchlists" RENAME COLUMN "updatedAt" TO "updated_at";

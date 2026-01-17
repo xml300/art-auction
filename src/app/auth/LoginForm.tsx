@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export default function LoginForm({ error }: { error?: string }){
+export default function LoginForm({ error, setAccType }: { error?: string, setAccType: (type: string) => void}){
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -105,9 +105,9 @@ export default function LoginForm({ error }: { error?: string }){
             <div className="text-center pt-2">
                 <p className=" text-gray-600 dark:text-gray-400">
                     Don&apos;t have an account?{' '}
-                    <Link href="/auth" className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors">
+                    <button onClick={() => setAccType('register')} className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors">
                         Sign up
-                    </Link>
+                    </button>
                 </p>
             </div>
         </form>

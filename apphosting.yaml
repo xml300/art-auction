@@ -12,6 +12,8 @@ env:
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
   - variable: SITE_BASE_URL
     value: "https://art-auction--hosting-72ffb.us-east4.hosted.app/"
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
   - variable: JWT_SECRET_KEY
     secret: JWT_SECRET_KEY
   - variable: PAYSTACK_SECRET_KEY
