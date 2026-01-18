@@ -28,6 +28,16 @@ export type NewActivity = typeof activities.$inferInsert;
 export type Watchlist = typeof watchlists.$inferSelect;
 export type NewWatchlist = typeof watchlists.$inferInsert;
 
+export interface ResultType {
+    artworks: Artwork;
+    users?: User;
+    bids?: Bid;
+}
+
+export interface JoinedReturnType extends Artwork {
+    artist?: User;
+    bids?: Bid[];
+}
 
 export interface CollectorProfile {
     name: string;

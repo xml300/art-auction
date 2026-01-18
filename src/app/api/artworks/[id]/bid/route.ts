@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtworkById, getUsers, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
-import { User } from '@/types';
+import { JoinedReturnType, User } from '@/types';
 import { getSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
         return response;
     }
-    const artwork = await getArtworkById(artworkId);
+    const artwork = await getArtworkById(artworkId) as JoinedReturnType;
     if (!artwork) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'Artwork not found', {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
 
-    if (bidAmount <= artwork.currentBid) {
+    if (artwork.currentBid && bidAmount <= artwork.currentBid) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'Bid amount must be higher than current bid', {
             maxAge: 10,

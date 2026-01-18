@@ -6,10 +6,11 @@ import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { cookies } from 'next/headers';
 import EmptyState from '@/components/EmptyState';
+import { JoinedReturnType } from '@/types';
 
 export default async function PlaceBidPage({params}: {params: Promise<{id: string}>}) {
     const id = parseInt((await params).id); 
-    const artwork = await getArtworkById(id, {withArtist: true});
+    const artwork = await getArtworkById(id, {withArtist: true}) as JoinedReturnType;
     const cookie = await cookies();
     const errors = cookie.get('errors')?.value;
 
@@ -48,7 +49,7 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
                         </div>
                         <div>
                             <p className="text-gray-500 dark:text-gray-400">Current Bid</p>
-                            { artwork.currentBid > 0 ? (
+                            { artwork.currentBid && artwork.currentBid > 0 ? (
                                 <p className="font-medium">${artwork.currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                             ):(
                                 <p className="font-medium">${artwork.startingBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>

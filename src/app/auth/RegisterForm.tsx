@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Eye, EyeOff, User, Lock, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 

@@ -1,4 +1,3 @@
-import PaginatedArtworks from "@/components/PaginatedArtworks";
 import { getArtworks } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 
