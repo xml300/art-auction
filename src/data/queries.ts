@@ -2,7 +2,7 @@ import { hash } from "crypto";
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { activities, artworks, bids, permissions, rolePermissions, roles, transactions, users, watchlists } from "@/db/schema";
-import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper } from "drizzle-orm";
+import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper, gt, lt } from "drizzle-orm";
 import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType } from "@/types";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -30,46 +30,41 @@ export async function updateUser<K extends keyof User>(id: number, updates: { [k
     return updatedUser;
 }
 
-export async function updatePassword(id: number, newPassword: string) {
-    const [updatedUser] = await db.update(users).set({ password: await hashValue(newPassword) }).where(eq(users.id, id)).returning();
-    return updatedUser;
+export async function getUser(id: number) {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
 }
 
-export async function getUsersQuery(where: { columnName: string, comparator: '=' | '<' | '>', value: string }[]) {
-    const conditions = where.map((obj) => {
-        const columns = getTableColumns(users);
-        const column = columns[obj.columnName as keyof typeof columns];
-        if (!column) return null;
-        switch (obj.comparator) {
-            case "=":
-                return eq(column, obj.value);
-            case ">":
-                return gte(column, obj.value);
-            case "<":
-                return lte(column, obj.value);
-            default:
-                return null;
-        }
-    }).filter((c) => c !== null);
+export async function getUsers(where?: { columnName: string, comparator: '=' | '<' | '>', value: string }[]): Promise<User[]> {
+    let conditions: SQLWrapper[] = [];
+
+    if (where) {
+        conditions = where.map((obj) => {
+            const columns = getTableColumns(users);
+            const column = columns[obj.columnName as keyof typeof columns];
+            if (!column) return null;
+            switch (obj.comparator) {
+                case "=":
+                    return eq(column, obj.value);
+                case ">":
+                    return gt(column, obj.value);
+                case "<":
+                    return lt(column, obj.value);
+                default:
+                    return null;
+            }
+        }).filter((c) => c !== null);
+    }
 
     const getUsers = await db.select().from(users).where(or(...conditions));
     return getUsers;
 }
-
-export async function getUsers(id?: number): Promise<User[] | User | null> {
-    const query = db.select().from(users);
-    if (id) {
-        const [user] = await query.where(eq(users.id, id));
-        if (!user) return null;
-        return user;
-    }
-    return await query;
-}
+ 
 
 export async function getUsersProfile(userId: number | null) {
     if (!userId) return null;
 
-    const user = await getUsers(userId) as User | null;
+    const user = await getUser(userId);
     const ownedArtworks = await getArtworks(userId);
     const watchlistRaw = await getWatchlist(userId);
     const watchlist = watchlistRaw.map(w => w.artworks).filter((a): a is Artwork => a !== null);
@@ -155,7 +150,7 @@ async function getRolePermissions(id: number) {
 }
 
 export async function getUserRole(userId: number): Promise<Role> {
-    const user = await getUsers(userId) as User;
+    const user = await getUser(userId);
     const role = await getRole(user.roleId) as Role;
     return role;
 }
@@ -169,7 +164,7 @@ export async function getPermissions(id?: number): Promise<Permission[] | Permis
 }
 
 export async function getUserPermissions(userId: number) {
-    const user = await getUsers(userId) as User;
+    const user = await getUser(userId);
     const permissions = await getRolePermissions(user.roleId);
     return permissions;
 }
@@ -203,16 +198,16 @@ export async function getArtworkById(id: number, options?: { withBids?: boolean,
 
     if (options?.withBids || options?.withArtist || options?.withRelatedWorks) {
         let q: any = query;
-        if(options?.withRelatedWorks) {
+        if (options?.withRelatedWorks) {
             const relatedWorks = alias(artworks, 'relatedWorks');
             q = q.leftJoin(relatedWorks, eq(relatedWorks.artistId, artworks.artistId));
         }
-        if(options?.withArtist) {
+        if (options?.withArtist) {
             q = q.leftJoin(users, eq(users.id, artworks.artistId));
         }
-        if(options?.withBids) {
+        if (options?.withBids) {
             q = q.leftJoin(bids, eq(bids.artworkId, artworks.id));
-        } 
+        }
 
         const rows = await q as ResultType[];
         if (!rows || rows.length === 0) return undefined;
@@ -246,6 +241,7 @@ export async function getArtworks(userId?: number, options?: {
     withBids?: boolean,
     withArtist?: boolean,
     withRelatedWorks?: boolean,
+    isAuctionable?: boolean,
     page?: number,
     limit?: number,
     searchQuery?: string,
@@ -259,14 +255,15 @@ export async function getArtworks(userId?: number, options?: {
     let startIndex = 0;
     let endIndex = -1;
 
-    console.log({withRelatedWorks: options?.withRelatedWorks})
-
-
     const conditions = [];
     if (userId) {
         conditions.push(eq(artworks.ownerId, userId));
     } else {
         conditions.push(isNull(artworks.ownerId));
+    }
+
+    if (options?.isAuctionable) {
+        conditions.push(gte(artworks.auctionEndTime, new Date()));
     }
 
     if (options?.minBid) {
@@ -307,13 +304,13 @@ export async function getArtworks(userId?: number, options?: {
     }
 
     let q: any = query;
-    if(options.withBids) {
+    if (options.withBids) {
         q = q.leftJoin(bids, eq(bids.artworkId, artworks.id));
     }
-    if(options.withArtist) {
+    if (options.withArtist) {
         q = q.leftJoin(users, eq(users.id, artworks.artistId));
     }
-    if(options.withRelatedWorks) {
+    if (options.withRelatedWorks) {
         q = q.leftJoin(artworks, eq(artworks.artistId, users.id));
     }
     const rows = await q.where(and(...conditions)) as ResultType[];
@@ -355,7 +352,7 @@ export async function getBids<K extends keyof Bid>(artworkId: number, options?: 
         for (const update of options.where) {
             const columns = getTableColumns(bids);
             const column = columns[update.columnName as keyof typeof columns];
-            if (column) { 
+            if (column) {
                 conditions.push(eq(column, update.value as SQLWrapper | number | Date));
             }
         }
@@ -377,7 +374,7 @@ export async function getBidsByUser<K extends keyof Bid>(bidderId: number, optio
     if (options && options.where) {
         for (const update of options.where) {
             const columns = getTableColumns(bids);
-            const column =  columns[update.columnName as keyof typeof columns];
+            const column = columns[update.columnName as keyof typeof columns];
             if (column) {
                 conditions.push(eq(column, update.value as SQLWrapper | number | Date));
             }

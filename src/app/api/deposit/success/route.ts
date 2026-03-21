@@ -1,14 +1,13 @@
-import { getUsers, updateTransaction, getTransactionByReference, updateUser } from "@/data/queries";
+import { getUser, updateTransaction, createTransaction, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { User } from "@/types";
 
 export async function GET(request: NextRequest) {
-    const [payload, error] = await getSession();
+    const [session, error] = await getSession();
     const reference = request.nextUrl.searchParams.get('reference');
     const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
 
-    if (error || payload === null) {
+    if (error || session === null) {
         const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'User unauthorized', {
             maxAge: 10,
@@ -24,7 +23,7 @@ export async function GET(request: NextRequest) {
         }
     })
     const paymentData = await res.json();
-    const transaction = await getTransactionByReference(reference || "");
+    const transaction = await createTransaction(session.userId, paymentData.data.reference, `Deposit of ₦${paymentData.data.amount.toLocaleString()}`, "Wallet Deposit", paymentData.data.amount, "pending");
     if(!paymentData.data){
         const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Payment verification failed', {
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
     updateTransaction(transaction.id, {
         status: 'completed'
     });
-    const user = await getUsers(transaction.buyerId) as User;
+    const user = await getUser(transaction.buyerId);
     updateUser(transaction.buyerId, {
             wallet: user.wallet + transaction.finalAmount
         });

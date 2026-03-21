@@ -1,5 +1,6 @@
-import { createUser, getUsersQuery } from "@/data/queries";
+import { createUser, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
+import { User } from "@/types";
 import * as jwt from "jsonwebtoken";
 
 export async function POST(request: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     try {
         const userType = parseInt(accountType);
         
-        const existingUsers = await getUsersQuery([
+        const existingUsers = await getUsers([
             { columnName: 'username', comparator: '=', value: username },
         ]);
         if (existingUsers.length > 0) {

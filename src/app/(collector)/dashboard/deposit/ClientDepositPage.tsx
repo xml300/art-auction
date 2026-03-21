@@ -55,7 +55,6 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                 <span className="block sm:inline"> {error}</span>
             </div>)}
             <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white animate-fade-in">Deposit</h1>
-
             <div className="grid grid-cols-1 gap-6 mb-8 animate-fade-in-delay-1">
                 {/* Current Balance Card */}
                 <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 transform transition-transform duration-300 hover:scale-105 flex flex-col justify-between">
@@ -77,7 +76,6 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                 {/* Placeholder for the removed Deposit Funds Form */}
                 <div className="hidden md:block"></div> {/* This div maintains the grid layout */}
             </div>
-
             {/* Transaction History */}
             <div className="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-fade-in-delay-2">
                 <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Transaction History</h2>
@@ -146,7 +144,6 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                     </>
                 )}
             </div>
-
             <DepositModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

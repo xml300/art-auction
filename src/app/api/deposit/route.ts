@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { createTransaction, getUsers } from "@/data/queries";
-import { User } from "@/types";
+import { getUser } from "@/data/queries";
+
 
 export async function POST(req: NextRequest) {
     const [session, error] = await getSession();
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const currentUser = await getUsers(userId) as User;
+        const currentUser = await getUser(userId);
         if (!currentUser) {
             const response = NextResponse.redirect(redirectUrl, {status: 303});
             response.cookies.set('errors', 'User not found', {
@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
             });
             return response;
         }
-        createTransaction(userId, referenceNumber, `Deposit of ₦${amount.toLocaleString()}`, "Wallet Deposit", amount, "pending");
         return NextResponse.redirect(paymentData.data.authorization_url, {status: 303});
     } catch (error) {
         console.error("API Deposit error:", error);

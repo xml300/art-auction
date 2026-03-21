@@ -13,14 +13,14 @@ export default function ProfileForm({ errors }: { errors?: string }) {
         username: "",
         email: "",
         bio: "",
-        profilePicture: "",
+        profilePicture: ""
     });
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await api.get<CollectorProfile>("/profile");
-                setProfile(response);
+                setProfile({ ...response });
             } catch (error) {
                 console.error("Error fetching profile data:", error);
             }
@@ -39,11 +39,12 @@ export default function ProfileForm({ errors }: { errors?: string }) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            console.log(file, URL.createObjectURL(file))
             // For now, we'll just store the file name or a base64 representation if needed.
             // In a real application, you'd upload this to a storage service.
             setProfile((prevProfile) => ({
                 ...prevProfile,
-                profile_picture: URL.createObjectURL(file), // Or handle actual upload
+                profilePicture: URL.createObjectURL(file)
             }));
         }
     };
@@ -59,9 +60,9 @@ export default function ProfileForm({ errors }: { errors?: string }) {
                 <span className="block sm:inline"> {errors}</span>
             </div>)}
             <div className="flex mb-6">
-                <label htmlFor="profile_picture" className="relative group">
+                <label htmlFor="profile_picture" className="relative group cursor-pointer">
                     <Image src={profile.profilePicture || "/logo.png"} width={80} height={80} className="w-24 h-24 bg-black/10 rounded-lg" alt="Profile" />
-                    <div className="absolute top-0 z-20 w-24 h-24 hidden group-hover:flex justify-center items-center bg-black/20 rounded-lg">
+                    <div className="absolute top-0 z-20 w-24 h-24 opacity-0 flex transition-opacity duration-300 group-hover:opacity-100 justify-center items-center bg-black/20 rounded-lg">
                         <Camera className="text-white w-8 h-8" />
                     </div>
                 </label>

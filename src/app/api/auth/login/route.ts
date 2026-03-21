@@ -1,5 +1,6 @@
-import { getUserRole, getUsersQuery, hashValue } from "@/data/queries";
+import { getUserRole, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
+import { User } from "@/types";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -21,9 +22,9 @@ export async function POST(request: NextRequest) {
         return response;
     }
 
-    const user = (await getUsersQuery([
+    const user = (await getUsers([
         { columnName: 'username', comparator: '=', value: username }
-    ]))[0];
+    ])).at(0);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
         const response = NextResponse.redirect(redirectUrl, {status: 303});

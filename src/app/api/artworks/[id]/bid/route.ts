@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getArtworkById, getUsers, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
+import { getArtworkById, getUser, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
 import { JoinedReturnType, User } from '@/types';
 import { getSession } from '@/lib/auth';
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
 
-    const user = await getUsers(payload.userId) as User;
+    const user = await getUser(payload.userId) as User;
     if (!user) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'User not found', {

@@ -1,4 +1,4 @@
-import { getBids, getUsers } from "@/data/queries";
+import { getBids, getUser } from "@/data/queries";
 import {User} from "@/types";
 import { getSession } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest){
     if(error || session == null){
         return NextResponse.json({message: "User unauthorized"}, {status: 401});
     }
-    const user = await getUsers(session!.userId) as User;
+    const user = await getUser(session!.userId) as User;
     if(artworkId){
         const artId = parseInt(artworkId);
         const bid = (await getBids(artId, {sortBy: 'bidTime', sortOrder: 'desc', where: [

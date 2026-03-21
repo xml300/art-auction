@@ -30,7 +30,7 @@ export async function GET() {
         return response;
     }
 
-    closeAuction();
+    // closeAuction();
 
     const user = await getUsersProfile(payload.userId);
     if (user) {

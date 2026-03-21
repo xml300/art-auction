@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ListFilter, MinusIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
@@ -23,12 +23,18 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
     const [maxBid, setMaxBid] = useState(0);
     const [minEndTime, setMinEndTime] = useState(0);
     const [maxEndTime, setMaxEndTime] = useState(0);
+    const isFirstRender = useRef(true);
 
 
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
         const fetchArtworks = async () => {
             const params = new URLSearchParams({
                 artist: "true",
+                auction: "true",
                 page: currentPage.toString(),
                 limit: pageLimit.toString(),
             });

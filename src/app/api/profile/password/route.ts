@@ -1,6 +1,5 @@
-import { hashValue, updatePassword, getUsers } from "@/data/queries";
+import { hashValue, getUser, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "@/types";
 import { getSession } from "@/lib/auth";
 import bcrypt from "bcrypt";
 
@@ -22,9 +21,9 @@ export async function POST(request: NextRequest) {
     const currentPassword = body.get('current_password')?.toString() || '';
     const newPassword = body.get('new_password')?.toString() || '';
 
-    const user = await getUsers(userId) as User;
+    const user = await getUser(userId);
 
-    if (!user || await bcrypt.compare(currentPassword, user.password)) {
+    if (!user || (await bcrypt.compare(currentPassword, user.password))) {
         const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('errors', 'Invalid current password', {
             maxAge: 10,
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
         return response;
     }
 
-    const updatedUser = await updatePassword(userId, newPassword);
+    const updatedUser = await updateUser(userId, {password: await hashValue(newPassword)});
 
     if (updatedUser) {
         const response = NextResponse.redirect(redirectURL, {status: 303});

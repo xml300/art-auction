@@ -5,6 +5,7 @@ export async function GET(request: NextRequest){
     const params = request.nextUrl.searchParams;
     const page = parseInt(params.get('page') || '1');
     const limit = parseInt(params.get('limit') || '10');
+    const isAuctionable = params.get('auction') === "true";
     const withArtist = params.get('artist') === "true";
     const withRelatedWorks = params.get('relatedWorks') === "true";
     const searchQuery = params.get('searchQuery') || undefined;
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest){
     const filterOptions = { 
         withArtist, 
         withRelatedWorks,
+        isAuctionable,
         searchQuery, 
         artistName, 
         minBid, 
