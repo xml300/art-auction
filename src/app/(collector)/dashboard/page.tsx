@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
+import { Artwork } from "@/types";
+import { api } from "@/lib/api";
 
 
 export default async function DashboardPage() {
     const [session] = await getSession();
     const userProfile = await getUsersProfile(session?.userId || null); // Using static user ID 1 for demonstration
-    const artworks = await getArtworks(); // This will be replaced with userProfile.ownedArtworks
+    const artworks = await api.get<{artworks: Artwork[], totalPages: number}>('/artworks/marketplace'); // This will be replaced with userProfile.ownedArtworks
 
     if(!userProfile){
         return <EmptyState
@@ -174,7 +176,7 @@ export default async function DashboardPage() {
             </div>
 
             {/*My Artworks*/}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block h-96 rounded-lg  overflow-hidden">
                 <h2 className="text-xl sm:text-2xl font-semibold animate-fade-in-delay-2">My Artworks</h2>
                 {userProfile.ownedArtworks.length === 0 ? (
                     <EmptyState
@@ -192,7 +194,7 @@ export default async function DashboardPage() {
             <div>
                 <h2 className="text-xl sm:text-2xl font-semibold animate-fade-in-delay-3">Marketplace</h2>
                 <div className="animate-fade-in-delay-4">
-                    <MarketplaceGrid artworks={artworks} numArtworks={6} />
+                    <MarketplaceGrid artworks={artworks.artworks} numArtworks={6} />
                 </div>
             </div>
         </div>

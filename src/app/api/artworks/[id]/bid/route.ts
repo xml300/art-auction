@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getArtworkById, getUser, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
 import { JoinedReturnType, User } from '@/types';
 import { getSession } from '@/lib/auth';
+import { db } from '@/data/db';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const [payload, error] = await getSession();
@@ -83,10 +84,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const reference = `BID-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     const transDescription = `Bid of ₦${bidAmount.toLocaleString()} placed on ${artwork.title}`;
 
-    createTransaction(user.id, reference, transDescription, 'wallet', amount, 'completed');
-    createBid(artworkId, user.id, bidAmount);
-    updateArtwork(artworkId, { currentBid: bidAmount });
-    updateUser(user.id, { wallet: user.wallet - amount });
+    await db.transaction(async (tx) => {
+        await createTransaction(user.id, reference, transDescription, 'bid_payment', amount.toFixed(2), 'completed', undefined, tx);
+        await createBid(artworkId, user.id, bidAmount, tx);
+        await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
+        await updateUser(user.id, { wallet: user.wallet - amount }, tx);
+    });
     const resp = NextResponse.redirect(redirectUrl, { status: 303 });
     return resp;
 }

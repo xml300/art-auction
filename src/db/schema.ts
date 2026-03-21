@@ -1,4 +1,8 @@
-import { pgTable, integer, varchar, timestamp, primaryKey, serial } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum } from "drizzle-orm/pg-core";
+
+
+export const transactionStatusEnum = pgEnum('transaction_status_enum', ["pending", "completed", "failed", "refunded"]);
+export const transactionTypeEnum = pgEnum('transaction_type_enum', ["deposit", "withdrawal", "bid_payment", "refund", "platform_fee"])
 
 const timestamps = {
     createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -66,14 +70,16 @@ const artworks = pgTable('artworks', {
 
 const transactions = pgTable('transactions', {
     id: serial('id').primaryKey(),
-    transRef: varchar('trans_ref', { length: 255 }).notNull(),
+    transRef: varchar('trans_ref', { length: 255 }).notNull().unique(),
     artworkId: integer('artwork_id').references(() => artworks.id),
-    buyerId: integer('buyer_id').references(() => users.id).notNull(),
-    finalAmount: integer('final_amount').notNull(),
-    description: varchar('description', { length: 1000 }),
-    type: varchar('type', { length: 100 }).notNull(),
-    status: varchar('status', { length: 100 }).notNull(),
-    transactionTime: timestamp('transaction_time').defaultNow().notNull(),
+    userId: integer('user_id').references(() => users.id).notNull(),
+    bidId: integer('bid_id').references(() => bids.id),
+    sellerId: integer('seller_id').references(() => users.id),
+    amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+    description: varchar('description', { length: 255 }),
+    type: transactionTypeEnum('type').notNull(),
+    status: transactionStatusEnum('status').notNull(), 
+    currency: varchar('currency', { length: 10 }).notNull().default('USD').notNull(),
     ...timestamps
 });
 

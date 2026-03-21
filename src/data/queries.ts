@@ -1,9 +1,8 @@
-import { hash } from "crypto";
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { activities, artworks, bids, permissions, rolePermissions, roles, transactions, users, watchlists } from "@/db/schema";
-import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper, gt, lt } from "drizzle-orm";
-import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType } from "@/types";
+import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper, gt, lt, sql, SQL } from "drizzle-orm";
+import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType, TransactionType, TransactionStatus } from "@/types";
 import { alias } from "drizzle-orm/pg-core";
 
 export async function hashValue(str: string) {
@@ -25,13 +24,13 @@ export async function createUser(email: string, username: string, password: stri
     return user;
 };
 
-export async function updateUser<K extends keyof User>(id: number, updates: { [key in K]: User[key] }) {
-    const [updatedUser] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+export async function updateUser<K extends keyof User>(id: number, updates: { [key in K]: User[key] }, tx?: any) {
+    const [updatedUser] = tx ? await tx.update(users).set(updates).where(eq(users.id, id)).returning() : await db.update(users).set(updates).where(eq(users.id, id)).returning();
     return updatedUser;
 }
 
-export async function getUser(id: number) {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+export async function getUser(id: number, tx?: any) {
+    const [user] = tx ? await tx.select().from(users).where(eq(users.id, id)) : await db.select().from(users).where(eq(users.id, id));
     return user;
 }
 
@@ -75,21 +74,24 @@ export async function getUsersProfile(userId: number | null) {
         return null;
     }
 
-    const userBids = await db.select().from(bids).where(eq(bids.bidderId, userId));
-    const allArtworks = await db.select().from(artworks);
+    const userBids = (await db.select({
+        numAuctions: sql<number>`COUNT(DISTINCT ${bids.artworkId})`,
+        activeBids: sql<number>`COUNT(DISTINCT CASE WHEN ${artworks.auctionEndTime} > ${new Date()} THEN ${bids.artworkId} END)`,
+        totalAmount: sql<number>`SUM(${bids.bidAmount})`,
+        avgAmount: sql<number>`AVG(${bids.bidAmount})`
+    })
+    .from(bids)
+    .leftJoin(artworks, eq(bids.artworkId, artworks.id))
+    .where(eq(bids.bidderId, userId))
+    ).at(0);
 
-    const activeBidsCount = userBids.filter(bid => {
-        const artwork = allArtworks.find(art => art.id === bid.artworkId);
-        return artwork && artwork.auctionEndTime > new Date(Date.now());
-    }).reduce((acc: Bid[], cur: Bid) => acc.find(bid => bid.artworkId === cur.artworkId) ? acc : [...acc, cur], []).length;
 
-    const totalBidAmount = userBids.reduce((acc: number, bid: Bid) => acc + bid.bidAmount, 0);
-    const avgBidAmount = userBids.length > 0 ? totalBidAmount / userBids.length : 0;
-
+    const activeBidsCount = userBids?.activeBids;
+    const avgBidAmount = userBids?.avgAmount;
     const memberSinceYears = (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 365);
 
-    const uniqueBiddedArtworks = new Set(userBids.map(bid => bid.artworkId));
-    const totalAuctionsParticipated = uniqueBiddedArtworks.size;
+    // const uniqueBiddedArtworks = new Set(userBids.map(bid => bid.artworkId));
+    const totalAuctionsParticipated = userBids?.numAuctions || 0;
     const successRate = totalAuctionsParticipated > 0 ? (ownedArtworks.length / totalAuctionsParticipated) * 100 : 0;
 
 
@@ -108,11 +110,11 @@ export async function getUsersProfile(userId: number | null) {
         },
         stats: {
             artworksOwned: ownedArtworks.length,
-            totalSpent: transactions.filter((tran: Transaction) => tran.status == 'completed' && tran.description == 'bid').reduce((acc: number, tran: Transaction) => tran.finalAmount + acc, 0),
+            totalSpent: transactions.filter((tran: Transaction) => tran.status == 'completed' && tran.description == 'bid').reduce((acc: number, tran: Transaction) => parseFloat(tran.amount) + acc, 0),
             auctionsWon: ownedArtworks.length,
             watchlistItems: watchlist.length,
-            activeBids: activeBidsCount,
-            avgBidAmount: parseFloat(avgBidAmount.toFixed(2)),
+            activeBids: activeBidsCount || 0,
+            avgBidAmount: avgBidAmount || 0,
             memberSince: parseFloat(memberSinceYears.toFixed(1)),
             successRate: parseFloat(successRate.toFixed(1)),
         },
@@ -187,8 +189,8 @@ export async function createArtwork(title: string, description: string, artistId
     return artwork;
 }
 
-export async function updateArtwork<K extends keyof Artwork>(id: number, update: { [key in K]: Artwork[K] }) {
-    const updatedArtwork = (await db.update(artworks).set(update).where(eq(artworks.id, id)).returning()).at(0);
+export async function updateArtwork<K extends keyof Artwork>(id: number, update: { [key in K]: Artwork[K] }, tx?: any ) {
+    const [updatedArtwork] = tx ? await tx.update(artworks).set(update).where(eq(artworks.id, id)).returning() : await db.update(artworks).set(update).where(eq(artworks.id, id)).returning();
     return updatedArtwork;
 }
 
@@ -252,8 +254,8 @@ export async function getArtworks(userId?: number, options?: {
     maxEndTime?: number
 }): Promise<Artwork[]> {
     const query = db.select().from(artworks).orderBy(asc(artworks.title));
-    let startIndex = 0;
-    let endIndex = -1;
+    let limit = 150;
+    let offset = 0;
 
     const conditions = [];
     if (userId) {
@@ -283,13 +285,12 @@ export async function getArtworks(userId?: number, options?: {
     }
 
     if (options?.page && options?.limit) {
-        startIndex = (options.page - 1) * options.limit;
-        endIndex = startIndex + options.limit;
+        limit = options.limit;
+        offset = (options.page - 1) * options.limit;
     }
 
     if (!options?.withBids && !options?.withArtist && !options?.withRelatedWorks) {
-        const rows = await query.where(and(...conditions));
-        return endIndex === -1 ? rows.slice(startIndex) : rows.slice(startIndex, endIndex);
+        return await query.where(and(...conditions)).limit(limit).offset(offset);
     }
 
 
@@ -322,10 +323,10 @@ export async function getArtworks(userId?: number, options?: {
 
         if (!acc.has(artwork.id)) {
             const artworkItem: JoinedReturnType = { ...artwork };
-            if (options?.withArtist) artworkItem.artist = artist;
-            if (options?.withBids) artworkItem.bids = bid ? [bid] : [];
+            if (options.withArtist) artworkItem.artist = artist;
+            if (options.withBids) artworkItem.bids = bid ? [bid] : [];
             acc.set(artwork.id, artworkItem);
-        } else if (options?.withBids && bid) {
+        } else if (options.withBids && bid) {
             acc.get(artwork.id)!.bids!.push(bid);
         }
         return acc;
@@ -333,7 +334,7 @@ export async function getArtworks(userId?: number, options?: {
 
     const artworks_: Artwork[] = Array.from(aggregated.values());
 
-    return endIndex === -1 ? artworks_.slice(startIndex) : artworks_.slice(startIndex, endIndex);
+    return artworks_.slice(offset, offset + limit);
 }
 
 export async function getBids<K extends keyof Bid>(artworkId: number, options?: { sortBy?: K, sortOrder?: 'asc' | 'desc', where?: { columnName: K, value: Bid[K] }[] }) {
@@ -383,31 +384,28 @@ export async function getBidsByUser<K extends keyof Bid>(bidderId: number, optio
     return await query.where(and(...conditions));
 }
 
-export async function createBid(artworkId: number, bidderId: number, bidAmount: number) {
+export async function createBid(artworkId: number, bidderId: number, bidAmount: number, tx: any) {
     const bid = {
         artworkId,
         bidderId,
         bidAmount,
         bidTime: new Date(),
     };
-    const [newBid] = await db.insert(bids).values(bid).returning();
-    if (newBid) {
-        await db.update(artworks).set({ currentBid: bidAmount }).where(eq(artworks.id, artworkId));
-    }
+    const [newBid] = tx ? await tx.insert(bids).values(bid).returning() : await db.insert(bids).values(bid).returning();
     return newBid;
 }
 
-export async function updateTransaction<K extends keyof Transaction>(id: number, updates: { [key in K]: Transaction[K] }) {
-    await db.update(transactions).set(updates).where(eq(transactions.id, id));
+export async function updateTransaction<K extends keyof Transaction>(id: number, updates: { [key in K]: Transaction[K] }, tx?: any) {
+    tx ? await tx.update(transactions).set(updates).where(eq(transactions.id, id)) : await db.update(transactions).set(updates).where(eq(transactions.id, id));
 }
 
 export async function getTransactions(userId?: number, options?: { sortBy?: keyof Transaction, sortOrder?: 'asc' | 'desc', page?: number, limit?: number }): Promise<{ transactions: Transaction[], totalCount: number }> {
     let query = db.select().from(transactions).$dynamic();
-    let startIndex = 0;
-    let endIndex = -1;
+    let offset = 0;
+    let limit = 150;
 
     if (userId) {
-        query = query.where(eq(transactions.buyerId, userId));
+        query = query.where(eq(transactions.userId, userId));
     }
     if (options && options.sortBy) {
         const columns = getTableColumns(transactions);
@@ -417,13 +415,17 @@ export async function getTransactions(userId?: number, options?: { sortBy?: keyo
         else
             query = query.orderBy(desc(column));
     }
-    const trxns = await query;
-    const totalCount = trxns.length;
     if (options?.page && options?.limit) {
-        startIndex = (options.page - 1) * options.limit;
-        endIndex = startIndex + options.limit;
+        limit = options.limit;
+        offset = (options.page - 1) * options.limit;
     }
-    return { transactions: endIndex === -1 ? trxns.slice(startIndex) : trxns.slice(startIndex, endIndex), totalCount };
+
+    const totalCountRes = await db.select({ count: sql<number>`count(*)` }).from(transactions).where(userId ? eq(transactions.userId, userId) : sql`true`);
+    const totalCount = Number(totalCountRes[0]?.count || 0);
+
+    const trxns = await query.limit(limit).offset(offset);
+   
+    return { transactions: trxns, totalCount };
 }
 
 export async function getTransactionByReference(referenceNumber: string): Promise<Transaction | undefined> {
@@ -431,19 +433,18 @@ export async function getTransactionByReference(referenceNumber: string): Promis
     return transactions_;
 }
 
-export async function createTransaction(userId: number, referenceNumber: string, description: string, payType: string, amount: number, status: string, artworkId?: number) {
+export async function createTransaction(userId: number, referenceNumber: string, description: string, payType: TransactionType, amount: string, status: TransactionStatus, artworkId?: number, tx?: any) {
     const transaction: NewTransaction = {
-        buyerId: userId,
+        userId,
         transRef: referenceNumber,
         description,
         type: payType,
-        finalAmount: amount,
-        status,
-        transactionTime: new Date(),
+        amount,
+        status
     };
     if (artworkId) transaction.artworkId = artworkId;
 
-    const [newTransaction] = await db.insert(transactions).values(transaction).returning();
+    const [newTransaction] = tx ? await tx.insert(transactions).values(transaction).returning() : await db.insert(transactions).values(transaction).returning();
     return newTransaction;
 }
 

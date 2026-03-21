@@ -33,8 +33,6 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
         }
         const fetchArtworks = async () => {
             const params = new URLSearchParams({
-                artist: "true",
-                auction: "true",
                 page: currentPage.toString(),
                 limit: pageLimit.toString(),
             });
@@ -46,7 +44,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
             if (minEndTime) params.set("minEndTime", minEndTime.toString());
             if (maxEndTime) params.set("maxEndTime", maxEndTime.toString());
 
-            const res = await api.get<{artworks: Artwork[], totalPages: number}>(`/artworks?${params.toString()}`);
+            const res = await api.get<{artworks: Artwork[], totalPages: number}>(`/artworks/marketplace?${params.toString()}`);
             setFilteredArtworks(res.artworks);
             setTotalPages(res.totalPages);
             setIsLoading(false);

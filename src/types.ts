@@ -1,4 +1,4 @@
-import { artworks, bids, permissions, roles, transactions, users, activities, watchlists } from "./db/schema";
+import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, transactionTypeEnum, transactionStatusEnum } from "./db/schema";
 
 export enum Roles {
     Admin,
@@ -17,6 +17,8 @@ export type NewBid = typeof bids.$inferInsert;
 
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
+export type TransactionType = typeof transactionTypeEnum.enumValues[number];
+export type TransactionStatus = typeof transactionStatusEnum.enumValues[number];
 
 export type Role = typeof roles.$inferSelect;
 

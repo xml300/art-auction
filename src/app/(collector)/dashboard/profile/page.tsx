@@ -55,9 +55,7 @@ export default function ProfilePage() {
         fetchProfileData();
     }, []);
 
-    if (loading) {
-        return <LoadingSpinner />;
-    }
+
 
     if (error) {
         return (

@@ -1,6 +1,7 @@
 import { getUser, updateTransaction, createTransaction, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
+import { db } from "@/data/db";
 
 export async function GET(request: NextRequest) {
     const [session, error] = await getSession();
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
     const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
 
     if (error || session === null) {
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
+        const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'User unauthorized', {
             maxAge: 10,
             path: '/'
@@ -23,9 +24,8 @@ export async function GET(request: NextRequest) {
         }
     })
     const paymentData = await res.json();
-    const transaction = await createTransaction(session.userId, paymentData.data.reference, `Deposit of ₦${paymentData.data.amount.toLocaleString()}`, "Wallet Deposit", paymentData.data.amount, "pending");
-    if(!paymentData.data){
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
+    if (!paymentData.data || paymentData.data.status !== 'success') {
+        const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'Payment verification failed', {
             maxAge: 10,
             path: '/'
@@ -33,30 +33,19 @@ export async function GET(request: NextRequest) {
         return response;
     }
 
-    if(!transaction){
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', 'Transaction not found', {
-            maxAge: 10,
-            path: '/'
-        });
-        return response;
-    }
+ 
 
-    if (paymentData.data.status !== 'success' && paymentData.data.amount * 0.01 !== transaction.finalAmount) {
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', 'Payment verification failed', {
-            maxAge: 10,
-            path: '/'
-        });
-        return response;
-    }
-    updateTransaction(transaction.id, {
-        status: 'completed'
+    await db.transaction(async (tx) => {
+        const transaction = await createTransaction(session.userId, paymentData.data.reference, `Deposit of ₦${paymentData.data.amount.toLocaleString()}`, "deposit", paymentData.data.amount, "pending", undefined, tx);
+     
+        await updateTransaction(transaction.id, {
+            status: 'completed'
+        }, tx);
+        const user = await getUser(transaction.userId, tx);
+        await updateUser(transaction.userId, {
+            wallet: user.wallet + parseFloat(transaction.amount)
+        }, tx);
     });
-    const user = await getUser(transaction.buyerId);
-    updateUser(transaction.buyerId, {
-            wallet: user.wallet + transaction.finalAmount
-        });
-    const response = NextResponse.redirect(redirectUrl, {status: 303});
+    const response = NextResponse.redirect(redirectUrl, { status: 303 });
     return response;
 }

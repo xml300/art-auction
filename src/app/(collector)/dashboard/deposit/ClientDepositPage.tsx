@@ -126,10 +126,10 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                                                 {transaction.type}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {formatCurrency(transaction.finalAmount)}
+                                                {formatCurrency(transaction.amount)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {new Date(transaction.transactionTime || "").toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}
+                                            {new Date(transaction.createdAt || "").toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}
                                             </td>
                                         </tr>
                                     ))}
