@@ -3,6 +3,7 @@ import ClientMarketplacePage from "./ClientMarketplacePage";
 import { Artwork } from "@/types";
 import { api } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 
 const ARTWORKS_PER_PAGE = 6;
 

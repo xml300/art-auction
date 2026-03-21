@@ -1,6 +1,5 @@
 import { getUserRole, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "@/types";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 

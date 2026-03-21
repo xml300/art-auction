@@ -2,6 +2,7 @@ import { Artwork, User } from '@/types';
 import { api } from '@/lib/api';
 import ClientArtworkDetailsPage from './ClientArtworkDetailsPage';
 
+export const dynamic = "force-dynamic";
 interface ArtworkResponse {
     artwork: Artwork & {
         artist: User;

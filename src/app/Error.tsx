@@ -48,7 +48,7 @@ export default function Error({
           
           <p className="text-base text-text/70 font-light leading-relaxed">
             Even the finest collections encounter unexpected imperfections. 
-            We're working to restore the exhibit to its original splendor.
+            We are working to restore the exhibit to its original splendor.
           </p>
         </div>
 

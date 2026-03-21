@@ -5,7 +5,6 @@ import ProfileHeader from "@/components/ProfileHeader";
 import StatsCard from "@/components/StatsCard";
 import ArtworkGrid from "@/components/ArtworkGrid";
 import ActivityFeed from "@/components/ActivityFeed";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { Activity, Artwork } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { api } from "@/lib/api";
@@ -34,7 +33,6 @@ interface CollectorProfile {
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("Overview");
     const [collectorProfile, setCollectorProfile] = useState<CollectorProfile | null>(null);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -47,8 +45,6 @@ export default function ProfilePage() {
              } catch (err: unknown) {
                 console.error("Error:", (err as Error).message);
                 setError("Failed to fetch profile data");
-            } finally {
-                setLoading(false);
             }
         };
 

@@ -1,6 +1,5 @@
 import { createUser, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "@/types";
 import * as jwt from "jsonwebtoken";
 
 export async function POST(request: NextRequest) {

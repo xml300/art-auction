@@ -1,11 +1,11 @@
-import { adminStorage } from "./firebaseAdmin";  
+import { adminStorage } from "./firebaseAdmin";
 
 const storageClient = adminStorage; 
 
-export async function writeFile(file: File) {
-  if (!file) return;
+export async function writeFile(file: File, path: string) {
+  if (!file) return null;
   const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const blob = storageClient.bucket().file(`json/${file.name}`);
+  const blob = storageClient.bucket().file(`${path}/${file.name}`);
   const blobStream = blob.createWriteStream({
     resumable: false,
     metadata: {
@@ -13,7 +13,7 @@ export async function writeFile(file: File) {
     },
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise<Error | string | undefined>((resolve, reject) => {
     blobStream.on('error', (err) => {
       console.error("Error uploading file:", err);
       reject(err);
@@ -21,10 +21,10 @@ export async function writeFile(file: File) {
 
     blobStream.on('finish', async () => {
       console.log('Uploaded a blob or file!');
-      resolve(await blob.getSignedUrl({
+      resolve((await blob.getSignedUrl({
         action: 'read',
         expires: '03-09-2491', 
-      }));
+      })).at(0));
     });
 
     blobStream.end(fileBuffer);

@@ -13,7 +13,7 @@ export default function RegisterForm() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
-    const {error, setError} = useError();
+    const {error} = useError();
 
     useEffect(() => {
         const validateForm = () => {

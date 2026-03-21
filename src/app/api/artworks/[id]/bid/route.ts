@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtworkById, getUser, createTransaction, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
-import { JoinedReturnType, User } from '@/types';
+import { JoinedReturnType } from '@/types';
 import { getSession } from '@/lib/auth';
 import { db } from '@/data/db';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const [payload, error] = await getSession();
+    const [session, error] = await getSession();
     const artworkId = parseInt((await params).id);
     const formData = await request.formData();
     const redirectUrl = new URL("/dashboard/marketplace/place-bid/" + artworkId, process.env.SITE_BASE_URL || "");
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
     const bidAmount = parseFloat(formData.get("bidAmount")!.toString().replace(/[^0-9\.]/g, ""));
 
-    if (error || payload === null) {
+    if (error || session === null) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'User unauthorized', {
             maxAge: 10,
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
 
-    const user = await getUser(payload.userId) as User;
+    const user = await getUser(session.userId);
     if (!user) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'User not found', {

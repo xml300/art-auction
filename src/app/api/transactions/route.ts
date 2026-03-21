@@ -4,17 +4,17 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
-    const [payload, error] = await getSession();
+    const [session, error] = await getSession();
+    const searchParams = request.nextUrl.searchParams;
 
-    if (error || payload === null) {
+    if (error || session === null) {
         return NextResponse.json({ message: error || "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-    const { transactions, totalCount } = await getTransactions(payload.userId, { sortBy: 'transactionTime', sortOrder: 'desc', page, limit });
+    const { transactions, totalCount } = await getTransactions(session.userId, { sortBy: 'createdAt', sortOrder: 'desc', page, limit });
 
     return NextResponse.json({ transactions, totalCount });
 }

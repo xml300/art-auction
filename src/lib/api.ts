@@ -10,7 +10,7 @@ async function apiCall<T>(url: string, options?: RequestInit): Promise<T>{
 
 export const api = {
     get: <T>(url: string) => apiCall<T>(url),
-    post: <T>(url: string, data: any) => apiCall<T>(url, { method: 'POST', body: JSON.stringify(data) }),
-    put: <T>(url: string, data: any) => apiCall<T>(url, { method: 'PUT', body: JSON.stringify(data) }),
+    post: <T>(url: string, data: unknown) => apiCall<T>(url, { method: 'POST', body: JSON.stringify(data) }),
+    put: <T>(url: string, data: unknown) => apiCall<T>(url, { method: 'PUT', body: JSON.stringify(data) }),
     delete: <T>(url: string) => apiCall<T>(url, { method: 'DELETE' }),
 }

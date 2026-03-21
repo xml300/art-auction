@@ -5,9 +5,9 @@ import ClientDepositPage from "./ClientDepositPage"; // A new client component t
 import { cookies } from "next/headers";
  
 async function getInitialData() {
-    const [payload, error] = await getSession();
+    const [session, error] = await getSession();
 
-    if (error || payload === null) {
+    if (error || session === null) {
         return {
         walletBalance: 0,
         transactions: [],
@@ -15,7 +15,7 @@ async function getInitialData() {
         };
     }
 
-    const userId = payload.userId;
+    const userId = session.userId;
     const profileData = await getUsersProfile(userId) as CollectorProfile;
     const { transactions, totalCount } = await getTransactions(userId, { sortBy: 'createdAt', sortOrder: 'desc', page: 1, limit: 10 }); // Fetch initial paginated data
 

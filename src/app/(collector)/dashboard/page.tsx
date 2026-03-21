@@ -1,4 +1,4 @@
-import { getArtworks, getUsersProfile } from "@/data/queries";
+import { getUsersProfile } from "@/data/queries";
 import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import EmptyState from "@/components/EmptyState";

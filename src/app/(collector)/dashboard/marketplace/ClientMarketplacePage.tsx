@@ -50,7 +50,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
             setIsLoading(false);
         };
         fetchArtworks();
-    }, [currentPage, searchFilter, artistName, minBid, maxBid, minEndTime, maxEndTime]);
+    }, [currentPage, searchFilter, artistName, minBid, maxBid, minEndTime, maxEndTime, pageLimit]);
 
     const toggleFilterMenu = () => {
         setIsFilterMenuOpen(!isFilterMenuOpen);

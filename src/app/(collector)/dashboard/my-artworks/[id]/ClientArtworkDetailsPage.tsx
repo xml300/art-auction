@@ -13,8 +13,8 @@ export default function ClientArtworkDetailsPage({ artwork }: {
         relatedWorks: Artwork[];
     }
 }) {
-    const [artist, setArtist] = useState<User>(artwork.artist);
-    const [relatedArtworks, setRelatedArtworks] = useState<Artwork[]>(artwork.relatedWorks);
+    const [artist] = useState<User>(artwork.artist);
+    const [relatedArtworks] = useState<Artwork[]>(artwork.relatedWorks);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg">

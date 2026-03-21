@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { activities, artworks, bids, permissions, rolePermissions, roles, transactions, users, watchlists } from "@/db/schema";
-import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper, gt, lt, sql, SQL } from "drizzle-orm";
+import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper, gt, lt, sql } from "drizzle-orm";
 import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType, TransactionType, TransactionStatus } from "@/types";
 import { alias } from "drizzle-orm/pg-core";
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export async function hashValue(str: string) {
     return await bcrypt.hash(str, 12);
@@ -24,12 +26,12 @@ export async function createUser(email: string, username: string, password: stri
     return user;
 };
 
-export async function updateUser<K extends keyof User>(id: number, updates: { [key in K]: User[key] }, tx?: any) {
+export async function updateUser<K extends keyof User>(id: number, updates: { [key in K]: User[key] }, tx?: Tx) {
     const [updatedUser] = tx ? await tx.update(users).set(updates).where(eq(users.id, id)).returning() : await db.update(users).set(updates).where(eq(users.id, id)).returning();
     return updatedUser;
 }
 
-export async function getUser(id: number, tx?: any) {
+export async function getUser(id: number, tx?: Tx) {
     const [user] = tx ? await tx.select().from(users).where(eq(users.id, id)) : await db.select().from(users).where(eq(users.id, id));
     return user;
 }
@@ -189,7 +191,7 @@ export async function createArtwork(title: string, description: string, artistId
     return artwork;
 }
 
-export async function updateArtwork<K extends keyof Artwork>(id: number, update: { [key in K]: Artwork[K] }, tx?: any ) {
+export async function updateArtwork<K extends keyof Artwork>(id: number, update: { [key in K]: Artwork[K] }, tx?: Tx) {
     const [updatedArtwork] = tx ? await tx.update(artworks).set(update).where(eq(artworks.id, id)).returning() : await db.update(artworks).set(update).where(eq(artworks.id, id)).returning();
     return updatedArtwork;
 }
@@ -199,6 +201,7 @@ export async function getArtworkById(id: number, options?: { withBids?: boolean,
     if (!options?.withBids && !options?.withArtist && !options?.withRelatedWorks) return await query;
 
     if (options?.withBids || options?.withArtist || options?.withRelatedWorks) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let q: any = query;
         if (options?.withRelatedWorks) {
             const relatedWorks = alias(artworks, 'relatedWorks');
@@ -304,6 +307,7 @@ export async function getArtworks(userId?: number, options?: {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let q: any = query;
     if (options.withBids) {
         q = q.leftJoin(bids, eq(bids.artworkId, artworks.id));
@@ -384,7 +388,7 @@ export async function getBidsByUser<K extends keyof Bid>(bidderId: number, optio
     return await query.where(and(...conditions));
 }
 
-export async function createBid(artworkId: number, bidderId: number, bidAmount: number, tx: any) {
+export async function createBid(artworkId: number, bidderId: number, bidAmount: number, tx?: Tx) {
     const bid = {
         artworkId,
         bidderId,
@@ -395,8 +399,12 @@ export async function createBid(artworkId: number, bidderId: number, bidAmount: 
     return newBid;
 }
 
-export async function updateTransaction<K extends keyof Transaction>(id: number, updates: { [key in K]: Transaction[K] }, tx?: any) {
-    tx ? await tx.update(transactions).set(updates).where(eq(transactions.id, id)) : await db.update(transactions).set(updates).where(eq(transactions.id, id));
+export async function updateTransaction<K extends keyof Transaction>(id: number, updates: { [key in K]: Transaction[K] }, tx?: Tx) {
+    if (tx) {
+        await tx.update(transactions).set(updates).where(eq(transactions.id, id));
+    } else {
+        await db.update(transactions).set(updates).where(eq(transactions.id, id));
+    }
 }
 
 export async function getTransactions(userId?: number, options?: { sortBy?: keyof Transaction, sortOrder?: 'asc' | 'desc', page?: number, limit?: number }): Promise<{ transactions: Transaction[], totalCount: number }> {
@@ -433,7 +441,7 @@ export async function getTransactionByReference(referenceNumber: string): Promis
     return transactions_;
 }
 
-export async function createTransaction(userId: number, referenceNumber: string, description: string, payType: TransactionType, amount: string, status: TransactionStatus, artworkId?: number, tx?: any) {
+export async function createTransaction(userId: number, referenceNumber: string, description: string, payType: TransactionType, amount: string, status: TransactionStatus, artworkId?: number, tx?: Tx) {
     const transaction: NewTransaction = {
         userId,
         transRef: referenceNumber,

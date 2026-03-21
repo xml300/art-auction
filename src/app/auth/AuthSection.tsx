@@ -13,7 +13,7 @@ export default function AuthSection({ error }: { error: string }) {
 
     useEffect(() =>{
         setError(error);
-    },[error]);
+    },[error, setError]);
 
     const handleButtonClick = (path: string) => {
         setTimeout(() => {
