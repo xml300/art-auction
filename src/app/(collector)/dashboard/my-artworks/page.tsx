@@ -9,7 +9,7 @@ export default async function MyArtworksPage() {
     if (error || session === null) {
         return (
             <div className="space-y-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold animate-fade-in">My Artworks</h1>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold animate-fade-in">My Artworks</h1>
                 <p className="text-lg text-gray-600 dark:text-gray-300 animate-fade-in-delay-1">Explore and manage your personal collection of digital art.</p>
                 <EmptyState
                     title="Not Logged In"

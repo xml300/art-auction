@@ -8,8 +8,7 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
-    const Url = process.env.SITE_BASE_URL || "";
-    const redirectUrl = new URL('/auth', Url);
+    const redirectUrl = new URL('/auth', request.url);
 
     if (!accountType || !username || !email || !password) {
         const response = NextResponse.redirect(redirectUrl, {status: 303});

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
   subsets: ["latin"],
 });
 
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased h-screen bg-white text-black dark:bg-dark-background dark:text-dark-text`}
+        className={`${openSans.className} antialiased h-screen bg-background text-text`}
       >
         <div className="animate-fade-in h-full">
           {children}

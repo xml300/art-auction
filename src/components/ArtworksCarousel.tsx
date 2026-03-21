@@ -24,7 +24,7 @@ export function ArtworkCarousel({ artworks, className }: { artworks: Artwork[], 
                 <Link ref={linkRef} href={`/dashboard/my-artworks/${artwork.id}`} key={artwork.id} className="w-full h-[48rem] flex-shrink-0 cursor-pointer relative transition-transform">
                     <Image src={artwork.imageUrl} width={800} height={800} alt={artwork.title} className="bg-black/60 h-full w-full" />
                     <div className="absolute bottom-0 text-white p-6 bg-gradient-to-b from-transparent to-black w-full">
-                        <h3 className="text-3xl font-semibold">{artwork.title}</h3>
+                        <h3 className="text-xl font-semibold">{artwork.title}</h3>
                         <p className="text-xl">{artwork.description} </p>
                     </div>
                 </Link>

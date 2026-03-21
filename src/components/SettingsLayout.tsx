@@ -18,7 +18,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 dark:text-white">Settings</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 dark:text-white">Settings</h1>
 
             <section className="flex flex-col lg:flex-row rounded-lg shadow-lg border border-gray-400 dark:border-gray-600 dark:bg-gray-800 animate-fade-in">
                 {/* Tabs */}

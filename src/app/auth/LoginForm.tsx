@@ -21,11 +21,11 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
         <form className="text-lg mt-4 space-y-4" action="/api/auth/login" method="post">
             <div className="text-center">
                 <h3 className="text-2xl font-bold mb-1">Welcome Back</h3>
-                <p className=" text-gray-600 dark:text-gray-400">Sign in to your account</p>
+                <p className="text-text opacity-70">Sign in to your account</p>
             </div>
 
             {error && (
-                <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
+                <div className="bg-secondary bg-opacity-20 border border-secondary text-text px-4 py-3 rounded relative" role="alert">
                     <strong className="font-bold">Error!</strong>
                     <span className="block sm:inline"> {error}</span>
                 </div>
@@ -43,7 +43,7 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                         id="username"
                         placeholder="Enter your username"
                         autoComplete="username"
-                        className="w-full text-lg rounded-lg p-3 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
+                        className="w-full text-lg rounded-lg p-3 border-2 border-secondary shadow-sm bg-background text-text focus:border-primary transition-all duration-200"
                         required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -82,7 +82,7 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                         <input type="checkbox" name="remember" className="mr-2 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500" />
                         <span className="">Remember me</span>
                     </label> */}
-                    <Link href="" className=" text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                    <Link href="" className="text-primary hover:opacity-80 transition-colors">
                         Forgot password?
                     </Link>
                 </div>
@@ -93,8 +93,8 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                     type="submit"
                     className={`w-full py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         isFormValid
-                            ? "bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white transform hover:scale-105 focus:ring-red-500"
-                            : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                            ? "bg-primary text-white transform hover:scale-105"
+                            : "bg-secondary bg-opacity-50 text-text opacity-50 cursor-not-allowed"
                     }`}
                     disabled={!isFormValid}
                 >
@@ -103,9 +103,9 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
             </div>
 
             <div className="text-center pt-2">
-                <p className=" text-gray-600 dark:text-gray-400">
+                <p className="text-text opacity-70">
                     Don&apos;t have an account?{' '}
-                    <button onClick={() => setAccType('register')} className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors">
+                    <button onClick={() => setAccType('register')} className="text-primary hover:opacity-80 font-medium transition-colors">
                         Sign up
                     </button>
                 </p>

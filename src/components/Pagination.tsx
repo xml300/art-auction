@@ -53,7 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="p-2 rounded-lg border dark:border-gray-700 dark:text-dark-text dark:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg border border-secondary text-text bg-background disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ChevronLeft size={20} />
             </button>
@@ -63,16 +63,16 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     {typeof page === 'number' ? (
                         <button
                             onClick={() => onPageChange(page)}
-                            className={`px-4 py-2 rounded-lg border dark:border-gray-700 ${
+                            className={`px-4 py-2 rounded-lg border border-secondary ${
                                 currentPage === page
-                                    ? 'bg-blue-600 text-white dark:bg-blue-700'
-                                    : 'bg-white text-gray-700 dark:bg-gray-800 dark:text-dark-text hover:bg-gray-100 dark:hover:bg-gray-700'
+                                    ? 'bg-primary text-white'
+                                    : 'bg-background text-text hover:bg-secondary hover:bg-opacity-20 transition-colors'
                             }`}
                         >
                             {page}
                         </button>
                     ) : (
-                        <span className="px-4 py-2 text-gray-500 dark:text-gray-400">...</span>
+                        <span className="px-4 py-2 text-text opacity-50">...</span>
                     )}
                 </React.Fragment>
             ))}
@@ -80,7 +80,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2 rounded-lg border dark:border-gray-700 dark:text-dark-text dark:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg border border-secondary text-text bg-background disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ChevronRight size={20} />
             </button>

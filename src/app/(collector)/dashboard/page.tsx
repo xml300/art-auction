@@ -46,7 +46,7 @@ export default async function DashboardPage() {
                                 <ImageIcon className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-blue-900 dark:text-blue-100">{userProfile.stats.artworksOwned}</div>
+                                <div className="text-lg sm:text-xl font-bold text-blue-900 dark:text-blue-100">{userProfile.stats.artworksOwned}</div>
                                 <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">Artworks</div>
                             </div>
                         </div>

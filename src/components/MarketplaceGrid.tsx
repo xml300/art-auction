@@ -32,12 +32,12 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                                 <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2">
                                     {artwork.title}
                                 </h3>
-                                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">
+                                <p className="text-secondary opacity-90 text-sm sm:text-base leading-relaxed mb-4">
                                     {artwork.description ? (artwork.description.length > 150 ? artwork.description.slice(0, 149) + '...' : artwork.description) : 'No description available'}
                                 </p>
                                 <div className="flex flex-col sm:flex-row justify-around w-full gap-4 py-3 border-t border-white/20">
                                     <div className="flex-1">
-                                        <p className="text-xs sm:text-sm text-gray-400 mb-1">Current Bid</p>
+                                        <p className="text-xs sm:text-sm text-secondary opacity-70 mb-1">Current Bid</p>
                                         {artwork.currentBid ? (artwork.currentBid > 0 ? (
                                             <p className="text-lg sm:text-xl font-bold">${artwork.currentBid.toLocaleString()}</p>
                                         ) : (
@@ -47,7 +47,7 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-xs sm:text-sm text-gray-400 mb-1">Auction Ends</p>
+                                        <p className="text-xs sm:text-sm text-secondary opacity-70 mb-1">Auction Ends</p>
                                         <p className="text-lg sm:text-xl font-medium">
                                             {new Date(artwork.auctionEndTime).toLocaleDateString("en-US", {
                                                 month: 'short',
@@ -60,7 +60,7 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                                 <div className="pt-4 w-full">
                                     <Link
                                         href={`/dashboard/marketplace/place-bid/${artwork.id}`}
-                                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-full shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-75 w-full block font-semibold text-lg"
+                                        className="bg-primary hover:opacity-90 text-white px-8 py-3 rounded-full shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-75 w-full block font-semibold text-lg"
                                     >
                                         Place Bid
                                     </Link>

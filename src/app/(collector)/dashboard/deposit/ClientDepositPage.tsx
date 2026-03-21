@@ -56,14 +56,14 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                 <strong className="font-bold">Error!</strong>
                 <span className="block sm:inline"> {error}</span>
             </div>)}
-            <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white animate-fade-in">Deposit</h1>
+            <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white animate-fade-in">Deposit</h1>
 
             <div className="grid grid-cols-1 gap-6 mb-8 animate-fade-in-delay-1">
                 {/* Current Balance Card */}
                 <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 transform transition-transform duration-300 hover:scale-105 flex flex-col justify-between">
                     <div>
                         <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Current Balance</h2>
-                        <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+                        <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                             ${walletBalance !== null ? walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "N/A"}
                         </p>
                         <p className="text-gray-500 dark:text-gray-400 mt-2">Funds available for bidding and purchases.</p>
@@ -133,7 +133,7 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                                                 ${transaction.finalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {transaction.transactionTime?.toLocaleString()}
+                                            {transaction.transactionTime?.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}
                                             </td>
                                         </tr>
                                     ))}

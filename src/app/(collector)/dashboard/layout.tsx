@@ -44,7 +44,7 @@ export default function DashboardLayout({
             {/* Main Content */}
             <section className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
-                <header className="w-full border-b-2 px-4 sm:px-6 lg:px-12 py-4 flex justify-between items-center shadow-lg bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <header className="w-full border-b px-4 sm:px-6 lg:px-12 py-4 flex justify-between items-center shadow-md bg-background border-slate-200 dark:border-slate-900">
                     {/* Mobile Menu Button */}
                     <button
                         onClick={toggleMobileMenu}
@@ -53,7 +53,7 @@ export default function DashboardLayout({
                         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
 
-                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Dashboard</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold">Dashboard</h2>
 
                     <div className="flex items-center gap-4">
                         <div className="group relative">

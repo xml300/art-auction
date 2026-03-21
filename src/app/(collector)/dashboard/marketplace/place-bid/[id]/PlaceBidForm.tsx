@@ -98,13 +98,13 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
     }, [artwork.id]);
 
     return (
-        <div className="xl:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+        <div className="xl:w-1/2 bg-background rounded-lg shadow-lg p-6 flex flex-col border border-secondary">
             {currentBid > 0 && <div className="my-8 w-full flex justify-end">
-                <span className="text-xl font-extrabold bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-6 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">Your current bid: ${currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="text-xl font-extrabold bg-secondary bg-opacity-10 text-text px-6 py-3 rounded-xl shadow-lg border border-secondary">Your current bid: ${currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
             </div>}
             <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white">Your Bid</h2>
             <form method="POST" action={`/api/artworks/${artwork.id}/bid`} className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
-                {error && (<div className={`bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
+                {error && (<div className={`bg-secondary bg-opacity-20 border border-secondary text-text px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
                     <strong className="font-bold">Error!</strong>
                     <span className="block sm:inline"> {error}</span>
                 </div>)}
@@ -115,7 +115,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
                     </div>
                 )}
                 <div>
-                    <label htmlFor="bidAmount" className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label htmlFor="bidAmount" className="block text-lg font-medium text-text opacity-80 mb-2">
                         Enter your bid amount
                     </label>
                     <input
@@ -126,7 +126,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
                         value={formattedBidAmount}
                         onChange={handleBidChange}
                         placeholder={`Minimum bid: $${minBid.toLocaleString()}`}
-                        className="w-full p-3 border border-gray-300 rounded-lg text-2xl text-center font-bold focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
+                        className="w-full p-3 border border-secondary rounded-lg text-2xl text-center font-bold focus:ring-primary focus:border-primary bg-background text-text transition-colors duration-200"
                         required
                     />
                 </div>
@@ -137,7 +137,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
                             key={option}
                             type="button"
                             onClick={() => handlePredefinedBid(option)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-lg font-medium text-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+                            className="px-4 py-2 border border-secondary rounded-lg text-base sm:text-lg font-medium text-text hover:bg-secondary hover:bg-opacity-20 transition-colors duration-200 flex items-center justify-center"
                         >
                             +${option}
                         </button>
@@ -146,7 +146,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
 
                 <button
                     type="submit"
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-75 text-xl"
+                    className="bg-primary hover:opacity-90 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-75 text-xl"
                 >
                     Place Bid
                 </button>

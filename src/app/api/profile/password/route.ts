@@ -2,6 +2,7 @@ import { hashValue, updatePassword, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/types";
 import { getSession } from "@/lib/auth";
+import bcrypt from "bcrypt";
 
 export async function POST(request: NextRequest) {
     const [payload, error] = await getSession();
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const user = await getUsers(userId) as User;
 
-    if (!user || hashValue(currentPassword) !== user.password) {
+    if (!user || await bcrypt.compare(currentPassword, user.password)) {
         const response = NextResponse.redirect(redirectURL, {status: 303});
         response.cookies.set('errors', 'Invalid current password', {
             maxAge: 10,

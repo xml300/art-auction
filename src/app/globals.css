@@ -2,8 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-size: 75%;
+@layer base {
+  :root {
+    --text: #040316;
+    --background: #fbfbfe;
+    --primary: #000bba;
+    --secondary: #ffc6c6;
+    --accent: #bc8c8f;
+  }
+  .dark {
+    --text: #eae9fc;
+    --background: #010104;
+    --primary: #4754ff;
+    --secondary: #380000;
+    --accent: #744447;
+  }
 }
 
 *{

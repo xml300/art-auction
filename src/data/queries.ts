@@ -1,18 +1,19 @@
 import { hash } from "crypto";
+import bcrypt from "bcrypt";
 import { db } from "./db";
 import { activities, artworks, bids, permissions, rolePermissions, roles, transactions, users, watchlists } from "@/db/schema";
 import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper } from "drizzle-orm";
 import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType } from "@/types";
 
-export function hashValue(str: string) {
-    return hash('sha256', str + "1djfdsnfjr3");
+export async function hashValue(str: string) {
+    return await bcrypt.hash(str, 12);
 }
 
 export async function createUser(email: string, username: string, password: string, roleId: Roles) {
     const userData = {
         email,
         username,
-        password: hashValue(password),
+        password: await hashValue(password),
         roleId,
         wallet: 0
     }
@@ -29,7 +30,7 @@ export async function updateUser<K extends keyof User>(id: number, updates: { [k
 }
 
 export async function updatePassword(id: number, newPassword: string) {
-    const [updatedUser] = await db.update(users).set({ password: hashValue(newPassword) }).where(eq(users.id, id)).returning();
+    const [updatedUser] = await db.update(users).set({ password: await hashValue(newPassword) }).where(eq(users.id, id)).returning();
     return updatedUser;
 }
 

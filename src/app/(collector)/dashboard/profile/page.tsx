@@ -99,7 +99,7 @@ export default function ProfilePage() {
             case "Artworks Showcase":
                 return (
                     <section className="mb-8">
-                        <h2 className="text-3xl font-semibold mb-6">My Collection</h2>
+                        <h2 className="text-xl font-semibold mb-6">My Collection</h2>
                         <ArtworkGrid
                             artworks={collectorProfile.ownedArtworks}
                             emptyMessage="No artworks in your collection yet."
@@ -110,7 +110,7 @@ export default function ProfilePage() {
             case "Activity Summary":
                 return (
                     <section className="mb-8">
-                        <h2 className="text-3xl font-semibold mb-6">Recent Activity</h2>
+                        <h2 className="text-xl font-semibold mb-6">Recent Activity</h2>
                         <ActivityFeed
                             activity={collectorProfile.activity}
                             emptyMessage="No recent activity."
@@ -120,7 +120,7 @@ export default function ProfilePage() {
             case "Watchlist":
                 return (
                     <section>
-                        <h2 className="text-3xl font-semibold mb-6">My Watchlist</h2>
+                        <h2 className="text-xl font-semibold mb-6">My Watchlist</h2>
                         <ArtworkGrid
                             artworks={collectorProfile.watchlist}
                             emptyMessage="Your watchlist is empty."
@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
     return (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8  ">Collector Profile</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8  ">Collector Profile</h1>
 
             <div className="mb-6 sm:mb-8 border-b border-gray-200 dark:border-gray-700 animate-fade-in-delay-1">
                 <nav className="-mb-px flex flex-wrap gap-2 sm:gap-4 lg:space-x-8" aria-label="Tabs">

@@ -104,18 +104,18 @@ export default async function Home() {
   const artworks = await getArtworks();
 
   return (
-    <main className="min-h-screen flex flex-col bg-white dark:bg-dark-background text-black dark:text-dark-text">
+    <main className="min-h-screen flex flex-col bg-background text-text">
       <Header />
       <section className="flex-1 my-6 px-4 sm:px-6 lg:px-8 gap-y-4">
         <section id="hero" className="mb-24 sm:mb-32 relative rounded-3xl bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
           <div className="z-20 text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight">Welcome to <span className="italic text-transparent bg-gradient-to-r from-red-800 to-red-200 bg-clip-text pr-4">Artsyl</span></h1>
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mt-4 italic">Your premier platform for luxury digital art auctions</p>
-            <Link href="/auth" className="mt-8 inline-block bg-red-700 hover:bg-red-600 text-white text-md sm:text-lg md:text-xl px-8 py-3 sm:px-10 sm:py-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">Explore Artworks</Link>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">Welcome to <span className="italic text-transparent bg-gradient-to-r from-primary to-accent bg-clip-text pr-4">Artsyl</span></h1>
+            <p className="text-base sm:text-lg md:text-xl font-light mt-4 italic">Your premier platform for luxury digital art auctions</p>
+            <Link href="/auth" className="mt-8 inline-block bg-primary hover:bg-opacity-90 text-white text-sm sm:text-base px-8 py-3 sm:px-10 sm:py-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">Explore Artworks</Link>
           </div>
           <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/50 rounded-3xl"></div>
         </section>
-        <section id="about" className="text-center shadow-md py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-background opacity-0 animate-fade-in-delay-1">
+        <section id="about" className="text-center shadow-md py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-background opacity-0 animate-fade-in-delay-1">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
               <Image
@@ -127,99 +127,99 @@ export default async function Home() {
               />
             </div>
             <div className="text-left">
-              <h2 className="font-bold text-4xl sm:text-5xl mb-4">About Artsyl</h2>
-              <p className="text-lg sm:text-xl mb-4">
+              <h2 className="font-bold text-2xl sm:text-3xl mb-4">About Artsyl</h2>
+              <p className="text-base mb-4">
                 Artsyl is a curated marketplace for luxury digital art and limited-edition NFTs.
                 We connect collectors, galleries, and artists through transparent auctions,
                 expert curation, and secure transactions.
               </p>
-              <ul className="space-y-3 mb-8 text-lg sm:text-xl">
+              <ul className="space-y-3 mb-8 text-base">
                 <li key="curated-collections" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-800 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M5 13l4 4L19 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <span>Curated collections from emerging and established artists</span>
                 </li>
                 <li key="secure-provenance" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-800 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M21 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <span>Secure bidding and verified provenance</span>
                 </li>
                 <li key="easy-dashboard" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-800 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M3 7h18M3 12h18M3 17h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <span>Easy-to-use dashboard for buyers and sellers</span>
                 </li>
               </ul>
               <div>
-                <Link href="" className="rounded-full bg-red-700 px-8 py-3 text-white text-lg sm:text-xl">Learn More</Link>
+                <Link href="" className="rounded-full bg-primary px-6 py-2 text-white text-base">Learn More</Link>
               </div>
             </div>
           </div>
         </section>
         <WhyChooseUs />
         <ArtworkCarousel artworks={artworks} className="hidden lg:flex" />
-        <section id="features" className="py-16 sm:py-24 bg-white dark:bg-dark-background opacity-0 animate-fade-in-delay-2">
+        <section id="features" className="py-16 sm:py-24 bg-background opacity-0 animate-fade-in-delay-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">
               Platform Features
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+            <p className="mt-6 text-base leading-8 text-text opacity-80">
               Built for collectors and creators — discover, bid, and own exceptional digital art.
             </p>
             <div className="mt-16 grid grid-cols-1 gap-y-10 md:grid-cols-3 md:gap-x-8">
-              <div key="curated-auctions" className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
-                <div className="p-4 bg-red-100 dark:bg-red-900 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <div key="curated-auctions" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
+                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
+                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M3 9h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Curated Auctions</h3>
-                <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">Hand-picked lots with expert curation to ensure quality and rarity.</p>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Curated Auctions</h3>
+                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Hand-picked lots with expert curation to ensure quality and rarity.</p>
               </div>
-              <div key="verified-provenance" className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
-                <div className="p-4 bg-red-100 dark:bg-red-900 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <div key="verified-provenance" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
+                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
+                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M12 20v-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <circle cx="12" cy="7" r="4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Verified Provenance</h3>
-                <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">Transparent history and ownership records for every piece.</p>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Verified Provenance</h3>
+                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Transparent history and ownership records for every piece.</p>
               </div>
-              <div key="secure-bidding" className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
-                <div className="p-4 bg-red-100 dark:bg-red-900 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <div key="secure-bidding" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
+                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
+                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M3 12h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M12 3v18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Secure Bidding</h3>
-                <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">Real-time bids with secure checkout and escrow options.</p>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Secure Bidding</h3>
+                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Real-time bids with secure checkout and escrow options.</p>
               </div>
             </div>
           </div>
         </section>
-        <section id="testimonials" className="text-center shadow-md max-w-7xl mx-auto py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-background opacity-0 animate-fade-in-delay-3">
-          <h2 className="font-bold text-4xl sm:text-5xl">Our Testimonials</h2>
+        <section id="testimonials" className="text-center shadow-md max-w-7xl mx-auto py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-background opacity-0 animate-fade-in-delay-3">
+          <h2 className="font-bold text-3xl sm:text-4xl">Our Testimonials</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4 sm:px-6 my-12">
             {testimonials.map((testimonial) => (
               <TestimonialCard key={testimonial.id} testimonial={testimonial} />
             ))}
           </div>
-          <Link href="/auth" className="bg-red-800 px-12 py-4 rounded-full text-white text-xl sm:text-2xl">Get Started Now</Link>
+          <Link href="/auth" className="bg-primary px-8 py-3 rounded-full text-white text-base">Get Started Now</Link>
         </section>
-        <section id="newsletter" className="shadow-md p-8 sm:p-12 min-h-48 flex flex-col justify-center items-center gap-y-6 sm:gap-y-8 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-background opacity-0 animate-fade-in-delay-4">
-          <h2 className="font-bold italic text-4xl sm:text-5xl mb-2">Join our Newsletter</h2>
-          <p className="text-lg sm:text-xl text-center mb-8">Stay updated with the latest art auctions and news.</p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 w-full max-w-2xl">
-            <input type="email" placeholder="Enter email" className="w-full sm:w-[70%] border-2 border-black dark:border-dark-secondary rounded-full p-4 sm:p-6 text-black dark:text-dark-text dark:bg-dark-background text-lg sm:text-xl" /> 
-            <button className="bg-red-800 text-white p-4 sm:p-6 rounded-full flex items-center justify-center">
-              <SendHorizonal className="w-8 h-8 sm:w-10 sm:h-10" />
+        <section id="newsletter" className="shadow-md p-8 min-h-48 flex flex-col justify-center items-center gap-y-4 py-16 px-4 bg-background opacity-0 animate-fade-in-delay-4">
+          <h2 className="font-bold italic text-3xl sm:text-4xl mb-2">Join our Newsletter</h2>
+          <p className="text-base text-center mb-6">Stay updated with the latest art auctions and news.</p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
+            <input type="email" placeholder="Enter email" className="w-full border-2 border-text rounded-full p-3 text-text bg-background text-base" /> 
+            <button className="bg-primary text-white p-3 rounded-full flex items-center justify-center">
+              <SendHorizonal className="w-6 h-6" />
             </button>
           </div>
         </section>
