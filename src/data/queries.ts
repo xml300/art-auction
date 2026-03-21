@@ -4,6 +4,7 @@ import { db } from "./db";
 import { activities, artworks, bids, permissions, rolePermissions, roles, transactions, users, watchlists } from "@/db/schema";
 import { eq, gte, isNull, like, lte, or, getTableColumns, asc, desc, and, SQLWrapper } from "drizzle-orm";
 import { User, Roles, Artwork, Bid, Transaction, Activity, Role, Permission, CollectorProfile, NewTransaction, ResultType, JoinedReturnType } from "@/types";
+import { alias } from "drizzle-orm/pg-core";
 
 export async function hashValue(str: string) {
     return await bcrypt.hash(str, 12);
@@ -196,18 +197,22 @@ export async function updateArtwork<K extends keyof Artwork>(id: number, update:
     return updatedArtwork;
 }
 
-export async function getArtworkById(id: number, options?: { withBids?: boolean, withArtist?: boolean }) {
+export async function getArtworkById(id: number, options?: { withBids?: boolean, withArtist?: boolean, withRelatedWorks?: boolean }) {
     const query = db.select().from(artworks).where(eq(artworks.id, id));
-    if (!options?.withBids && !options?.withArtist) return await query;
+    if (!options?.withBids && !options?.withArtist && !options?.withRelatedWorks) return await query;
 
-    if (options?.withBids || options?.withArtist) {
-        const q = options.withArtist ?
-            options.withBids ?
-                query.leftJoin(users, eq(users.id, artworks.artistId)).leftJoin(bids, eq(bids.artworkId, artworks.id)) :
-                query.leftJoin(users, eq(users.id, artworks.artistId)) :
-            options.withBids ?
-                query.leftJoin(bids, eq(bids.artworkId, artworks.id)) :
-                query;
+    if (options?.withBids || options?.withArtist || options?.withRelatedWorks) {
+        let q: any = query;
+        if(options?.withRelatedWorks) {
+            const relatedWorks = alias(artworks, 'relatedWorks');
+            q = q.leftJoin(relatedWorks, eq(relatedWorks.artistId, artworks.artistId));
+        }
+        if(options?.withArtist) {
+            q = q.leftJoin(users, eq(users.id, artworks.artistId));
+        }
+        if(options?.withBids) {
+            q = q.leftJoin(bids, eq(bids.artworkId, artworks.id));
+        } 
 
         const rows = await q as ResultType[];
         if (!rows || rows.length === 0) return undefined;
@@ -216,14 +221,18 @@ export async function getArtworkById(id: number, options?: { withBids?: boolean,
         const result = rows.reduce((acc: JoinedReturnType | null, row: ResultType) => {
             const artwork = row.artworks;
             const bid = row.bids;
+            const relatedWork = row.relatedWorks;
             const artist = row.users;
 
             if (!acc) {
                 acc = { ...artwork };
                 if (options?.withArtist) acc.artist = artist;
                 if (options?.withBids) acc.bids = bid ? [bid] : [];
+                if (options?.withRelatedWorks) acc.relatedWorks = relatedWork ? [relatedWork] : [];
             } else if (options?.withBids && bid) {
                 acc.bids?.push(bid);
+            } else if (options?.withRelatedWorks && relatedWork && acc.relatedWorks!.length < 5) {
+                acc.relatedWorks?.push(relatedWork);
             }
             return acc;
         }, null);
@@ -236,6 +245,7 @@ export async function getArtworkById(id: number, options?: { withBids?: boolean,
 export async function getArtworks(userId?: number, options?: {
     withBids?: boolean,
     withArtist?: boolean,
+    withRelatedWorks?: boolean,
     page?: number,
     limit?: number,
     searchQuery?: string,
@@ -248,6 +258,8 @@ export async function getArtworks(userId?: number, options?: {
     const query = db.select().from(artworks).orderBy(asc(artworks.title));
     let startIndex = 0;
     let endIndex = -1;
+
+    console.log({withRelatedWorks: options?.withRelatedWorks})
 
 
     const conditions = [];
@@ -278,7 +290,7 @@ export async function getArtworks(userId?: number, options?: {
         endIndex = startIndex + options.limit;
     }
 
-    if (!options?.withBids && !options?.withArtist) {
+    if (!options?.withBids && !options?.withArtist && !options?.withRelatedWorks) {
         const rows = await query.where(and(...conditions));
         return endIndex === -1 ? rows.slice(startIndex) : rows.slice(startIndex, endIndex);
     }
@@ -294,13 +306,16 @@ export async function getArtworks(userId?: number, options?: {
         }
     }
 
-    const q = options.withBids ?
-        options.withArtist ?
-            query.leftJoin(bids, eq(bids.artworkId, artworks.id)).leftJoin(users, eq(users.id, artworks.artistId)) :
-            query.leftJoin(bids, eq(bids.artworkId, artworks.id)) :
-        options.withArtist ?
-            query.leftJoin(users, eq(users.id, artworks.artistId)) :
-            query;
+    let q: any = query;
+    if(options.withBids) {
+        q = q.leftJoin(bids, eq(bids.artworkId, artworks.id));
+    }
+    if(options.withArtist) {
+        q = q.leftJoin(users, eq(users.id, artworks.artistId));
+    }
+    if(options.withRelatedWorks) {
+        q = q.leftJoin(artworks, eq(artworks.artistId, users.id));
+    }
     const rows = await q.where(and(...conditions)) as ResultType[];
 
     const aggregated = rows.reduce((acc: Map<number, JoinedReturnType>, row: ResultType) => {

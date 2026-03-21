@@ -1,5 +1,7 @@
 "use client";
 
+import { api } from "@/lib/api";
+import { CollectorProfile } from "@/types";
 import { Camera } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -17,13 +19,8 @@ export default function ProfileForm({ errors }: { errors?: string }) {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch("/api/profile");
-                if (response.ok) {
-                    const data = await response.json();
-                    setProfile(data);
-                } else {
-                    console.error("Failed to fetch profile data");
-                }
+                const response = await api.get<CollectorProfile>("/profile");
+                setProfile(response);
             } catch (error) {
                 console.error("Error fetching profile data:", error);
             }

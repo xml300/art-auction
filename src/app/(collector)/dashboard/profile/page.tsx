@@ -8,6 +8,7 @@ import ActivityFeed from "@/components/ActivityFeed";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Activity, Artwork } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 
 interface CollectorProfile {
@@ -40,13 +41,9 @@ export default function ProfilePage() {
         const fetchProfileData = async () => {
             try {
                 
-                const response = await fetch("/api/profile");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch profile data");
-                }
-                const data = await response.json();
-                setCollectorProfile(data);
-                console.log(data);    
+                const response = await api.get<CollectorProfile>("/profile");
+                setCollectorProfile(response);
+                console.log(response);    
              } catch (err: unknown) {
                 console.error("Error:", (err as Error).message);
                 setError("Failed to fetch profile data");

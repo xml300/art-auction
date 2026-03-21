@@ -32,11 +32,13 @@ export interface ResultType {
     artworks: Artwork;
     users?: User;
     bids?: Bid;
+    relatedWorks?: Artwork;
 }
 
 export interface JoinedReturnType extends Artwork {
     artist?: User;
     bids?: Bid[];
+    relatedWorks?: Artwork[];
 }
 
 export interface CollectorProfile {

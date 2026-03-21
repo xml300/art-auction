@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { getSession } from "@/lib/auth";
+import { useSession } from "@/hooks/useSession";
 
-export default async function ProfilePicture() {
-    const [session] = await getSession();
-    const profilePicture = session?.profilePicture || "";
+export default function ProfilePicture() {
+    const { session } = useSession();
+    const profilePicture = session?.profilePicture || "/default-avatar.png";
 
     return (
         <Image

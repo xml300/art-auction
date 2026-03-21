@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import { Artwork } from "@/types";
+import { api } from "@/lib/api";
 
 
 export default function ClientMarketplacePage({initialArtworks, initialTotalPages, pageLimit}: {initialArtworks: Artwork[], initialTotalPages: number, pageLimit: number}) {
@@ -39,10 +40,9 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
             if (minEndTime) params.set("minEndTime", minEndTime.toString());
             if (maxEndTime) params.set("maxEndTime", maxEndTime.toString());
 
-            const res = await fetch(`/api/artworks?${params.toString()}`);
-            const json = await res.json();
-            setFilteredArtworks(json.artworks);
-            setTotalPages(json.totalPages);
+            const res = await api.get<{artworks: Artwork[], totalPages: number}>(`/artworks?${params.toString()}`);
+            setFilteredArtworks(res.artworks);
+            setTotalPages(res.totalPages);
             setIsLoading(false);
         };
         fetchArtworks();

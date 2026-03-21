@@ -6,6 +6,7 @@ export async function GET(request: NextRequest){
     const page = parseInt(params.get('page') || '1');
     const limit = parseInt(params.get('limit') || '10');
     const withArtist = params.get('artist') === "true";
+    const withRelatedWorks = params.get('relatedWorks') === "true";
     const searchQuery = params.get('searchQuery') || undefined;
     const artistName = params.get('artistName') || undefined;
     const minBid = params.get('minBid') ? parseInt(params.get('minBid')!) : undefined;
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest){
 
     const filterOptions = { 
         withArtist, 
+        withRelatedWorks,
         searchQuery, 
         artistName, 
         minBid, 

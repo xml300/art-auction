@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Artwork } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: string }) {
     const minBid = (artwork.currentBid && artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid) + 1;
@@ -16,8 +17,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
     const router = useRouter();
 
     useEffect(() => {
-        fetch('/api/profile')
-        .then(res => res.json())
+        api.get<{wallet: number}>('/profile')
         .then(json => {
             setWalletBalance(json.wallet)
         })
@@ -86,8 +86,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
     }, [cursorPosition, inputRef]);
 
     useEffect(() => {
-        fetch(`/api/bid?artworkId=${artwork.id}`)
-        .then(res => res.json())
+        api.get<{bidAmount: number}>(`/bid?artworkId=${artwork.id}`)
         .then(json => {
             setCurrentBid(json.bidAmount)
         })

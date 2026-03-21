@@ -7,6 +7,7 @@ import EmptyState from "@/components/EmptyState";
 import DepositModal from "@/components/DepositModal";
 import Pagination from "@/components/Pagination"; // Import Pagination component
 import { formatCurrency } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 interface ClientDepositPageProps {
     initialWalletBalance: number;
@@ -29,13 +30,9 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
     const fetchTransactions = async (page: number) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/transactions?page=${page}&limit=${transactionsPerPage}`);
-            if (!res.ok) {
-                throw new Error("Failed to fetch transactions");
-            }
-            const data = await res.json();
-            setTransactions(data.transactions);
-            setTotalTransactions(data.totalCount);
+            const res = await api.get<{transactions: Transaction[], totalCount: number}>(`/transactions?page=${page}&limit=${transactionsPerPage}`);
+            setTransactions(res.transactions);
+            setTotalTransactions(res.totalCount);
         } catch (err) {
             console.error("Error fetching transactions:", err);
             setError("Failed to load transaction history.");
