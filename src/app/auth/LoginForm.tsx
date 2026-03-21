@@ -2,12 +2,14 @@
 import Link from "next/link";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useError } from "@/hooks/useErrors";
 
-export default function LoginForm({ error, setAccType }: { error?: string, setAccType: (type: string) => void}){
+export default function LoginForm(){
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
+    const { error } = useError();
 
     useEffect(() => {
         const validateForm = () => {
@@ -18,9 +20,9 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
     }, [username, password]);
 
     return (
-        <form className="text-lg mt-4 space-y-4" action="/api/auth/login" method="post">
+        <form className="text-base mt-4 space-y-4" action="/api/auth/login" method="post">
             <div className="text-center">
-                <h3 className="text-2xl font-bold mb-1">Welcome Back</h3>
+                <h3 className="text-xl font-bold mb-1">Welcome Back</h3>
                 <p className="text-text opacity-70">Sign in to your account</p>
             </div>
 
@@ -43,7 +45,7 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                         id="username"
                         placeholder="Enter your username"
                         autoComplete="username"
-                        className="w-full text-lg rounded-lg p-3 border-2 border-secondary shadow-sm bg-background text-text focus:border-primary transition-all duration-200"
+                        className="w-full text-base rounded-lg p-3 border-2 border-secondary shadow-sm bg-background text-text focus:border-primary transition-all duration-200"
                         required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -62,7 +64,7 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                             id="password"
                             placeholder="Enter your password"
                             autoComplete="current-password"
-                            className="w-full text-lg rounded-lg p-3 pr-10 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
+                            className="w-full text-base rounded-lg p-3 pr-10 border-2 border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-700 text-black dark:text-white focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 transition-all duration-200"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -91,7 +93,7 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
             <div className="pt-4">
                 <button
                     type="submit"
-                    className={`w-full py-3 px-4 rounded-lg text-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    className={`w-full py-3 px-4 rounded-lg text-base font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         isFormValid
                             ? "bg-primary text-white transform hover:scale-105"
                             : "bg-secondary bg-opacity-50 text-text opacity-50 cursor-not-allowed"
@@ -100,15 +102,6 @@ export default function LoginForm({ error, setAccType }: { error?: string, setAc
                 >
                     Sign In
                 </button>
-            </div>
-
-            <div className="text-center pt-2">
-                <p className="text-text opacity-70">
-                    Don&apos;t have an account?{' '}
-                    <button onClick={() => setAccType('register')} className="text-primary hover:opacity-80 font-medium transition-colors">
-                        Sign up
-                    </button>
-                </p>
             </div>
         </form>
     );

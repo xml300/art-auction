@@ -45,7 +45,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
         return pageNumbers;
     };
-
     const pageNumbers = getPageNumbers();
 
     return (

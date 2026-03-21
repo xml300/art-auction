@@ -2,28 +2,22 @@
 
 import Sidebar from "@/components/Sidebar";
 import { SwitchThemeToggle } from "@/components/ThemeToggle";
+import ProfilePicture from "./ProfilePicture";
 import { LogOut, UserCircle, Menu, X } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    // const [session] = await getSession();
+    // const profilePicture = session?.profilePicture;
+    const profilePicture = "/logo.png";
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [profilePicture, setProfilePicture] = useState<string>("/null"); 
 
-    useEffect(() => {
-        fetch('/api/profile')
-        .then(res => res.json())
-        .then(json => {
-            setProfilePicture(json.profilePicture) 
-        })
-    }, []);
 
- 
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -41,10 +35,11 @@ export default function DashboardLayout({
                 <Sidebar onClose={toggleMobileMenu} />
             </div>
 
+
             {/* Main Content */}
             <section className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
-                <header className="w-full border-b px-4 sm:px-6 lg:px-12 py-4 flex justify-between items-center shadow-md bg-background border-slate-200 dark:border-slate-900">
+                <header className=" w-full border-b px-4 sm:px-6 lg:px-12 py-4 flex justify-between items-center shadow-md bg-background border-slate-200 dark:border-slate-900">
                     {/* Mobile Menu Button */}
                     <button
                         onClick={toggleMobileMenu}
@@ -57,14 +52,8 @@ export default function DashboardLayout({
 
                     <div className="flex items-center gap-4">
                         <div className="group relative">
-                            <Image
-                                src={profilePicture}
-                                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black dark:bg-white hover:scale-110 transition-transform duration-200"
-                                width={100}
-                                height={100}
-                                alt="User Profile"
-                            />
-                            <div className="hidden group-hover:flex absolute right-0 bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg min-w-48 p-2 animate-fade-in z-50" style={{animationDuration: '0.3s'}}>
+                            <ProfilePicture />
+                            <div className="hidden group-hover:flex absolute right-0 bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg min-w-48 p-2 animate-fade-in z-50" style={{ animationDuration: '0.3s' }}>
                                 <ul className="space-y-2 w-full">
                                     <li className="px-4 py-2 w-full flex gap-x-2 hover:scale-105 transition-transform duration-200">
                                         <SwitchThemeToggle />

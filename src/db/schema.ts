@@ -73,7 +73,7 @@ const transactions = pgTable('transactions', {
     description: varchar('description', { length: 1000 }),
     type: varchar('type', { length: 100 }).notNull(),
     status: varchar('status', { length: 100 }).notNull(),
-    transactionTime: timestamp('transaction_time').defaultNow(),
+    transactionTime: timestamp('transaction_time').defaultNow().notNull(),
     ...timestamps
 });
 

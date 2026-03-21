@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
         const route = userType === 1 ? '/artist-dashboard' : '/dashboard';
         const response = NextResponse.redirect(new URL(route, process.env.SITE_BASE_URL || ""), {status: 303});
-        response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
+        response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username, profilePicture: user.profilePicture }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
             maxAge: 1 * 60 * 60, 
             httpOnly: true,
             path: '/'

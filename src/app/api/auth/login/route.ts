@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         { columnName: 'username', comparator: '=', value: username }
     ]))[0];
 
-    if (!user || await bcrypt.compare(password, user.password)) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
         const response = NextResponse.redirect(redirectUrl, {status: 303});
         response.cookies.set('errors', 'Invalid username or password.', {
             maxAge: 10, 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const role = await getUserRole(user.id);
     const path = role.name === 'Artist' ? '/artist-dashboard' : '/dashboard';
     const response = NextResponse.redirect(new URL(path, request.url), {status: 303});
-    response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
+    response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username, profilePicture: user.profilePicture }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
         maxAge: 1 * 60 * 60, 
         httpOnly: true,
         path: '/'

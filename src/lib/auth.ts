@@ -5,6 +5,7 @@ interface Payload {
     userId: number;
     roleId: number; 
     username: string;
+    profilePicture: string | null;
     iat: number;
 }
 

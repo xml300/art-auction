@@ -26,7 +26,7 @@ export function Header() {
     }, [isMobileMenuOpen]);
 
     return (
-        <header className="px-4 sm:px-6 lg:px-8 py-4 shadow-b-lg border-b-2 bg-background border-secondary">
+        <header className="px-4 sm:px-6 lg:px-8 py-4 shadow-b-lg border-b bg-background border-accent sticky top-0 z-20 w-full">
             <nav className="flex justify-between items-center">
                 <div className="">
                     <Link href="/">

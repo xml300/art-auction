@@ -25,7 +25,6 @@ export async function GET(request: NextRequest){
 
     const allArtworks = await getArtworks(undefined, filterOptions);
     const paginatedArtworks = await getArtworks(undefined, { ...filterOptions, page, limit });
-    console.log(paginatedArtworks);
    
     return NextResponse.json({
         artworks: paginatedArtworks,

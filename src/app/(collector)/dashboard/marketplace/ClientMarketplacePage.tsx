@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ListFilter, MinusIcon } from "lucide-react";
+import { ListFilter, MinusIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
@@ -12,6 +12,8 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
     const [filteredArtworks, setFilteredArtworks] = useState<Artwork[]>(initialArtworks);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(initialTotalPages);
+
+    const [isLoading, setIsLoading] = useState(false);
     
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [searchFilter, setSearchFilter] = useState("");
@@ -41,6 +43,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
             const json = await res.json();
             setFilteredArtworks(json.artworks);
             setTotalPages(json.totalPages);
+            setIsLoading(false);
         };
         fetchArtworks();
     }, [currentPage, searchFilter, artistName, minBid, maxBid, minEndTime, maxEndTime]);
@@ -51,6 +54,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+        setIsLoading(true);
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,9 +162,15 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
             </div>
 
             {/* Marketplace Grid */}
-            <div className="z-10">
-                <MarketplaceGrid artworks={filteredArtworks} />
-            </div>
+            {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                    <Loader2 className="w-12 h-12 animate-spin" />
+                </div>
+            ) : (
+                <div className="z-10">
+                    <MarketplaceGrid artworks={filteredArtworks} />
+                </div>
+            )}
 
             {/* Pagination */}
             <div className="flex justify-center sm:justify-end w-full animate-fade-in-delay-3">

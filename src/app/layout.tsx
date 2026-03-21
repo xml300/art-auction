@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import "./globals.css";
+import { ErrorProvider } from "@/components/ErrorProvider";
+import { ErrorBoundary } from "./ErrorBoundary";
+import Error from "./Error";
+import "./globals.css"; 
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -23,7 +26,11 @@ export default function RootLayout({
         className={`${openSans.className} antialiased h-screen bg-background text-text`}
       >
         <div className="animate-fade-in h-full">
-          {children}
+          <ErrorBoundary fallback={Error}>
+            <ErrorProvider>
+              {children}
+            </ErrorProvider>
+          </ErrorBoundary>
         </div>
       </body>
     </html>

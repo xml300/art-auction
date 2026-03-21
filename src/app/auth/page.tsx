@@ -17,7 +17,7 @@ export default async function AuthPage(){
                 <Image src="/logo.png" width={80} height={80} alt="Logo" />
             </Link>
 
-            <div className="w-full max-w-xl mx-auto rounded-2xl shadow-2xl p-6 mt-6 bg-background border border-secondary">
+            <div className="w-full max-w-xl mx-auto rounded-2xl shadow-2xl p-6 mt-6 bg-background border border-slate-200 dark:border-slate-900">
                <AuthSection error={error || ""} />
             </div>
         </main>

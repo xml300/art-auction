@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="text-center py-4 border-t shadow-md bg-background text-text border-secondary animate-fade-in">
+        <footer className="text-center py-4 border-t-2 shadow-md bg-background text-text border-slate-200 animate-fade-in">
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-base">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div className="text-left space-y-4 animate-fade-in">
@@ -48,13 +48,10 @@ export function Footer() {
                 </div>
             </section>
 
-            <hr className="my-12 h-0.5 bg-secondary" />
+            <hr className="my-6 mt-12 h-[0.1] bg-slate-200" />
 
             <div className="max-w-7xl mx-auto px-4 text-sm mb-2">
-                <Link href="" className=" hover:underline ">
-                    Privacy Policy / Terms & Conditions
-                </Link>
-                  <p className="font-light italic mt-8">&copy; 2025 Artsyl. All rights reserved.</p>
+                  <p className="font-light italic">&copy; 2025 Artsyl. All rights reserved.</p>
             </div>
         </footer>
     );

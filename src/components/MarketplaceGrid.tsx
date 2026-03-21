@@ -5,14 +5,13 @@ import EmptyState from "./EmptyState";
 import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[], numArtworks?: number }) {
-    let marketArtworks = artworks.filter(artwork => artwork.ownerId == null);
     if (numArtworks) {
-        marketArtworks = marketArtworks.slice(0, numArtworks);
+        artworks = artworks.slice(0, numArtworks);
     }
 
     return (
         <section className="mb-12 mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
-            {marketArtworks.map(artwork => {
+            {artworks.map(artwork => {
                 return (
                     <div key={artwork.id} className={` rounded-lg shadow-lg hover:scale-105 transition-transform duration-300`}>
                         <div className="flex flex-col gap-6 relative group">
