@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
             });
             return response;
         }
-        createTransaction(userId, referenceNumber, `Deposit of $${amount.toFixed(2)}`, "Wallet Deposit", amount, "pending");
+        createTransaction(userId, referenceNumber, `Deposit of ₦${amount.toLocaleString()}`, "Wallet Deposit", amount, "pending");
         return NextResponse.redirect(paymentData.data.authorization_url, {status: 303});
     } catch (error) {
         console.error("API Deposit error:", error);

@@ -48,9 +48,9 @@ export default function DepositModal({
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200 appearance-none"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            placeholder="e.g., 50.00"
-                            min="50.00"
-                            step="0.01"
+                            placeholder="e.g., 1000.00"
+                            min="100.00"
+                            step="1.00"
                             required
                         />
                     </div>

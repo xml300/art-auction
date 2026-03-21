@@ -114,7 +114,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
                                         name="min_bid"
                                         id="min_bid"
                                         className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
-                                        placeholder="$0.00"
+                                        placeholder="₦0.00"
                                         onChange={(e) => (document.querySelector('#max_bid') as HTMLInputElement).value = e.target.value}
                                     />
                                     <MinusIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -123,7 +123,7 @@ export default function ClientMarketplacePage({initialArtworks, initialTotalPage
                                         name="max_bid"
                                         id="max_bid"
                                         className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
-                                        placeholder="$10,000.00"
+                                        placeholder="₦10,000.00"
                                     />
                                 </div>
                             </div>

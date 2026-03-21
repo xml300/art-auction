@@ -6,6 +6,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import DepositModal from "@/components/DepositModal";
 import Pagination from "@/components/Pagination"; // Import Pagination component
+import { formatCurrency } from "@/lib/utils";
 
 interface ClientDepositPageProps {
     initialWalletBalance: number;
@@ -64,7 +65,7 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                     <div>
                         <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Current Balance</h2>
                         <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                            ${walletBalance !== null ? walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "N/A"}
+                            {walletBalance !== null ? formatCurrency(walletBalance) : "N/A"}
                         </p>
                         <p className="text-gray-500 dark:text-gray-400 mt-2">Funds available for bidding and purchases.</p>
                     </div>
@@ -123,14 +124,14 @@ export default function ClientDepositPage({ initialWalletBalance, initialTransac
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                 {transaction.description?.replaceAll(/([\d\.]+)/g, (match, p1: string) => {
-                                                    return parseFloat(p1).toLocaleString("en-US", { minimumFractionDigits: 2 });
+                                                    return parseFloat(p1).toLocaleString("en-NG", { minimumFractionDigits: 2 });
                                                 })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                 {transaction.type}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                ${transaction.finalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                {formatCurrency(transaction.finalAmount)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {transaction.transactionTime?.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}

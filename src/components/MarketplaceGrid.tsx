@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Artwork } from "@/types";
 import EmptyState from "./EmptyState";
+import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[], numArtworks?: number }) {
     let marketArtworks = artworks.filter(artwork => artwork.ownerId == null);
@@ -16,9 +17,9 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                     <div key={artwork.id} className={` rounded-lg shadow-lg hover:scale-105 transition-transform duration-300`}>
                         <div className="flex flex-col gap-6 relative group">
                             {artwork.currentBid ? artwork.currentBid > 0 ?
-                                <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.currentBid.toLocaleString()}</span> :
-                                <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.startingBid.toLocaleString()}</span>
-                            : <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">${artwork.startingBid.toLocaleString()}</span>}
+                                <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">{formatCurrency(artwork.currentBid)}</span> :
+                                <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">{formatCurrency(artwork.startingBid)}</span>
+                            : <span className="group-hover:hidden absolute right-4 top-4 bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-lg font-semibold border border-white/20">{formatCurrency(artwork.startingBid)}</span>}
                             <div className="w-full">
                                 <Image
                                     src={artwork.imageUrl}
@@ -39,11 +40,11 @@ export function MarketplaceGrid({ artworks, numArtworks }: { artworks: Artwork[]
                                     <div className="flex-1">
                                         <p className="text-xs sm:text-sm text-secondary opacity-70 mb-1">Current Bid</p>
                                         {artwork.currentBid ? (artwork.currentBid > 0 ? (
-                                            <p className="text-lg sm:text-xl font-bold">${artwork.currentBid.toLocaleString()}</p>
+                                            <p className="text-lg sm:text-xl font-bold">{formatCurrency(artwork.currentBid)}</p>
                                         ) : (
-                                            <p className="text-lg sm:text-xl font-bold">${artwork.startingBid.toLocaleString()}</p>
+                                            <p className="text-lg sm:text-xl font-bold">{formatCurrency(artwork.startingBid)}</p>
                                         )) : (
-                                            <p className="text-lg sm:text-xl font-bold">${artwork.startingBid.toLocaleString()}</p>
+                                            <p className="text-lg sm:text-xl font-bold">{formatCurrency(artwork.startingBid)}</p>
                                         )}
                                     </div>
                                     <div className="flex-1">

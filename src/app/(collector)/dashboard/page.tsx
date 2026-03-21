@@ -4,7 +4,7 @@ import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import EmptyState from "@/components/EmptyState";
 import {
     ImageIcon,
-    DollarSign,
+    Coins,
     TrendingUp,
     Heart,
     Award,
@@ -13,11 +13,7 @@ import {
     Activity
 } from "lucide-react";
 import { getSession } from "@/lib/auth";
-
-
-function formatAmount(amount: number){
-    return amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-}
+import { formatCurrency } from "@/lib/utils";
 
 
 export default async function DashboardPage() {
@@ -60,10 +56,10 @@ export default async function DashboardPage() {
                     <div className="group relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-fade-in-delay-2 border border-green-200/50 dark:border-green-800/50">
                         <div className="flex items-center justify-between mb-4">
                             <div className="p-3 bg-green-500 rounded-xl group-hover:bg-green-600 transition-colors duration-300">
-                                <DollarSign className="w-6 h-6 text-white" />
+                                <Coins className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">${formatAmount(userProfile.stats.totalSpent)}</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">{formatCurrency(userProfile.stats.totalSpent)}</div>
                                 <div className="text-xs text-green-600 dark:text-green-400 font-medium">Total</div>
                             </div>
                         </div>
@@ -131,7 +127,7 @@ export default async function DashboardPage() {
                                 <TrendingUp className="w-6 h-6 text-white" />
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">${formatAmount(userProfile.stats.avgBidAmount)}</div>
+                                <div className="text-2xl sm:text-3xl font-bold text-indigo-900 dark:text-indigo-100">{formatCurrency(userProfile.stats.avgBidAmount)}</div>
                                 <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Average</div>
                             </div>
                         </div>

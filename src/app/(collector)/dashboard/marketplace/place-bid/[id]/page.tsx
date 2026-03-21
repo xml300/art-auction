@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { cookies } from 'next/headers';
 import EmptyState from '@/components/EmptyState';
 import { JoinedReturnType } from '@/types';
+import { formatCurrency } from '@/lib/utils';
 
 export default async function PlaceBidPage({params}: {params: Promise<{id: string}>}) {
     const id = parseInt((await params).id); 
@@ -50,9 +51,9 @@ export default async function PlaceBidPage({params}: {params: Promise<{id: strin
                         <div>
                             <p className="text-text opacity-50">Current Bid</p>
                             { artwork.currentBid && artwork.currentBid > 0 ? (
-                                <p className="font-medium">${artwork.currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                <p className="font-medium">{formatCurrency(artwork.currentBid)}</p>
                             ):(
-                                <p className="font-medium">${artwork.startingBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                <p className="font-medium">{formatCurrency(artwork.startingBid)}</p>
 
                             )}
                         </div>

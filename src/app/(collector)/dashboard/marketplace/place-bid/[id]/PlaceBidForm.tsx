@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Artwork } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: string }) {
     const minBid = (artwork.currentBid && artwork.currentBid > 0 ? artwork.currentBid : artwork.startingBid) + 1;
@@ -53,7 +54,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
         setSuccessMessage(null);
 
         if (bidAmount < minBid) {
-            setError(`Bid amount must be at least $${minBid.toLocaleString()}.`);
+            setError(`Bid amount must be at least ${formatCurrency(minBid)}.`);
             event.preventDefault();
             return;
         }
@@ -75,12 +76,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
     const predefinedOptions = useMemo(() => getPreiledBidOptions((artwork.currentBid && artwork.currentBid > 0) ? artwork.currentBid : artwork.startingBid), [artwork.currentBid, artwork.startingBid]);
 
     const formattedBidAmount = useMemo(() => {
-        return bidAmount.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+        return formatCurrency(bidAmount);
     }, [bidAmount]);
 
     useEffect(() => {
@@ -100,7 +96,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
     return (
         <div className="xl:w-1/2 bg-background rounded-lg shadow-lg p-6 flex flex-col border border-secondary">
             {currentBid > 0 && <div className="my-8 w-full flex justify-end">
-                <span className="text-xl font-extrabold bg-secondary bg-opacity-10 text-text px-6 py-3 rounded-xl shadow-lg border border-secondary">Your current bid: ${currentBid.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="text-xl font-extrabold bg-secondary bg-opacity-10 text-text px-6 py-3 rounded-xl shadow-lg border border-secondary">Your current bid: {formatCurrency(currentBid)}</span>
             </div>}
             <h2 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-white">Your Bid</h2>
             <form method="POST" action={`/api/artworks/${artwork.id}/bid`} className="flex flex-col gap-6 flex-grow" onSubmit={handleSubmit}>
@@ -125,7 +121,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
                         ref={inputRef}
                         value={formattedBidAmount}
                         onChange={handleBidChange}
-                        placeholder={`Minimum bid: $${minBid.toLocaleString()}`}
+                        placeholder={`Minimum bid: ${formatCurrency(minBid)}`}
                         className="w-full p-3 border border-secondary rounded-lg text-2xl text-center font-bold focus:ring-primary focus:border-primary bg-background text-text transition-colors duration-200"
                         required
                     />
@@ -139,7 +135,7 @@ export function PlaceBidForm({ artwork, errors }: { artwork: Artwork, errors: st
                             onClick={() => handlePredefinedBid(option)}
                             className="px-4 py-2 border border-secondary rounded-lg text-base sm:text-lg font-medium text-text hover:bg-secondary hover:bg-opacity-20 transition-colors duration-200 flex items-center justify-center"
                         >
-                            +${option}
+                            +₦{option.toLocaleString()}
                         </button>
                     ))}
                 </div>

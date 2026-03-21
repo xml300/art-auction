@@ -81,7 +81,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const reference = `BID-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-    const transDescription = `Bid of $${bidAmount} placed on ${artwork.title}`;
+    const transDescription = `Bid of ₦${bidAmount.toLocaleString()} placed on ${artwork.title}`;
 
     createTransaction(user.id, reference, transDescription, 'wallet', amount, 'completed');
     createBid(artworkId, user.id, bidAmount);

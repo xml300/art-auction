@@ -7,6 +7,7 @@ import ArtworkGrid from "@/components/ArtworkGrid";
 import ActivityFeed from "@/components/ActivityFeed";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Activity, Artwork } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 
 interface CollectorProfile {
@@ -90,7 +91,7 @@ export default function ProfilePage() {
                         />
                         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                             <StatsCard title="Artworks Owned" value={collectorProfile.stats.artworksOwned} />
-                            <StatsCard title="Total Spent" value={`$${collectorProfile.stats.totalSpent.toLocaleString()}`} />
+                            <StatsCard title="Total Spent" value={formatCurrency(collectorProfile.stats.totalSpent)} />
                             <StatsCard title="Auctions Won" value={collectorProfile.stats.auctionsWon} />
                             <StatsCard title="Watchlist Items" value={collectorProfile.stats.watchlistItems} />
                         </section>
