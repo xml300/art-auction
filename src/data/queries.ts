@@ -10,6 +10,7 @@ import {
   Transactions,
   Watchlists,
   Activities,
+  Notifications,
 } from "@/models";
 
 // User models
@@ -43,3 +44,11 @@ export const createTransaction = Transactions.create;
 // Watchlist & Activity models
 export const getWatchlist = Watchlists.get;
 export const getActivity = Activities.get;
+
+// Notification models
+export const createNotification = Notifications.create;
+export const getNotifications = Notifications.getAll;
+export const getUnreadNotificationsCount = Notifications.getUnreadCount;
+export const markNotificationAsRead = Notifications.markAsRead;
+export const markAllNotificationsAsRead = Notifications.markAllAsRead;
+export const deleteNotification = Notifications.delete;

@@ -5,3 +5,4 @@ export * from "./bid.model";
 export * from "./transaction.model";
 export * from "./watchlist.model";
 export * from "./activity.model";
+export * from "./notification.model";

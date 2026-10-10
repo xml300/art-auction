@@ -1,8 +1,9 @@
-import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum, boolean } from "drizzle-orm/pg-core";
 
 
 export const transactionStatusEnum = pgEnum('transaction_status_enum', ["pending", "completed", "failed", "refunded"]);
-export const transactionTypeEnum = pgEnum('transaction_type_enum', ["deposit", "withdrawal", "bid_payment", "refund", "platform_fee"])
+export const transactionTypeEnum = pgEnum('transaction_type_enum', ["deposit", "withdrawal", "bid_payment", "refund", "platform_fee"]);
+export const notificationTypeEnum = pgEnum('notification_type_enum', ["outbid", "auction_won", "auction_ending_soon", "deposit_success", "watchlist_reminder", "system"]);
 
 const timestamps = {
     createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -108,4 +109,16 @@ const watchlists = pgTable('watchlists', {
     ...timestamps
 });
 
-export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids, activities, watchlists };
+const notifications = pgTable('notifications', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id').references(() => users.id).notNull(),
+    type: notificationTypeEnum('type').notNull().default('system'),
+    title: varchar('title', { length: 255 }).notNull(),
+    message: varchar('message', { length: 1000 }).notNull(),
+    data: varchar('data', { length: 1000 }),
+    isRead: boolean('is_read').default(false).notNull(),
+    readAt: timestamp('read_at'),
+    ...timestamps
+});
+
+export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids, activities, watchlists, notifications };

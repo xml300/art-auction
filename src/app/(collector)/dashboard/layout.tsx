@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { SwitchThemeToggle } from "@/components/ThemeToggle";
 import SessionProvider from "@/components/SessionProvider";
 import ProfilePicture from "./ProfilePicture";
+import NotificationBell from "@/components/NotificationBell";
 import { LogOut, UserCircle, Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -57,7 +58,9 @@ export default function DashboardLayout({
                 </h1>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <NotificationBell />
+
                 <div className="group relative">
                   <button
                     type="button"
