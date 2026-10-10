@@ -33,8 +33,8 @@ export default function DashboardLayout({
         {/* Sidebar Container */}
         <aside
           className={`fixed top-0 left-0 h-full z-50 transform ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static shrink-0`}
+            isMobileMenuOpen ? "translate-x-0 visible pointer-events-auto" : "-translate-x-full invisible pointer-events-none"
+          } lg:translate-x-0 lg:visible lg:pointer-events-auto transition-transform duration-200 ease-in-out lg:static shrink-0`}
         >
           <Sidebar onClose={() => setIsMobileMenuOpen(false)} />
         </aside>
@@ -42,31 +42,32 @@ export default function DashboardLayout({
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           {/* Top Navigation Bar */}
-          <header className="w-full border-b border-border-subtle px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center bg-surface shrink-0">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={toggleMobileMenu}
-                aria-label="Toggle navigation menu"
-                className="lg:hidden p-2 rounded-xl text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <h1 className="text-lg font-bold tracking-tight text-text">
-                Collector Dashboard
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="group relative">
+          <header className="w-full border-b border-border-subtle px-4 sm:px-6 lg:px-8 py-3.5 bg-surface shrink-0">
+            <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
+              <div className="flex items-center gap-3">
                 <button
-                  type="button"
-                  aria-label="User account menu"
-                  className="rounded-full ring-2 ring-transparent group-hover:ring-primary/30 transition-all"
+                  onClick={toggleMobileMenu}
+                  aria-label="Toggle navigation menu"
+                  className="lg:hidden p-2 rounded-xl text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
                 >
-                  <ProfilePicture />
+                  <Menu className="w-5 h-5" />
                 </button>
+                <h1 className="text-lg font-bold tracking-tight text-text">
+                  Collector Dashboard
+                </h1>
+              </div>
 
-                <div className="hidden group-hover:block absolute right-0 top-full pt-2 z-50 min-w-48 animate-fade-in">
+              <div className="flex items-center gap-3">
+                <div className="group relative">
+                  <button
+                    type="button"
+                    aria-label="User account menu"
+                    className="flex items-center justify-center rounded-full ring-2 ring-transparent group-hover:ring-primary/30 transition-all"
+                  >
+                    <ProfilePicture />
+                  </button>
+
+                  <div className="hidden group-hover:block absolute right-0 top-full pt-2 z-50 min-w-48 animate-fade-in">
                   <div className="bg-surface rounded-2xl shadow-xl border border-border-subtle p-2 space-y-1">
                     <div className="px-3 py-2 flex items-center justify-between text-xs text-text-muted">
                       <span>Dark Theme</span>
@@ -93,7 +94,8 @@ export default function DashboardLayout({
                 </div>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
           {/* Scrollable Viewport */}
           <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0">

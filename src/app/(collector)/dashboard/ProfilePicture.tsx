@@ -8,9 +8,9 @@ export default function ProfilePicture() {
     return (
         <Image
             src={profilePicture}
-            className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black dark:bg-white hover:scale-110 transition-transform duration-200"
-            width={100}
-            height={100}
+            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full object-cover bg-surface-elevated hover:scale-105 transition-transform duration-200"
+            width={40}
+            height={40}
             alt="User Profile"
         />
     );

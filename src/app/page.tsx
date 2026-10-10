@@ -42,7 +42,7 @@ export default async function Home() {
   const artworks = await getArtworks();
 
   return (
-    <main className="min-h-screen flex flex-col bg-background text-text transition-colors">
+    <main className="min-h-screen flex flex-col bg-background text-text transition-colors overflow-x-hidden">
       <Header />
 
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-8 space-y-16">
