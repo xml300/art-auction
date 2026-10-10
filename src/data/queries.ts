@@ -11,6 +11,7 @@ import {
   Watchlists,
   Activities,
   Notifications,
+  PushSubscriptions,
 } from "@/models";
 
 // User models
@@ -52,3 +53,9 @@ export const getUnreadNotificationsCount = Notifications.getUnreadCount;
 export const markNotificationAsRead = Notifications.markAsRead;
 export const markAllNotificationsAsRead = Notifications.markAllAsRead;
 export const deleteNotification = Notifications.delete;
+
+// Push subscription models
+export const savePushSubscription = PushSubscriptions.createOrUpdate;
+export const getPushSubscriptionsByUser = PushSubscriptions.getByUserId;
+export const deletePushSubscriptionByEndpoint = PushSubscriptions.deleteByEndpoint;
+export const deletePushSubscriptionsByUser = PushSubscriptions.deleteByUserId;

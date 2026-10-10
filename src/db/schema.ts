@@ -121,4 +121,14 @@ const notifications = pgTable('notifications', {
     ...timestamps
 });
 
-export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids, activities, watchlists, notifications };
+const pushSubscriptions = pgTable('push_subscriptions', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id').references(() => users.id).notNull(),
+    endpoint: varchar('endpoint', { length: 1000 }).notNull().unique(),
+    p256dh: varchar('p256dh', { length: 500 }).notNull(),
+    auth: varchar('auth', { length: 500 }).notNull(),
+    userAgent: varchar('user_agent', { length: 500 }),
+    ...timestamps
+});
+
+export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids, activities, watchlists, notifications, pushSubscriptions };

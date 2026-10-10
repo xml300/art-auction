@@ -1,4 +1,4 @@
-import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum } from "./db/schema";
+import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum } from "./db/schema";
 
 export enum Roles {
     Admin,
@@ -33,6 +33,9 @@ export type NewWatchlist = typeof watchlists.$inferInsert;
 export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
 export type NotificationType = typeof notificationTypeEnum.enumValues[number];
+
+export type DbPushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewDbPushSubscription = typeof pushSubscriptions.$inferInsert;
 
 export interface ResultType {
     artworks: Artwork;
