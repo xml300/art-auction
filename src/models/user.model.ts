@@ -183,7 +183,7 @@ export const Users = {
       email: user.email,
       profilePicture: user.profilePicture || "/logo.png",
       bio: user.bio || "No bio provided.",
-      wallet: user.wallet,
+      wallet: user.wallet / 100,
       socialMedia: {
         twitter: "https://twitter.com/janedoe_art",
         instagram: "https://instagram.com/janedoe_collection",
@@ -191,7 +191,7 @@ export const Users = {
       stats: {
         artworksOwned: ownedArtworks.length,
         totalSpent: transactions
-          .filter((tran: Transaction) => tran.status === "completed" && tran.description === "bid")
+          .filter((tran: Transaction) => tran.status === "completed" && (tran.type === "bid_payment" || tran.description === "bid"))
           .reduce((acc: number, tran: Transaction) => parseFloat(tran.amount) + acc, 0),
         auctionsWon: ownedArtworks.length,
         watchlistItems: watchlist.length,

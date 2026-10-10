@@ -40,7 +40,7 @@ export async function GET() {
         email: user.email,
         roleId: user.roleId,
         roleName,
-        wallet: user.wallet,
+        wallet: user.wallet / 100,
         profilePicture: user.profilePicture || null,
         firstName: user.firstName,
         surname: user.surname,

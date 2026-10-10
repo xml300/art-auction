@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getArtworkById, getUser, createTransaction, getBids, getBidsByUser, updateArtwork, createBid, updateUser } from '@/data/queries';
+import { getArtworkById, getUser, createTransaction, getBids, updateArtwork, createBid, updateUser } from '@/data/queries';
 import { JoinedReturnType } from '@/types';
 import { getSession } from '@/lib/auth';
 import { notifyUser } from '@/lib/notifications';
@@ -65,15 +65,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
         return response;
     }
-    const bid = (await getBidsByUser(user.id, { sortBy: 'bidTime', sortOrder: 'desc', where: [{ columnName: 'artworkId', value: artworkId }] })).at(0);
-    let amount = bidAmount;
-    if (bid) {
-        amount = amount - bid.bidAmount;
+    // Fetch recent bids to identify previous highest bidder
+    const previousBids = await getBids(artworkId, { sortBy: 'bidTime', sortOrder: 'desc' });
+    const highestBid = previousBids[0];
+
+    // Determine amount to pay: if user is raising their own active top bid, only pay difference; otherwise pay full bid
+    let amountToPayNaira = bidAmount;
+    if (highestBid && highestBid.bidderId === user.id) {
+        amountToPayNaira = bidAmount - highestBid.bidAmount;
     }
-    console.log(amount, bid, bidAmount)
 
+    const amountToPayKobo = Math.round(amountToPayNaira * 100);
 
-    if (amount > user.wallet) {
+    if (amountToPayKobo > user.wallet) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'Insufficient funds in your auction deposit', {
             maxAge: 10,
@@ -85,15 +89,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const reference = `BID-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
     const transDescription = `Bid of ₦${bidAmount.toLocaleString()} placed on ${artwork.title}`;
 
-    // Fetch recent bids to identify previous highest bidder
-    const previousBids = await getBids(artworkId, { sortBy: 'bidTime', sortOrder: 'desc' });
-    const previousTopBid = previousBids.find(b => b.bidderId !== user.id);
-
     await db.transaction(async (tx) => {
-        await createTransaction(user.id, reference, transDescription, 'bid_payment', amount.toFixed(2), 'completed', undefined, tx);
+        await createTransaction(user.id, reference, transDescription, 'bid_payment', amountToPayNaira.toFixed(2), 'completed', artworkId, tx);
         await createBid(artworkId, user.id, bidAmount, tx);
         await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
-        await updateUser(user.id, { wallet: user.wallet - amount }, tx);
+        await updateUser(user.id, { wallet: user.wallet - amountToPayKobo }, tx);
+
+        // If another collector was the highest bidder, refund their bid to their wallet
+        if (highestBid && highestBid.bidderId !== user.id) {
+            const previousBidder = await getUser(highestBid.bidderId, tx);
+            if (previousBidder) {
+                const refundKobo = Math.round(highestBid.bidAmount * 100);
+                const refundRef = `REF-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+                const refundDesc = `Refund for outbid on ${artwork.title}`;
+                await createTransaction(previousBidder.id, refundRef, refundDesc, 'refund', highestBid.bidAmount.toFixed(2), 'completed', artworkId, tx);
+                await updateUser(previousBidder.id, { wallet: previousBidder.wallet + refundKobo }, tx);
+            }
+        }
     });
 
     // Notify current user of successful bid placement
@@ -106,13 +118,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         channels: ["in_app"],
     }).catch(err => console.error("Bid confirmation dispatch error:", err));
 
-    // Notify previous top bidder that they have been outbid (via in-app & push)
-    if (previousTopBid) {
+    // Notify previous top bidder that they have been outbid and their funds refunded
+    if (highestBid && highestBid.bidderId !== user.id) {
         notifyUser({
-            userId: previousTopBid.bidderId,
+            userId: highestBid.bidderId,
             type: "outbid",
-            title: "Outbid Alert",
-            body: `You have been outbid on "${artwork.title}". High bid is now ₦${bidAmount.toLocaleString()}.`,
+            title: "Outbid Alert & Refund",
+            body: `You have been outbid on "${artwork.title}". Your bid of ₦${highestBid.bidAmount.toLocaleString()} has been refunded to your wallet.`,
             data: { artworkId, targetUrl: `/dashboard/marketplace/place-bid/${artworkId}` },
             channels: ["in_app", "push"],
         }).catch(err => console.error("Outbid dispatch error:", err));
