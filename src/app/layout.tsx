@@ -3,6 +3,7 @@ import { Open_Sans } from "next/font/google";
 import { ErrorProvider } from "@/components/ErrorProvider";
 import { ErrorBoundary } from "./ErrorBoundary";
 import Error from "./Error";
+import { ToastProvider } from "@/contexts/ToastContext";
 import "./globals.css"; 
 
 const openSans = Open_Sans({
@@ -28,7 +29,9 @@ export default function RootLayout({
         <div className="animate-fade-in h-full">
           <ErrorBoundary fallback={Error}>
             <ErrorProvider>
-              {children}
+              <ToastProvider>
+                {children}
+              </ToastProvider>
             </ErrorProvider>
           </ErrorBoundary>
         </div>

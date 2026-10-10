@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function NotificationSettings() {
   const [isSaved, setIsSaved] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaved(true);
+    toast.success("Notification preferences have been saved successfully.", "Preferences Updated");
     setTimeout(() => setIsSaved(false), 2000);
   };
 
