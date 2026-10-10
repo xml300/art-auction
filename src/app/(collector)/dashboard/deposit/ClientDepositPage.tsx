@@ -2,152 +2,189 @@
 
 import { useState, useEffect } from "react";
 import { Transaction } from "@/types";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import DepositModal from "@/components/DepositModal";
-import Pagination from "@/components/Pagination"; // Import Pagination component
+import Pagination from "@/components/Pagination";
 import { formatCurrency } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { TableRowSkeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/Button";
+import { PlusCircle, Wallet, AlertCircle } from "lucide-react";
 
 interface ClientDepositPageProps {
-    initialWalletBalance: number;
-    initialTransactions: Transaction[];
-    initialTotalTransactions: number; // Add initialTotalTransactions
-    errors: string;
+  initialWalletBalance: number;
+  initialTransactions: Transaction[];
+  initialTotalTransactions: number;
+  errors: string;
 }
 
-export default function ClientDepositPage({ initialWalletBalance, initialTransactions, initialTotalTransactions, errors }: ClientDepositPageProps) {
-    const [loading, setLoading] = useState(false);
-    const [walletBalance] = useState<number | null>(initialWalletBalance);
-    const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
-    const [totalTransactions, setTotalTransactions] = useState<number>(initialTotalTransactions); // State for total transactions
-    const [currentPage, setCurrentPage] = useState(1); // State for current page
-    const transactionsPerPage = 10; // Number of transactions per page
-    const [isModalOpen, setIsModalOpen] = useState(false);
+export default function ClientDepositPage({
+  initialWalletBalance,
+  initialTransactions,
+  initialTotalTransactions,
+  errors,
+}: ClientDepositPageProps) {
+  const [loading, setLoading] = useState(false);
+  const [walletBalance] = useState<number | null>(initialWalletBalance);
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [totalTransactions, setTotalTransactions] = useState<number>(initialTotalTransactions);
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 10;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(errors);
 
-    const [error, setError] = useState<string | null>(errors);
+  const fetchTransactions = async (page: number) => {
+    setLoading(true);
+    try {
+      const res = await api.get<{ transactions: Transaction[]; totalCount: number }>(
+        `/transactions?page=${page}&limit=${transactionsPerPage}`
+      );
+      setTransactions(res.transactions);
+      setTotalTransactions(res.totalCount);
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+      setError("Failed to load transaction history.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchTransactions = async (page: number) => {
-        setLoading(true);
-        try {
-            const res = await api.get<{transactions: Transaction[], totalCount: number}>(`/transactions?page=${page}&limit=${transactionsPerPage}`);
-            setTransactions(res.transactions);
-            setTotalTransactions(res.totalCount);
-        } catch (err) {
-            console.error("Error fetching transactions:", err);
-            setError("Failed to load transaction history.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    fetchTransactions(currentPage);
+  }, [currentPage]);
 
+  const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
 
-    useEffect(() => {
-        fetchTransactions(currentPage);
-    }, [currentPage]); // Refetch transactions when page changes
-
-    const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
-
-    return (
-        <div className="container mx-auto p-4 ">
-            {error && (<div className={`bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
-                <strong className="font-bold">Error!</strong>
-                <span className="block sm:inline"> {error}</span>
-            </div>)}
-            <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white animate-fade-in">Deposit</h1>
-            <div className="grid grid-cols-1 gap-6 mb-8 animate-fade-in-delay-1">
-                {/* Current Balance Card */}
-                <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 transform transition-transform duration-300 hover:scale-105 flex flex-col justify-between">
-                    <div>
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Current Balance</h2>
-                        <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                            {walletBalance !== null ? formatCurrency(walletBalance) : "N/A"}
-                        </p>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2">Funds available for bidding and purchases.</p>
-                    </div>
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out transform hover:-translate-y-0.5"
-                    >
-                        Deposit Funds
-                    </button>
-                </div>
-
-                {/* Placeholder for the removed Deposit Funds Form */}
-                <div className="hidden md:block"></div> {/* This div maintains the grid layout */}
-            </div>
-            {/* Transaction History */}
-            <div className="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-fade-in-delay-2">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Transaction History</h2>
-                {loading ? (
-                    <LoadingSpinner />
-                ) : transactions.length === 0 ? (
-                    <EmptyState
-                        title="No Auction Activity Yet"
-                        message="It looks like you haven't made any deposits or withdrawals. Make a deposit to start bidding!"
-                    />
-                ) : (
-                    <>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead className="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Reference
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Description
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Type
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Amount
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Date
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {transactions.map((transaction) => (
-                                        <tr key={transaction.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                                {transaction.transRef}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {transaction.description?.replaceAll(/([\d\.]+)/g, (match, p1: string) => {
-                                                    return parseFloat(p1).toLocaleString("en-NG", { minimumFractionDigits: 2 });
-                                                })}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {transaction.type}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                {formatCurrency(transaction.amount)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {new Date(transaction.createdAt || "").toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setCurrentPage}
-                        />
-                    </>
-                )}
-            </div>
-            <DepositModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {error && (
+        <div
+          className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2"
+          role="alert"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
-    );
+      )}
+
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-text">Wallet & Deposit</h1>
+        <p className="text-xs text-text-muted mt-1">Manage bidding funds and review transaction receipts</p>
+      </div>
+
+      {/* Balance Card */}
+      <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="p-3.5 rounded-2xl bg-primary/10 text-primary">
+            <Wallet className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-xs uppercase font-semibold tracking-wider text-text-muted block">
+              Available Bidding Balance
+            </span>
+            <span className="text-3xl font-extrabold tracking-tight text-text">
+              {walletBalance !== null ? formatCurrency(walletBalance) : "₦0.00"}
+            </span>
+          </div>
+        </div>
+
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => setIsModalOpen(true)}
+          leftIcon={<PlusCircle className="w-4 h-4" />}
+        >
+          Deposit Funds
+        </Button>
+      </div>
+
+      {/* Transaction History Table */}
+      <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold tracking-tight text-text">
+            Transaction Activity
+          </h2>
+          <span className="text-xs text-text-muted">
+            {totalTransactions} total entries
+          </span>
+        </div>
+
+        <div className="overflow-x-auto rounded-xl border border-border-subtle">
+          <table className="min-w-full divide-y divide-border-subtle text-left text-xs">
+            <thead className="bg-surface-elevated text-text-muted uppercase font-semibold tracking-wider">
+              <tr>
+                <th scope="col" className="px-5 py-3">Reference</th>
+                <th scope="col" className="px-5 py-3">Description</th>
+                <th scope="col" className="px-5 py-3">Type</th>
+                <th scope="col" className="px-5 py-3">Amount</th>
+                <th scope="col" className="px-5 py-3">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border-subtle bg-surface">
+              {loading ? (
+                <>
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                </>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12">
+                    <EmptyState
+                      title="No Transactions Found"
+                      message="Fund your wallet to participate in live auctions."
+                    />
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((transaction) => (
+                  <tr
+                    key={transaction.id}
+                    className="hover:bg-surface-elevated transition-colors"
+                  >
+                    <td className="px-5 py-3.5 font-mono text-[11px] text-text-muted">
+                      {transaction.transRef}
+                    </td>
+                    <td className="px-5 py-3.5 text-text font-medium">
+                      {transaction.description || "Wallet Deposit"}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
+                        {transaction.type}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 font-semibold text-text">
+                      {formatCurrency(transaction.amount)}
+                    </td>
+                    <td className="px-5 py-3.5 text-text-muted">
+                      {new Date(transaction.createdAt || "").toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {totalPages > 1 && !loading && (
+          <div className="pt-2 flex justify-center sm:justify-end">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+      </div>
+
+      <DepositModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>
+  );
 }

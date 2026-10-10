@@ -1,34 +1,59 @@
-'use client';
+"use client";
+
 import { useState, useEffect } from "react";
 
 export default function ThemeSettings() {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [theme, setTheme] = useState("light");
+  const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
-        }
-    }, [theme]);
+  useEffect(() => {
+    setMounted(true);
+    const stored = localStorage.getItem("theme");
+    const isDark =
+      stored === "dark" ||
+      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const currentTheme = isDark ? "dark" : "light";
+    setTheme(currentTheme);
+  }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTheme(e.target.value);
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = e.target.value;
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    if (next === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
-    return (
-        <div className="p-12 w-full">
-            <div>
-                <h1 className="dark:text-white">Theme</h1>
-                <select name="theme_select" id="theme_select" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-6 py-2 rounded-lg" value={theme} onChange={handleChange}>
-                    <option value="light">Light Theme</option>
-                    <option value="dark">Dark Theme</option>
-                </select>
-            </div>
-        </div>
-    );
+  if (!mounted) {
+    return <div className="p-6 h-24" />;
+  }
+
+  return (
+    <div className="p-6 space-y-4 text-left">
+      <div>
+        <label
+          htmlFor="theme_select"
+          className="block text-xs font-semibold uppercase tracking-wider text-text-muted mb-2"
+        >
+          Interface Theme
+        </label>
+        <select
+          name="theme_select"
+          id="theme_select"
+          className="rounded-xl border border-border-subtle bg-surface text-text text-sm py-2 px-3.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          value={theme}
+          onChange={handleChange}
+        >
+          <option value="light">Light Theme (Classic Ivory)</option>
+          <option value="dark">Dark Theme (Deep Midnight Navy)</option>
+        </select>
+      </div>
+      <p className="text-xs text-text-muted">
+        Adjust interface colors to your viewing preference across all platform pages.
+      </p>
+    </div>
+  );
 }

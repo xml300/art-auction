@@ -1,40 +1,95 @@
 "use client";
+
 import { useState } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { AlertCircle, Lock } from "lucide-react";
 
-export default function PasswordForm({errors}:{errors: string}) {
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmNewPassword, setConfirmNewPassword] = useState("");
-    const [error, setError] = useState<string|null>(errors);
+export default function PasswordForm({ errors }: { errors: string }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [error, setError] = useState<string | null>(errors);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    if (newPassword !== confirmNewPassword) {
+      setError("New password and confirm password do not match.");
+      e.preventDefault();
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters.");
+      e.preventDefault();
+      return;
+    }
+    setIsSubmitting(true);
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        if (newPassword !== confirmNewPassword) {
-            setError("New password and confirm new password do not match.");
-            e.preventDefault();
-            return;
-        }
-    };
+  return (
+    <form
+      method="POST"
+      action="/api/profile/password"
+      onSubmit={handleSubmit}
+      className="p-6 space-y-4 max-w-lg text-left"
+    >
+      {error && (
+        <div
+          className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2"
+          role="alert"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
- 
-    return (
-        <form method="POST" action="/api/profile/password" onSubmit={handleSubmit} className="p-12 w-full">
-            {error && (<div className={`bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
-                        <strong className="font-bold">Error!</strong>
-                        <span className="block sm:inline"> {error}</span>
-                    </div>)}
-            <div className="flex flex-col mb-4">
-                <label htmlFor="current_password" className="dark:text-white">Current Password</label>
-                <input type="password" id="current_password" name="current_password" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Confirm your current password" required />
-            </div>
-            <div className="flex flex-col mb-4">
-                <label htmlFor="new_password" className="dark:text-white">New Password</label>
-                <input type="password" id="new_password" name="new_password" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-            </div>
-            <div className="flex flex-col mb-4">
-                <label htmlFor="confirm_new_password" className="dark:text-white">Confirm New Password</label>
-                <input type="password" id="confirm_new_password" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Confirm your new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} required />
-            </div>
-            <button type="submit" className="bg-black text-white rounded-lg px-6 py-2 mt-4">Save Changes</button>
-        </form>
-    );
+      <Input
+        label="Current Password"
+        type="password"
+        id="current_password"
+        name="current_password"
+        value={currentPassword}
+        onChange={(e) => setCurrentPassword(e.target.value)}
+        placeholder="Enter your current password"
+        required
+        leftIcon={<Lock className="w-4 h-4" />}
+      />
+
+      <Input
+        label="New Password"
+        type="password"
+        id="new_password"
+        name="new_password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        placeholder="At least 8 characters"
+        required
+        leftIcon={<Lock className="w-4 h-4" />}
+      />
+
+      <Input
+        label="Confirm New Password"
+        type="password"
+        id="confirm_new_password"
+        name="confirm_new_password"
+        value={confirmNewPassword}
+        onChange={(e) => setConfirmNewPassword(e.target.value)}
+        placeholder="Confirm your new password"
+        required
+        error={newPassword && confirmNewPassword && newPassword !== confirmNewPassword ? "Passwords do not match" : undefined}
+        leftIcon={<Lock className="w-4 h-4" />}
+      />
+
+      <div className="pt-2">
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isSubmitting}
+          disabled={!currentPassword || !newPassword || !confirmNewPassword || newPassword !== confirmNewPassword || isSubmitting}
+        >
+          {isSubmitting ? "Updating..." : "Save Password"}
+        </Button>
+      </div>
+    </form>
+  );
 }

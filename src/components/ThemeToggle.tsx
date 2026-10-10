@@ -1,73 +1,95 @@
-'use client';
+"use client";
+
 import { Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
-export default function ThemeToggle({ className, switchToggle }: { className?: string, switchToggle?: boolean }) {
-    const [theme, setTheme] = useState(false);
+export default function ThemeToggle({
+  className,
+  switchToggle = false,
+}: {
+  className?: string;
+  switchToggle?: boolean;
+}) {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
+    setMounted(true);
+    const stored = localStorage.getItem("theme");
+    const isDark =
+      stored === "dark" ||
+      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const resolvedTheme = isDark ? "dark" : "light";
+    setTheme(resolvedTheme);
+    if (resolvedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
 
-        if (typeof window !== 'undefined') {
-            setTheme(localStorage.getItem('theme') === 'dark');
-        }
-    }, []);
+  const toggleTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    if (next === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (theme == false) {
-                document.body.parentElement?.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.body.parentElement?.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-    }, [theme]);
+  if (!mounted) {
+    return (
+      <div className={cn("w-9 h-9 rounded-xl border border-border-subtle bg-surface", className)} />
+    );
+  }
 
-    return (switchToggle ? (
-        <div className="bg-gray-600 w-12 h-6 rounded-full overflow-hidden">
-            <label htmlFor="check" className="relative flex w-full h-full">
-                <input type="checkbox" name="check" id="check" className="peer sr-only" checked={theme} onChange={() => setTheme((oldTheme) => !oldTheme)} />
-                <div className="bg-green-600 w-full h-full rounded-full transition-transform -translate-x-8 peer-checked:translate-x-0"></div>
-                <div className="bg-white rounded-full w-6 h-6 z-10 absolute left-0 transition-transform peer-checked:translate-x-6"></div>
-            </label>
-        </div>
-    ) : (
-        <button onClick={() => setTheme((oldTheme) => !oldTheme)}>
-            {theme ? <Sun className={className} /> : <Moon className={className} />}
-        </button>
-    ));
+  if (switchToggle) {
+    return (
+      <button
+        type="button"
+        role="switch"
+        aria-checked={theme === "dark"}
+        aria-label="Toggle dark mode"
+        onClick={toggleTheme}
+        className={cn(
+          "w-11 h-6 rounded-full transition-colors relative flex items-center p-0.5 border border-border-subtle",
+          theme === "dark" ? "bg-primary" : "bg-slate-300 dark:bg-slate-700"
+        )}
+      >
+        <span
+          className={cn(
+            "w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 flex items-center justify-center text-slate-800",
+            theme === "dark" ? "translate-x-5" : "translate-x-0"
+          )}
+        >
+          {theme === "dark" ? <Moon className="w-3 h-3 text-primary" /> : <Sun className="w-3 h-3 text-amber-500" />}
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label="Toggle theme"
+      onClick={toggleTheme}
+      className={cn(
+        "p-2 rounded-xl border border-border-subtle bg-surface text-text hover:bg-surface-elevated transition-colors shadow-xs active:scale-95 flex items-center justify-center",
+        className
+      )}
+    >
+      {theme === "dark" ? (
+        <Sun className="w-4 h-4 text-amber-400" />
+      ) : (
+        <Moon className="w-4 h-4 text-text-muted" />
+      )}
+    </button>
+  );
 }
 
 export function SwitchThemeToggle() {
-    const [theme, setTheme] = useState(false);
-
-    useEffect(() => {
-
-        if (typeof window !== 'undefined') {
-            setTheme(localStorage.getItem('theme') === 'dark');
-        }
-    }, []);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (theme == false) {
-                document.body.parentElement?.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.body.parentElement?.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-    }, [theme]);
-
-    return (
-        <div className="bg-gray-600 w-12 h-6 rounded-full overflow-hidden">
-            <label htmlFor="check" className="relative flex w-full h-full">
-                <input type="checkbox" name="check" id="check" className="peer sr-only" checked={theme} onChange={() => setTheme((oldTheme) => !oldTheme)} />
-                <div className="bg-green-600 w-full h-full rounded-full transition-transform -translate-x-8 peer-checked:translate-x-0"></div>
-                <div className="bg-white rounded-full w-6 h-6 z-10 absolute left-0 transition-transform peer-checked:translate-x-6"></div>
-            </label>
-        </div>
-    );
+  return <ThemeToggle switchToggle />;
 }

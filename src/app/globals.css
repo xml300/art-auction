@@ -4,18 +4,28 @@
 
 @layer base {
   :root {
-    --text: #040316;
-    --background: #fbfbfe;
-    --primary: #000bba;
-    --secondary: #ffc6c6;
-    --accent: #bc8c8f;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --surface-elevated: #f1f5f9;
+    --border-subtle: #e2e8f0;
+    --primary: #1d4ed8;
+    --primary-hover: #1e40af;
+    --secondary: #e2e8f0;
+    --accent: #3b82f6;
   }
   .dark {
-    --text: #eae9fc;
-    --background: #010104;
-    --primary: #4754ff;
-    --secondary: #380000;
-    --accent: #744447;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --background: #070d18;
+    --surface: #0f172a;
+    --surface-elevated: #172339;
+    --border-subtle: #1e293b;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary: #1e293b;
+    --accent: #60a5fa;
   }
 }
 

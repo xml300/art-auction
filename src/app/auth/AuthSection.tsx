@@ -4,39 +4,52 @@ import { useError } from "@/hooks/useErrors";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function AuthSection({ error }: { error: string }) {
-    const [accType, setAcctype] = useState("login");
-    const [isClicked, setIsClicked] = useState(false);
-    const {setError} = useError();
+  const [accType, setAcctype] = useState<"login" | "register">("login");
+  const { setError } = useError();
 
-
-    useEffect(() =>{
-        setError(error);
-    },[error, setError]);
-
-    const handleButtonClick = (path: string) => {
-        setTimeout(() => {
-            setIsClicked(false)
-            setAcctype(path);
-        }, 1000);
-        setIsClicked(true);
+  useEffect(() => {
+    if (error) {
+      setError(error);
     }
+  }, [error, setError]);
 
-    return (
-        <>
-            <section className="relative bg-secondary bg-opacity-30 flex w-48 mx-auto justify-between rounded-full cursor-pointer p-1 mb-4">
-                <button onClick={() => handleButtonClick('login')} className={`z-10 px-6 py-2 font-medium transition-all duration-300 cursor-pointer ${accType === 'login' ? 'text-white' : 'text-text'}`}>
-                    Login
-                </button>
-                <button onClick={() => handleButtonClick('register')} className={`z-10 px-6 py-2 font-medium transition-all duration-300 cursor-pointer ${accType === 'register' ? 'text-white' : 'text-text'}`}>
-                    Register
-                </button>
-                <div className={`bg-primary w-1/2 h-full rounded-full absolute left-0 top-0 transition-transform duration-300 ${accType === 'login' ? 'translate-x-0' : 'translate-x-full'}`}></div>
-            </section>
-            <section className={`mt-4 transition-opacity duration-[1s] ${isClicked ? 'opacity-0' : 'opacity-100'}`}>
-                {accType === 'login' ? <LoginForm /> : <RegisterForm />}
-            </section>
-        </>
-    );
+  return (
+    <div className="w-full">
+      {/* Segmented Pill Tabs */}
+      <div className="relative p-1 bg-surface-elevated rounded-xl flex max-w-xs mx-auto mb-6 border border-border-subtle">
+        <button
+          type="button"
+          onClick={() => setAcctype("login")}
+          className={cn(
+            "flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 z-10 text-center select-none",
+            accType === "login"
+              ? "bg-surface text-text shadow-xs"
+              : "text-text-muted hover:text-text"
+          )}
+        >
+          Sign In
+        </button>
+        <button
+          type="button"
+          onClick={() => setAcctype("register")}
+          className={cn(
+            "flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 z-10 text-center select-none",
+            accType === "register"
+              ? "bg-surface text-text shadow-xs"
+              : "text-text-muted hover:text-text"
+          )}
+        >
+          Register
+        </button>
+      </div>
+
+      {/* Forms Container */}
+      <div className="transition-all duration-200">
+        {accType === "login" ? <LoginForm /> : <RegisterForm />}
+      </div>
+    </div>
+  );
 }

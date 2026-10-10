@@ -12,7 +12,7 @@ interface Payload {
 export async function getSession(): Promise<[ Payload | null, string | null]> {
     const authCookie = (await cookies()).get("auth")?.value || "";
     try {
-        const payload = jwt.verify(authCookie, process.env.JWT_SECRET_KEY || '') as Payload;
+        const payload = jwt.verify(authCookie, process.env.JWT_SECRET_KEY || 'your_jwt_secret') as Payload;
         return [payload, null];
     } catch (error) {
         if ((error as jwt.TokenExpiredError).name === 'TokenExpiredError') {

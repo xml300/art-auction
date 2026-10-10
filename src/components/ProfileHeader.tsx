@@ -3,45 +3,67 @@ import Link from "next/link";
 import { Twitter, Instagram } from "lucide-react";
 
 interface ProfileHeaderProps {
-    name: string;
-    username: string;
-    profilePicture: string;
-    bio: string;
-    socialMedia: {
-        twitter?: string;
-        instagram?: string;
-    };
+  name: string;
+  username: string;
+  profilePicture: string;
+  bio: string;
+  socialMedia: {
+    twitter?: string;
+    instagram?: string;
+  };
 }
 
-export default function ProfileHeader({ name, username, profilePicture, bio, socialMedia }: ProfileHeaderProps) {
-    return (
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="flex-shrink-0">
-                <Image
-                    src={profilePicture}
-                    alt="Profile Picture"
-                    width={150}
-                    height={150}
-                    className="rounded-full object-cover"
-                />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-                <h2 className="text-3xl font-semibold">{name}</h2>
-                <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">@{username}</p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">{bio}</p>
-                <div className="flex justify-center md:justify-start gap-4 mt-4">
-                    {socialMedia.twitter && (
-                        <Link href={socialMedia.twitter} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-600">
-                            <Twitter size={24} />
-                        </Link>
-                    )}
-                    {socialMedia.instagram && (
-                        <Link href={socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-700">
-                            <Instagram size={24} />
-                        </Link>
-                    )}
-                </div>
-            </div>
-        </section>
-    );
+export default function ProfileHeader({
+  name,
+  username,
+  profilePicture,
+  bio,
+  socialMedia,
+}: ProfileHeaderProps) {
+  return (
+    <section className="bg-surface rounded-2xl border border-border-subtle shadow-xs p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+      <div className="shrink-0">
+        <Image
+          src={profilePicture}
+          alt={name}
+          width={100}
+          height={100}
+          className="rounded-full object-cover ring-4 ring-surface-elevated"
+        />
+      </div>
+      <div className="flex-1 text-center sm:text-left space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-text">{name}</h2>
+            <p className="text-xs text-text-muted">@{username}</p>
+          </div>
+          <div className="flex justify-center sm:justify-start gap-2">
+            {socialMedia.twitter && (
+              <Link
+                href={socialMedia.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl border border-border-subtle bg-surface-elevated text-text-muted hover:text-primary transition-colors"
+              >
+                <Twitter className="w-4 h-4" />
+              </Link>
+            )}
+            {socialMedia.instagram && (
+              <Link
+                href={socialMedia.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl border border-border-subtle bg-surface-elevated text-text-muted hover:text-rose-500 transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
+              </Link>
+            )}
+          </div>
+        </div>
+        {bio && (
+          <p className="text-xs text-text-muted leading-relaxed max-w-2xl">{bio}</p>
+        )}
+      </div>
+    </section>
+  );
 }

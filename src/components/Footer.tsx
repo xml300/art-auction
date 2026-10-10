@@ -1,58 +1,104 @@
-import { Facebook, Instagram, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
-    return (
-        <footer className="text-center py-4 border-t-2 shadow-md bg-background text-text border-slate-200 animate-fade-in">
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-base">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div className="text-left space-y-4 animate-fade-in">
-                        <Image src="/logo.png" alt="Logo" width={40} height={40} className="rounded-full" />
-                        <p className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"><Phone className="h-6 w-6" /> +234123456789</p>
-                        <p className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"><Mail className="h-6 w-6" /> artsy-auction@artsyl.com</p>
-                    </div>
-
-                    <div className="text-left animate-fade-in">
-                        <h3 className="font-bold mb-4 text-lg">Navigation</h3>
-                        <ul className="space-y-4 font-light">
-                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/" className="">Home</Link></li>
-                            <li className="hover:scale-105 transition-transform duration-200"><Link href="" className="">About</Link></li>
-                            <li className="hover:scale-105 transition-transform duration-200"><Link href="" className="">Privacy Policy</Link></li>
-                        </ul>
-                    </div>
-
-                    <div className="text-left animate-fade-in">
-                        <h3 className="font-bold mb-4 text-lg">Products</h3>
-                        <ul className="space-y-4 font-light">
-                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/dashboard" className="">Auction</Link></li>
-                            <li className="hover:scale-105 transition-transform duration-200"><Link href="/dashboard" className="">Showcase</Link></li>
-                        </ul>
-                    </div>
-
-                    <div className="text-left animate-fade-in">
-                        <h3 className="font-bold mb-4 text-lg">Socials</h3>
-                        <ul className="space-y-4 font-light">
-                            <li className="hover:scale-105 transition-transform duration-200">
-                                <a href="#" className="flex items-center gap-2 ">
-                                    <Facebook className="h-6 w-6" /> Facebook
-                                </a>
-                            </li>
-                            <li className="hover:scale-105 transition-transform duration-200">
-                                <a href="#" className="flex items-center gap-2 ">
-                                    <Instagram className="h-6 w-6" /> Instagram
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <hr className="my-6 mt-12 h-[0.1] bg-slate-200" />
-
-            <div className="max-w-7xl mx-auto px-4 text-sm mb-2">
-                  <p className="font-light italic">&copy; 2025 Artsyl. All rights reserved.</p>
+  return (
+    <footer className="border-t border-border-subtle bg-surface text-text transition-colors mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="space-y-4">
+            <Link href="/" className="flex items-center gap-2.5">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+              <span className="font-bold text-base text-text">Artsyl</span>
+            </Link>
+            <p className="text-xs text-text-muted leading-relaxed">
+              The premier platform for curated luxury digital art auctions and verified ownership provenance.
+            </p>
+            <div className="space-y-2 text-xs text-text-muted">
+              <p className="flex items-center gap-2">
+                <Phone className="h-3.5 w-3.5 text-primary" /> +234 123 456 789
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail className="h-3.5 w-3.5 text-primary" /> concierge@artsyl.com
+              </p>
             </div>
-        </footer>
-    );
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-xs uppercase tracking-wider text-text mb-3">
+              Navigation
+            </h3>
+            <ul className="space-y-2 text-xs text-text-muted">
+              <li>
+                <Link href="/" className="hover:text-primary transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="#about" className="hover:text-primary transition-colors">
+                  About the Gallery
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth" className="hover:text-primary transition-colors">
+                  Collector Portal
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-xs uppercase tracking-wider text-text mb-3">
+              Platform
+            </h3>
+            <ul className="space-y-2 text-xs text-text-muted">
+              <li>
+                <Link href="/dashboard/marketplace" className="hover:text-primary transition-colors">
+                  Live Auctions
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/my-artworks" className="hover:text-primary transition-colors">
+                  Vault Showcase
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/deposit" className="hover:text-primary transition-colors">
+                  Wallet & Bidding
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-xs uppercase tracking-wider text-text mb-3">
+              Security & Trust
+            </h3>
+            <p className="text-xs text-text-muted leading-relaxed">
+              All bids are legally binding and settled with verified custodial escrow. Digital certificate of authenticity issued for every acquired piece.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-10 pt-6 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
+          <p>&copy; {new Date().getFullYear()} Artsyl Luxury Auctions. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link href="/" className="hover:text-text transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/" className="hover:text-text transition-colors">
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

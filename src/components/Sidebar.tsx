@@ -1,60 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { Home, ShoppingCart, User, Settings, UserCircle, LogOut, DollarSign } from "lucide-react";
+import { Home, ShoppingCart, User, Settings, UserCircle, LogOut, DollarSign, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
 
 interface SidebarProps {
-    onClose: () => void;
+  onClose?: () => void;
 }
 
 export default function Sidebar({ onClose }: SidebarProps) {
-    const pathname = usePathname();
-    const sidebarLinks = [
-        { href: '/dashboard', content: "Home", icon: <Home /> },
-        { href: "/dashboard/marketplace",content: "Marketplace", icon: <ShoppingCart /> },
-        { href: "/dashboard/my-artworks", content: "My Artworks", icon: <User /> },
-        { href: "/dashboard/deposit", content: "Deposit", icon: <DollarSign /> },
-        { href: "/dashboard/settings", content: "Settings", icon: <Settings /> },                
-    ];
+  const pathname = usePathname();
 
-    return (
-        <div className="h-full w-80 sm:w-96 lg:w-auto border-r p-4 sm:p-6 lg:p-8 flex flex-col bg-background text-text border-slate-200 dark:border-slate-900">
-            <div className="lg:hidden flex justify-end mb-4">
-                <button onClick={onClose} className="text-text cursor-pointer hover:scale-110 transition-transform duration-200">
-                    <X size={28} />
-                </button>
-            </div>
-            <div className="text-text">
-                <h2 className="text-xl text-center">Artsyl</h2>
-                <p className="text-sm italic text-center mt-2 font-light opacity-80">Pursuing your passion for art</p>
-            </div>
-            <div className="mt-16 flex-col flex justify-between flex-1">
-                <ul className="space-y-2">
-                    {sidebarLinks.map(link => (
-                        <li key={link.href}>
-                            <Link href={link.href} onClick={onClose} className={`flex items-center gap-2 text-base hover:bg-secondary p-3 rounded-lg transition-colors ${pathname === link.href ? "bg-secondary" : ""}`}>
-                                {link.icon}{link.content}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-                <ul className="space-y-2">
-                    <li>
-                        <Link href="/dashboard/profile" onClick={onClose} className={`flex gap-2 text-base hover:bg-secondary hover:bg-opacity-20 p-3 rounded-lg transition-colors ${pathname === "/dashboard/profile" ? "bg-secondary bg-opacity-30 font-semibold" : ""}`}>
-                            <UserCircle />Profile
-                        </Link>
-                    </li>
-                    <li>
-                        <form action="/api/logout" method="POST" className="w-full">
-                            <button type="submit" onClick={onClose} className="w-full flex gap-2 text-base hover:bg-secondary hover:bg-opacity-20 p-3 rounded-lg transition-colors">
-                                <LogOut />Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+  const sidebarLinks = [
+    { href: "/dashboard", content: "Overview", icon: <Home className="w-4 h-4" /> },
+    { href: "/dashboard/marketplace", content: "Marketplace", icon: <ShoppingCart className="w-4 h-4" /> },
+    { href: "/dashboard/my-artworks", content: "My Artworks", icon: <User className="w-4 h-4" /> },
+    { href: "/dashboard/deposit", content: "Wallet & Deposit", icon: <DollarSign className="w-4 h-4" /> },
+    { href: "/dashboard/settings", content: "Settings", icon: <Settings className="w-4 h-4" /> },
+  ];
+
+  return (
+    <div className="h-full w-64 border-r border-border-subtle p-5 flex flex-col justify-between bg-surface text-text">
+      <div>
+        <div className="flex items-center justify-between mb-8 px-2">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="font-bold text-xl tracking-tight text-primary">Artsyl</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+              Collector
+            </span>
+          </Link>
+          {onClose && (
+            <button
+              onClick={onClose}
+              aria-label="Close navigation"
+              className="lg:hidden p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
-    );
+
+        <nav className="space-y-1">
+          {sidebarLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={onClose}
+                className={`flex items-center gap-3 text-sm px-3.5 py-2.5 rounded-xl font-medium transition-all duration-150 ${
+                  isActive
+                    ? "bg-primary text-white shadow-xs font-semibold"
+                    : "text-text-muted hover:text-text hover:bg-surface-elevated"
+                }`}
+              >
+                {link.icon}
+                {link.content}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="pt-4 border-t border-border-subtle space-y-1">
+        <Link
+          href="/dashboard/profile"
+          onClick={onClose}
+          className={`flex items-center gap-3 text-sm px-3.5 py-2.5 rounded-xl font-medium transition-all duration-150 ${
+            pathname === "/dashboard/profile"
+              ? "bg-primary text-white shadow-xs font-semibold"
+              : "text-text-muted hover:text-text hover:bg-surface-elevated"
+          }`}
+        >
+          <UserCircle className="w-4 h-4" />
+          Profile
+        </Link>
+        <form action="/api/logout" method="POST" className="w-full">
+          <button
+            type="submit"
+            onClick={onClose}
+            className="w-full flex items-center gap-3 text-sm px-3.5 py-2.5 rounded-xl font-medium text-text-muted hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }

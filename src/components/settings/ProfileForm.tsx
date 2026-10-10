@@ -2,95 +2,170 @@
 
 import { api } from "@/lib/api";
 import { CollectorProfile } from "@/types";
-import { Camera } from "lucide-react";
+import { Camera, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export default function ProfileForm({ errors }: { errors?: string }) {
-    const [profile, setProfile] = useState({
-        surname: "",
-        firstName: "",
-        username: "",
-        email: "",
-        bio: "",
-        profilePicture: ""
-    });
+  const [profile, setProfile] = useState({
+    surname: "",
+    firstName: "",
+    username: "",
+    email: "",
+    bio: "",
+    profilePicture: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await api.get<CollectorProfile>("/profile");
-                setProfile({ ...response });
-            } catch (error) {
-                console.error("Error fetching profile data:", error);
-            }
-        };
-        fetchProfile();
-    }, []);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { id, value } = e.target;
-        setProfile((prevProfile) => ({
-            ...prevProfile,
-            [id]: value,
-        }));
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get<CollectorProfile>("/profile");
+        setProfile({ ...response });
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
     };
+    fetchProfile();
+  }, []);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            console.log(file, URL.createObjectURL(file))
-            // For now, we'll just store the file name or a base64 representation if needed.
-            // In a real application, you'd upload this to a storage service.
-            setProfile((prevProfile) => ({
-                ...prevProfile,
-                profilePicture: URL.createObjectURL(file)
-            }));
-        }
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [id]: value,
+    }));
+  };
 
-    const handleSubmit = async () => {
-        // e.preventDefault();
-    };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        profilePicture: URL.createObjectURL(file),
+      }));
+    }
+  };
 
-    return (
-        <form method="POST" action="/api/profile" onSubmit={handleSubmit} className="p-12 w-full" encType="multipart/form-data">
-            {errors && (<div className={`bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-8 transition-transform animate-fade-in`} role="alert">
-                <strong className="font-bold">Error!</strong>
-                <span className="block sm:inline"> {errors}</span>
-            </div>)}
-            <div className="flex mb-6">
-                <label htmlFor="profile_picture" className="relative group cursor-pointer">
-                    <Image src={profile.profilePicture || "/logo.png"} width={80} height={80} className="w-24 h-24 bg-black/10 rounded-lg" alt="Profile" />
-                    <div className="absolute top-0 z-20 w-24 h-24 opacity-0 flex transition-opacity duration-300 group-hover:opacity-100 justify-center items-center bg-black/20 rounded-lg">
-                        <Camera className="text-white w-8 h-8" />
-                    </div>
-                </label>
-                <input type="file" className="hidden" name="profile_picture" id="profile_picture" onChange={handleFileChange} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mb-4 w-full">
-                <div className="w-full">
-                    <label htmlFor="surname" className="dark:text-white">Surname</label>
-                    <input type="text" id="surname" name="surname" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your surname" value={profile.surname} onChange={handleChange} />
-                </div>
-                <div className="w-full">
-                    <label htmlFor="firstName" className="dark:text-white">First Name</label>
-                    <input type="text" id="firstName" name="first_name" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your first name" value={profile.firstName} onChange={handleChange} />
-                </div>
-            </div>
-            <div className="flex flex-col mb-4">
-                <label htmlFor="username" className="dark:text-white">Username</label>
-                <input type="text" id="username" name="username" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your username" value={profile.username} onChange={handleChange} />
-            </div>
-            <div className="flex flex-col mb-4">
-                <label htmlFor="email" className="dark:text-white">Email</label>
-                <input type="text" id="email" name="email" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter your email" value={profile.email} onChange={handleChange} />
-            </div>
-            <div className="flex flex-col mb-4">
-                <label htmlFor="bio" className="dark:text-white">About you</label>
-                <textarea rows={5} id="bio" name="about_you" className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2 rounded-lg w-full" placeholder="Enter information about yourself" value={profile.bio} onChange={handleChange} />
-            </div>
-            <button type="submit" className="bg-black text-white rounded-lg px-6 py-2 mt-4">Save Changes</button>
-        </form>
-    );
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+  };
+
+  return (
+    <form
+      method="POST"
+      action="/api/profile"
+      onSubmit={handleSubmit}
+      className="p-6 space-y-4 max-w-xl text-left"
+      encType="multipart/form-data"
+    >
+      {errors && (
+        <div
+          className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2"
+          role="alert"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errors}</span>
+        </div>
+      )}
+
+      {/* Avatar Picker */}
+      <div className="flex items-center gap-4 pb-2">
+        <label htmlFor="profile_picture" className="relative group cursor-pointer shrink-0">
+          <Image
+            src={profile.profilePicture || "/logo.png"}
+            width={80}
+            height={80}
+            className="w-20 h-20 rounded-2xl object-cover ring-2 ring-border-subtle"
+            alt="Profile Avatar"
+          />
+          <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-black/50 text-white">
+            <Camera className="w-5 h-5" />
+          </div>
+        </label>
+        <div>
+          <span className="text-xs font-semibold text-text block">Profile Avatar</span>
+          <span className="text-[11px] text-text-muted">Click image to upload new avatar</span>
+        </div>
+        <input
+          type="file"
+          className="hidden"
+          name="profile_picture"
+          id="profile_picture"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Input
+          label="First Name"
+          type="text"
+          id="firstName"
+          name="first_name"
+          value={profile.firstName}
+          onChange={handleChange}
+          placeholder="First name"
+        />
+        <Input
+          label="Surname"
+          type="text"
+          id="surname"
+          name="surname"
+          value={profile.surname}
+          onChange={handleChange}
+          placeholder="Surname"
+        />
+      </div>
+
+      <Input
+        label="Username"
+        type="text"
+        id="username"
+        name="username"
+        value={profile.username}
+        onChange={handleChange}
+        placeholder="Username"
+      />
+
+      <Input
+        label="Email Address"
+        type="email"
+        id="email"
+        name="email"
+        value={profile.email}
+        onChange={handleChange}
+        placeholder="Email address"
+      />
+
+      <div className="space-y-1.5">
+        <label
+          htmlFor="bio"
+          className="block text-xs font-semibold uppercase tracking-wider text-text-muted"
+        >
+          Collector Bio
+        </label>
+        <textarea
+          rows={4}
+          id="bio"
+          name="about_you"
+          value={profile.bio}
+          onChange={handleChange}
+          placeholder="Tell other collectors about your art tastes..."
+          className="w-full rounded-xl border border-border-subtle bg-surface text-text text-sm p-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-text-muted/60"
+        />
+      </div>
+
+      <div className="pt-2">
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : "Save Profile"}
+        </Button>
+      </div>
+    </form>
+  );
 }

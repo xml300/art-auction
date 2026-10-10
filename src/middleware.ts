@@ -1,13 +1,19 @@
-import { NextResponse, NextRequest } from "next/server";
+import { chainMiddlewares } from "@/middlewares/chain";
+import { withLogging } from "@/middlewares/withLogging";
+import { withSecurityHeaders } from "@/middlewares/withSecurityHeaders";
+import { withAuth } from "@/middlewares/withAuth";
+import { withRole } from "@/middlewares/withRole";
 
-export default function middleware(request: NextRequest) {
-    const authCookie = request.cookies.get("auth");
-    if(!authCookie){
-        return NextResponse.redirect(new URL("/auth", process.env.SITE_BASE_URL || ""), {status: 303});
-    }
-    return NextResponse.next();
-}
+export default chainMiddlewares([
+  withLogging,
+  withSecurityHeaders,
+  withAuth,
+  withRole,
+]);
 
 export const config = {
-    matcher: ['/dashboard/:path*','/artist-dashboard/:path*'],
-}
+  matcher: [
+    "/dashboard/:path*",
+    "/artist-dashboard/:path*",
+  ],
+};

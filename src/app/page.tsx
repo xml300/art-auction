@@ -1,9 +1,9 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { TestimonialCard } from "@/components/TestimonialCard";
-import { WhyChooseUs } from '@/components/WhyChooseUs';
-import { ArtworkCarousel } from '@/components/ArtworksCarousel';
-import { SendHorizonal } from "lucide-react";
+import { WhyChooseUs } from "@/components/WhyChooseUs";
+import { ArtworkCarousel } from "@/components/ArtworksCarousel";
+import { SendHorizonal, ShieldCheck, Eye, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getArtworks } from "@/data/queries";
@@ -11,219 +11,252 @@ import { getArtworks } from "@/data/queries";
 export default async function Home() {
   const testimonials = [
     {
-      "id": 1,
-      "name": "Sarah Chen",
-      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2024-09-15T10:00:00Z",
-      "comment": "The support team was incredibly responsive and solved my issue within minutes. A truly seamless experience from start to finish!",
-      "position": "Lead UX Designer at TechCorp"
+      id: 1,
+      name: "Sarah Chen",
+      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+      rating: 5,
+      date: "2024-09-15T10:00:00Z",
+      comment: "Artsyl is unmatched in curation and auction integrity. Acquired two rare digital pieces with zero friction.",
+      position: "Lead UX Designer at TechCorp",
     },
     {
-      "id": 2,
-      "name": "Marcus Rivas",
-      "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 4,
-      "date": "2024-10-01T15:30:00Z",
-      "comment": "Solid product with great features. The interface could be slightly more intuitive, but overall highly recommend it for professionals.",
-      "position": "Senior Data Analyst, FinTrack"
+      id: 2,
+      name: "Marcus Rivas",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3",
+      rating: 5,
+      date: "2024-10-01T15:30:00Z",
+      comment: "The real-time bidding interface is sleek and transparent. Provenance verification gave me total confidence.",
+      position: "Senior Data Analyst, FinTrack",
     },
     {
-      "id": 3,
-      "name": "Aisha Khan",
-      "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2024-10-14T08:45:00Z",
-      "comment": "Absolutely outstanding! The quality exceeded my expectations. I've already seen a huge difference in my productivity since adopting this tool.",
-      "position": "CEO of Creative Solutions"
+      id: 3,
+      name: "Aisha Khan",
+      image: "https://images.unsplash.com/photo-1535713875002-d1d0cfce72b9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+      rating: 5,
+      date: "2024-10-14T08:45:00Z",
+      comment: "Top-tier curated marketplace for serious digital art collectors. Customer concierge is first-class.",
+      position: "CEO of Creative Solutions",
     },
-    {
-      "id": 4,
-      "name": "David Lee",
-      "image": "https://images.unsplash.com/photo-1508214751196-cdfd462dab18?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2024-11-05T12:10:00Z",
-      "comment": "Best in class performance and reliability. I appreciate the frequent updates and new integrations being rolled out.",
-      "position": "Software Architect, Global Systems"
-    },
-    {
-      "id": 5,
-      "name": "Emily Watson",
-      "image": "https://images.unsplash.com/photo-1520452343136-f88205a2900b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 3,
-      "date": "2024-11-20T09:05:00Z",
-      "comment": "It meets our basic needs well, but some of the advanced features are difficult to configure. Good value for the price, though.",
-      "position": "Project Manager, Retail Innovations"
-    },
-    {
-      "id": 6,
-      "name": "Javier Perez",
-      "image": "https://images.unsplash.com/photo-1535713875002-d1d0cfce72b9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2024-12-03T17:22:00Z",
-      "comment": "Incredible customer service and a fantastic community behind the product. It made my migration process effortless.",
-      "position": "Independent Consultant"
-    },
-    {
-      "id": 7,
-      "name": "Nina Sharma",
-      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 4,
-      "date": "2025-01-08T11:40:00Z",
-      "comment": "The feature set is robust and the API integration was surprisingly easy. Highly recommended for development teams.",
-      "position": "CTO, NextGen Labs"
-    },
-    {
-      "id": 8,
-      "name": "Chris Bell",
-      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2025-01-25T14:55:00Z",
-      "comment": "After trying several competitors, this is the one we stuck with. It's fast, stable, and perfectly scalable for our needs.",
-      "position": "Founder, Bell Ventures"
-    },
-    {
-      "id": 9,
-      "name": "Olivia Moore",
-      "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 4,
-      "date": "2025-02-10T16:07:00Z",
-      "comment": "The onboarding process was excellent and the documentation is top-notch. Docking one star for a small bug I found, but it was quickly addressed.",
-      "position": "Marketing Director, HealthPath"
-    },
-    {
-      "id": 10,
-      "name": "Kenji Tanaka",
-      "image": "https://images.unsplash.com/photo-1507003211169-e695c6bdd610?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "rating": 5,
-      "date": "2025-03-01T09:15:00Z",
-      "comment": "A reliable, beautifully designed solution. It handles high traffic with zero issues. My go-to choice from now on.",
-      "position": "Operations Manager, Aero Dynamics"
-    }
   ];
+
   const artworks = await getArtworks();
 
   return (
-    <main className="min-h-screen flex flex-col bg-background text-text">
+    <main className="min-h-screen flex flex-col bg-background text-text transition-colors">
       <Header />
-      <section className="flex-1 my-6 px-4 sm:px-6 lg:px-8 gap-y-4">
-        <section id="hero" className="mb-24 sm:mb-32 relative rounded-3xl bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center flex flex-col justify-center items-center text-white py-20 sm:py-24 md:py-32 h-[60vh] sm:h-[70vh] lg:h-[80vh] opacity-0 animate-fade-in">
-          <div className="z-20 text-center max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">Welcome to <span className="italic text-transparent bg-gradient-to-r from-primary to-accent bg-clip-text pr-4">Artsyl</span></h1>
-            <p className="text-base sm:text-lg md:text-xl font-light mt-4 italic">Your premier platform for luxury digital art auctions</p>
-            <Link href="/auth" className="mt-8 inline-block bg-primary hover:bg-opacity-90 text-white text-sm sm:text-base px-8 py-3 sm:px-10 sm:py-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">Explore Artworks</Link>
-          </div>
-          <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/50 rounded-3xl"></div>
-        </section>
-        <section id="about" className="text-center shadow-md py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-background opacity-0 animate-fade-in-delay-1">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <Image
-                src="/logo.png"
-                alt="Featured artwork"
-                width={200}
-                height={200}
-                className="rounded-lg mx-auto"
-              />
-            </div>
-            <div className="text-left">
-              <h2 className="font-bold text-2xl sm:text-3xl mb-4">About Artsyl</h2>
-              <p className="text-base mb-4">
-                Artsyl is a curated marketplace for luxury digital art and limited-edition NFTs.
-                We connect collectors, galleries, and artists through transparent auctions,
-                expert curation, and secure transactions.
-              </p>
-              <ul className="space-y-3 mb-8 text-base">
-                <li key="curated-collections" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M5 13l4 4L19 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>Curated collections from emerging and established artists</span>
-                </li>
-                <li key="secure-provenance" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M21 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>Secure bidding and verified provenance</span>
-                </li>
-                <li key="easy-dashboard" className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-primary flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M3 7h18M3 12h18M3 17h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>Easy-to-use dashboard for buyers and sellers</span>
-                </li>
-              </ul>
-              <div>
-                <Link href="" className="rounded-full bg-primary px-6 py-2 text-white text-base">Learn More</Link>
-              </div>
-            </div>
-          </div>
-        </section>
-        <WhyChooseUs />
-        <ArtworkCarousel artworks={artworks} className="hidden lg:flex" />
-        <section id="features" className="py-16 sm:py-24 bg-background opacity-0 animate-fade-in-delay-2">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">
-              Platform Features
-            </h2>
-            <p className="mt-6 text-base leading-8 text-text opacity-80">
-              Built for collectors and creators — discover, bid, and own exceptional digital art.
+
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-8 space-y-16">
+        {/* Modern Minimal Hero */}
+        <section
+          id="hero"
+          className="relative rounded-3xl overflow-hidden bg-slate-900 text-white min-h-[420px] sm:min-h-[480px] flex items-center justify-center p-8 sm:p-12 shadow-md animate-fade-in"
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent" />
+
+          <div className="relative z-10 text-center max-w-2xl mx-auto space-y-5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/20 text-blue-200 border border-blue-400/20 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5" />
+              Curated Luxury Digital Auctions
+            </span>
+
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+              Collect Exceptional <br />
+              <span className="text-transparent bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text">
+                Digital Masterpieces
+              </span>
+            </h1>
+
+            <p className="text-sm sm:text-base text-slate-300 font-light max-w-lg mx-auto leading-relaxed">
+              Experience transparent bidding, verified provenance, and direct access to world-renowned digital artists.
             </p>
-            <div className="mt-16 grid grid-cols-1 gap-y-10 md:grid-cols-3 md:gap-x-8">
-              <div key="curated-auctions" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
-                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M3 9h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Curated Auctions</h3>
-                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Hand-picked lots with expert curation to ensure quality and rarity.</p>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                href="/auth"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold transition-all shadow-sm active:scale-95"
+              >
+                Explore Curated Lots
+              </Link>
+              <Link
+                href="#about"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold backdrop-blur-md transition-all border border-white/10 active:scale-95"
+              >
+                Learn How It Works
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Multi-Item Showcase Carousel (Responsive across all screens) */}
+        <section id="showcase">
+          <ArtworkCarousel artworks={artworks} />
+        </section>
+
+        {/* About Section */}
+        <section
+          id="about"
+          className="rounded-3xl border border-border-subtle bg-surface p-8 sm:p-12 shadow-xs"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="flex justify-center">
+              <div className="relative w-48 h-48 sm:w-64 sm:h-64 rounded-2xl overflow-hidden bg-surface-elevated border border-border-subtle p-6 flex items-center justify-center shadow-xs">
+                <Image
+                  src="/logo.png"
+                  alt="Artsyl Crest"
+                  width={140}
+                  height={140}
+                  className="rounded-full shadow-md object-contain"
+                />
               </div>
-              <div key="verified-provenance" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
-                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M12 20v-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="12" cy="7" r="4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+            </div>
+
+            <div className="space-y-4 text-left">
+              <span className="text-xs uppercase font-bold tracking-wider text-primary">
+                About the Platform
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+                Setting the Standard for Digital Fine Art
+              </h2>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                Artsyl is a curated auction platform connecting esteemed collectors with visionary digital creators. Each artwork passes strict authenticity scrutiny before entering live bidding.
+              </p>
+
+              <div className="space-y-2.5 pt-2">
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-semibold text-text">Verified Provenance</h4>
+                    <p className="text-[11px] text-text-muted">Unbroken chain of custody for every minted piece.</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Verified Provenance</h3>
-                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Transparent history and ownership records for every piece.</p>
+
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">
+                    <Eye className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-semibold text-text">Expert Curation</h4>
+                    <p className="text-[11px] text-text-muted">Strictly limited releases selected by advisory curators.</p>
+                  </div>
+                </div>
               </div>
-              <div key="secure-bidding" className="flex flex-col items-center text-center p-6 bg-secondary bg-opacity-10 rounded-lg shadow-md">
-                <div className="p-4 bg-secondary bg-opacity-20 rounded-full mb-4">
-                  <svg className="w-12 h-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M3 12h18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M12 3v18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Secure Bidding</h3>
-                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Real-time bids with secure checkout and escrow options.</p>
+
+              <div className="pt-3">
+                <Link
+                  href="/auth"
+                  className="inline-flex items-center text-xs font-semibold px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
+                >
+                  Join as a Collector
+                </Link>
               </div>
             </div>
           </div>
         </section>
-        <section id="testimonials" className="text-center shadow-md max-w-7xl mx-auto py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-background opacity-0 animate-fade-in-delay-3">
-          <h2 className="font-bold text-3xl sm:text-4xl">Our Testimonials</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4 sm:px-6 my-12">
+
+        {/* Why Choose Us */}
+        <WhyChooseUs />
+
+        {/* Platform Features */}
+        <section id="features" className="space-y-8">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs uppercase font-bold tracking-wider text-primary">
+              Core Capabilities
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text mt-1">
+              Built for Modern Digital Collecting
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-xs hover:border-primary/40 hover:shadow-md transition-all duration-200 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+                01
+              </div>
+              <h3 className="text-base font-bold text-text">Live Reserve Auctions</h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Competitive real-time bidding with automatic outbid alerts and escrow deposit locks.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-xs hover:border-primary/40 hover:shadow-md transition-all duration-200 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+                02
+              </div>
+              <h3 className="text-base font-bold text-text">Collector Vault Showcase</h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Personalized digital portfolio with high-resolution viewing and verifiable certificates.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-xs hover:border-primary/40 hover:shadow-md transition-all duration-200 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+                03
+              </div>
+              <h3 className="text-base font-bold text-text">Immediate Settlement</h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Automated wallet accounting and immediate ownership transfer upon auction completion.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section id="testimonials" className="space-y-8">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs uppercase font-bold tracking-wider text-primary">
+              Community Reviews
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text mt-1">
+              Trusted by Premier Collectors
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((testimonial) => (
               <TestimonialCard key={testimonial.id} testimonial={testimonial} />
             ))}
           </div>
-          <Link href="/auth" className="bg-primary px-8 py-3 rounded-full text-white text-base">Get Started Now</Link>
         </section>
-        <section id="newsletter" className="shadow-md p-8 min-h-48 flex flex-col justify-center items-center gap-y-4 py-16 px-4 bg-background opacity-0 animate-fade-in-delay-4">
-          <h2 className="font-bold italic text-3xl sm:text-4xl mb-2">Join our Newsletter</h2>
-          <p className="text-base text-center mb-6">Stay updated with the latest art auctions and news.</p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
-            <input type="email" placeholder="Enter email" className="w-full border-2 border-text rounded-full p-3 text-text bg-background text-base" /> 
-            <button className="bg-primary text-white p-3 rounded-full flex items-center justify-center">
-              <SendHorizonal className="w-6 h-6" />
+
+        {/* Newsletter Section */}
+        <section className="rounded-3xl border border-border-subtle bg-surface p-8 sm:p-12 text-center shadow-xs max-w-2xl mx-auto space-y-4">
+          <span className="text-xs uppercase font-bold tracking-wider text-primary">
+            Curator Dispatch
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight text-text">
+            Stay Ahead of Exclusive Lot Drops
+          </h2>
+          <p className="text-xs text-text-muted max-w-md mx-auto">
+            Receive private notifications prior to public catalogue releases and curated digital exhibitions.
+          </p>
+
+          <form className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto pt-2">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              required
+              className="flex-1 rounded-xl border border-border-subtle bg-surface-elevated text-text text-sm py-2.5 px-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-text-muted/60"
+            />
+            <button
+              type="submit"
+              className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            >
+              <span>Subscribe</span>
+              <SendHorizonal className="w-3.5 h-3.5" />
             </button>
-          </div>
+          </form>
         </section>
-      </section>
+      </div>
+
       <Footer />
     </main>
   );

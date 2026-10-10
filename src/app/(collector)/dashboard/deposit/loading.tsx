@@ -1,7 +1,9 @@
-export default function Loading(){
-    return (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="rounded-full w-24 h-24 border-8 border-t-transparent border-red-800 animate-spin"></div>
-        </div>
-    )
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+export default function Loading() {
+  return (
+    <div className="w-full min-h-[400px] flex items-center justify-center p-8">
+      <LoadingSpinner size="lg" message="Loading deposit details..." />
+    </div>
+  );
 }

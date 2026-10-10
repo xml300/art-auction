@@ -1,68 +1,111 @@
 "use client";
 
-import { useState } from "react"; 
+import { useState, useEffect } from "react";
+import { X, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 interface DepositModalProps {
-    isOpen: boolean;
-    onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function DepositModal({
-    isOpen,
-    onClose
-}: DepositModalProps) {
-    const [amount, setAmount] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
+  const [amount, setAmount] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleDeposit = async ( ) => {
-        // e.preventDefault();
-        setIsProcessing(true);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen && !isProcessing) {
+        onClose();
+      }
     };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isProcessing, onClose]);
 
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <div onClick={onClose} className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-screen w-screen z-50 flex justify-center items-center animate-fade-in">
-            <div onClick={(e) => e.stopPropagation()} className="bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-2xl p-6 sm:p-8 m-4 max-w-lg w-full transform transition-all duration-300 scale-95 opacity-0 animate-scale-in border border-gray-200 dark:border-gray-700">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Deposit Funds</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 p-2 -mr-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+  const handleDeposit = () => {
+    setIsProcessing(true);
+  };
 
-                <form method="POST" action="/api/deposit" onSubmit={handleDeposit}>
-                    <div className="mb-6">
-                        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Amount to Deposit
-                        </label>
-                        <input
-                            type="number"
-                            id="amount"
-                            name="amount"
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200 appearance-none"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="e.g., 1000.00"
-                            min="100.00"
-                            step="1.00"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition duration-300 ease-in-out transform hover:-translate-y-1 active:translate-y-0"
-                        disabled={isProcessing}
-                    >
-                        {isProcessing ? "Processing..." : "Confirm Deposit"}
-                    </button>
-                </form>
-            </div>
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={() => !isProcessing && onClose()}
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex justify-center items-center p-4 animate-fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface rounded-2xl shadow-2xl border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-5"
+      >
+        <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-text">Deposit Funds</h2>
+            <p className="text-xs text-text-muted">Instant credit to your bidding balance</p>
+          </div>
+          <button
+            onClick={() => !isProcessing && onClose()}
+            aria-label="Close modal"
+            className="p-1.5 rounded-xl text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-    );
+
+        <form method="POST" action="/api/deposit" onSubmit={handleDeposit} className="space-y-4">
+          <Input
+            label="Amount (₦)"
+            type="number"
+            id="amount"
+            name="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="e.g. 50000"
+            min="100"
+            step="1"
+            required
+            leftIcon={<DollarSign className="w-4 h-4" />}
+            hint="Minimum deposit amount is ₦100.00"
+          />
+
+          <div className="flex gap-2">
+            {[10000, 50000, 100000].map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setAmount(preset.toString())}
+                className="flex-1 py-1.5 px-2 rounded-lg text-xs font-medium border border-border-subtle bg-surface-elevated text-text hover:border-primary/40 transition-colors"
+              >
+                +₦{preset.toLocaleString()}
+              </button>
+            ))}
+          </div>
+
+          <div className="pt-2 flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              disabled={isProcessing}
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              className="flex-1"
+              isLoading={isProcessing}
+              disabled={!amount || Number(amount) < 100 || isProcessing}
+            >
+              {isProcessing ? "Processing..." : "Confirm Deposit"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
