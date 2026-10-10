@@ -41,13 +41,14 @@ export async function sendPushNotification(
   try {
     await webpush.sendNotification(pushSubscription, payloadString);
     return true;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const pushErr = error as { statusCode?: number; message?: string };
     // 410 Gone or 404 Not Found indicates client unsubscribed / expired
-    if (error.statusCode === 410 || error.statusCode === 404) {
+    if (pushErr.statusCode === 410 || pushErr.statusCode === 404) {
       console.log(`Pruning expired push subscription: ${subscription.endpoint}`);
       await deletePushSubscriptionByEndpoint(subscription.endpoint);
     } else {
-      console.error("Web Push delivery failed:", error?.message || error);
+      console.error("Web Push delivery failed:", pushErr?.message || error);
     }
     return false;
   }

@@ -1,65 +1,84 @@
 import { createUser, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
-import * as jwt from "jsonwebtoken";
+import { signAccessToken, signRefreshToken, setAuthCookies } from "@/lib/auth";
+import { validateRequest, registerSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
-    const formData = await request.formData();
-    const accountType = formData.get('accountType')?.toString();
-    const username = formData.get('username')?.toString();
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-    const redirectUrl = new URL('/auth', request.url);
+  const validation = await validateRequest(request, registerSchema);
+  if (!validation.success) {
+    return validation.response;
+  }
 
-    if (!accountType || !username || !email || !password) {
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', 'All fields are required.', {
-            maxAge: 10, 
-            path: '/',
-        });
-        return response;
+  const { username, email, password, accountType } = validation.data;
+
+  try {
+    // Check if username is already taken
+    const existingByUsername = await getUsers([
+      { columnName: "username", comparator: "=", value: username },
+    ]);
+    if (existingByUsername.length > 0) {
+      return NextResponse.json(
+        { success: false, error: "Username is already taken." },
+        { status: 409 }
+      );
     }
 
-    try {
-        const userType = parseInt(accountType);
-        
-        const existingUsers = await getUsers([
-            { columnName: 'username', comparator: '=', value: username },
-        ]);
-        if (existingUsers.length > 0) {
-            const response = NextResponse.redirect(redirectUrl, {status: 303});
-            response.cookies.set('errors', 'Username already taken.', {
-                maxAge: 10,
-                path: '/',
-            });
-            return response;
-        }
-
-        const user = await createUser(email, username, password, userType);
-
-        if(!user){
-            const response = NextResponse.redirect(redirectUrl, {status: 303});
-            response.cookies.set('errors', 'Failed to create account.', {
-                maxAge: 10,
-                path: '/',
-            });
-            return response;
-        }
-
-        const route = userType === 1 ? '/artist-dashboard' : '/dashboard';
-        const response = NextResponse.redirect(new URL(route, process.env.SITE_BASE_URL || ""), {status: 303});
-        response.cookies.set('auth', jwt.sign({ userId: user.id, roleId: user.roleId, username: user.username, profilePicture: user.profilePicture }, process.env.JWT_SECRET_KEY || "your_jwt_secret"), {
-            maxAge: 1 * 60 * 60, 
-            httpOnly: true,
-            path: '/'
-        });
-        return response;
-    } catch (error: unknown) {
-        console.error(error);
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', 'Failed to create account.', {
-            maxAge: 10,
-            path: '/',
-        });
-        return response;
+    // Check if email is already taken
+    const existingByEmail = await getUsers([
+      { columnName: "email", comparator: "=", value: email },
+    ]);
+    if (existingByEmail.length > 0) {
+      return NextResponse.json(
+        { success: false, error: "An account with this email already exists." },
+        { status: 409 }
+      );
     }
+
+    const user = await createUser(email, username, password, accountType);
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Failed to create account." },
+        { status: 500 }
+      );
+    }
+
+    const redirectPath = accountType === 1 ? "/artist-dashboard" : "/dashboard";
+
+    const accessToken = signAccessToken({
+      userId: user.id,
+      roleId: user.roleId,
+      username: user.username,
+      profilePicture: user.profilePicture,
+    });
+    const refreshToken = signRefreshToken({
+      userId: user.id,
+      roleId: user.roleId,
+      username: user.username,
+    });
+
+    const response = NextResponse.json(
+      {
+        success: true,
+        message: "Account registered successfully",
+        redirectUrl: redirectPath,
+        user: {
+          userId: user.id,
+          username: user.username,
+          email: user.email,
+          roleId: user.roleId,
+        },
+      },
+      { status: 201 }
+    );
+
+    setAuthCookies(response, accessToken, refreshToken);
+    return response;
+  } catch (error: unknown) {
+    console.error("Register route error:", error);
+    return NextResponse.json(
+      { success: false, error: "An unexpected error occurred during registration." },
+      { status: 500 }
+    );
+  }
 }

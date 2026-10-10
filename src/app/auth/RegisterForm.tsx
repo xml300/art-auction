@@ -3,10 +3,12 @@
 import { useError } from "@/hooks/useErrors";
 import { Eye, EyeOff, User, Lock, Mail, ShieldCheck, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [username, setUsername] = useState("");
@@ -14,7 +16,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { error } = useError();
+  const { error, setError } = useError();
 
   const isPasswordMatch = password === confirmPassword || confirmPassword === "";
   const isPasswordValid = password.length >= 8;
@@ -24,17 +26,47 @@ export default function RegisterForm() {
     isPasswordValid &&
     password === confirmPassword;
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid || isSubmitting) return;
+
+    setError(null);
     setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          email: email.trim(),
+          password,
+          accountType: 2, // Collector default
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        setError(data.error || "Failed to create account.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const redirectPath = data.redirectUrl || "/dashboard";
+      router.push(redirectPath);
+      router.refresh();
+    } catch {
+      setError("An unexpected network error occurred. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <form
-      className="space-y-4 text-left"
-      action="/api/auth/register"
-      method="post"
-      onSubmit={handleSubmit}
-    >
+    <form className="space-y-4 text-left" onSubmit={handleSubmit}>
       <div className="text-center mb-6">
         <h3 className="text-xl font-bold tracking-tight text-text">Create Account</h3>
         <p className="text-xs text-text-muted mt-1">Join the Artsyl collector community</p>
@@ -51,7 +83,6 @@ export default function RegisterForm() {
       )}
 
       {/* Role Pill - Collectors only */}
-      <input type="hidden" name="accountType" value="2" />
       <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-xs">
         <div className="flex items-center gap-2 text-text">
           <ShieldCheck className="w-4 h-4 text-primary" />
@@ -72,7 +103,10 @@ export default function RegisterForm() {
           autoComplete="username"
           required
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setUsername(e.target.value);
+          }}
           leftIcon={<User className="w-4 h-4" />}
         />
 
@@ -85,7 +119,10 @@ export default function RegisterForm() {
           autoComplete="email"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setEmail(e.target.value);
+          }}
           leftIcon={<Mail className="w-4 h-4" />}
         />
 
@@ -98,7 +135,10 @@ export default function RegisterForm() {
           autoComplete="new-password"
           required
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setPassword(e.target.value);
+          }}
           hint={password && !isPasswordValid ? "Must be at least 8 characters" : undefined}
           leftIcon={<Lock className="w-4 h-4" />}
           rightIcon={
@@ -122,7 +162,10 @@ export default function RegisterForm() {
           autoComplete="new-password"
           required
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setConfirmPassword(e.target.value);
+          }}
           error={!isPasswordMatch ? "Passwords do not match" : undefined}
           leftIcon={<Lock className="w-4 h-4" />}
           rightIcon={

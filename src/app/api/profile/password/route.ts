@@ -2,50 +2,56 @@ import { hashValue, getUser, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import bcrypt from "bcrypt";
+import { validateRequest, passwordChangeSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
-    const [payload, error] = await getSession();
-    const redirectURL = new URL('/dashboard/settings', process.env.SITE_BASE_URL || "");
+  const [session, authError] = await getSession();
 
-    if (error || payload === null) {
-        const response = NextResponse.redirect(redirectURL, {status: 303});
-        response.cookies.set('errors', error || "", {
-            maxAge: 10,
-            path: '/',
-        });
-        return response;
-    }
+  if (authError || !session) {
+    return NextResponse.json(
+      { success: false, error: authError || "User unauthorized" },
+      { status: 401 }
+    );
+  }
 
-    const userId = payload.userId;
-    const body = await request.formData();
-    const currentPassword = body.get('current_password')?.toString() || '';
-    const newPassword = body.get('new_password')?.toString() || '';
+  const validation = await validateRequest(request, passwordChangeSchema);
+  if (!validation.success) {
+    return validation.response;
+  }
 
+  const { current_password, new_password } = validation.data;
+  const userId = session.userId;
+
+  try {
     const user = await getUser(userId);
 
-    if (!user || (await bcrypt.compare(currentPassword, user.password))) {
-        const response = NextResponse.redirect(redirectURL, {status: 303});
-        response.cookies.set('errors', 'Invalid current password', {
-            maxAge: 10,
-            path: '/',
-        });
-        return response;
+    // FIXED: Properly verify current password using !bcrypt.compare
+    if (!user || !(await bcrypt.compare(current_password, user.password))) {
+      return NextResponse.json(
+        { success: false, error: "Invalid current password" },
+        { status: 400 }
+      );
     }
 
-    const updatedUser = await updateUser(userId, {password: await hashValue(newPassword)});
+    const hashedPassword = await hashValue(new_password);
+    const updatedUser = await updateUser(userId, { password: hashedPassword });
 
-    if (updatedUser) {
-        const response = NextResponse.redirect(redirectURL, {status: 303});
-        response.cookies.set('success', "Password updated successfully", {
-            maxAge: 10,
-            path: '/',
-        });
-        return response;
+    if (!updatedUser) {
+      return NextResponse.json(
+        { success: false, error: "Failed to update password" },
+        { status: 500 }
+      );
     }
-    const response = NextResponse.redirect(redirectURL, {status: 303});
-    response.cookies.set('errors', "User not found or password update failed", {
-        maxAge: 10,
-        path: '/',
+
+    return NextResponse.json({
+      success: true,
+      message: "Password updated successfully",
     });
-    return response;
+  } catch (err) {
+    console.error("Password update error:", err);
+    return NextResponse.json(
+      { success: false, error: "An unexpected error occurred while updating password" },
+      { status: 500 }
+    );
+  }
 }

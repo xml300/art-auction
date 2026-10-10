@@ -6,7 +6,7 @@ import RegisterForm from "./RegisterForm";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export default function AuthSection({ error }: { error: string }) {
+export default function AuthSection({ error }: { error?: string }) {
   const [accType, setAcctype] = useState<"login" | "register">("login");
   const { setError } = useError();
 
@@ -16,13 +16,18 @@ export default function AuthSection({ error }: { error: string }) {
     }
   }, [error, setError]);
 
+  const handleTabChange = (type: "login" | "register") => {
+    setError(null);
+    setAcctype(type);
+  };
+
   return (
     <div className="w-full">
       {/* Segmented Pill Tabs */}
       <div className="relative p-1 bg-surface-elevated rounded-xl flex max-w-xs mx-auto mb-6 border border-border-subtle">
         <button
           type="button"
-          onClick={() => setAcctype("login")}
+          onClick={() => handleTabChange("login")}
           className={cn(
             "flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 z-10 text-center select-none",
             accType === "login"
@@ -34,7 +39,7 @@ export default function AuthSection({ error }: { error: string }) {
         </button>
         <button
           type="button"
-          onClick={() => setAcctype("register")}
+          onClick={() => handleTabChange("register")}
           className={cn(
             "flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 z-10 text-center select-none",
             accType === "register"

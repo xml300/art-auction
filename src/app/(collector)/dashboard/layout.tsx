@@ -22,7 +22,7 @@ export default function DashboardLayout({
 
   return (
     <SessionProvider>
-      <main className="flex h-screen overflow-hidden bg-background text-text">
+      <main className="flex h-screen h-dvh overflow-hidden bg-background text-text">
         {/* Mobile Menu Backdrop */}
         {isMobileMenuOpen && (
           <div
@@ -33,9 +33,9 @@ export default function DashboardLayout({
 
         {/* Sidebar Container */}
         <aside
-          className={`fixed top-0 left-0 h-full z-50 transform ${
+          className={`fixed top-0 left-0 h-dvh max-h-screen z-50 transform ${
             isMobileMenuOpen ? "translate-x-0 visible pointer-events-auto" : "-translate-x-full invisible pointer-events-none"
-          } lg:translate-x-0 lg:visible lg:pointer-events-auto transition-transform duration-200 ease-in-out lg:static shrink-0`}
+          } lg:translate-x-0 lg:visible lg:pointer-events-auto transition-transform duration-200 ease-in-out lg:static lg:h-full shrink-0`}
         >
           <Sidebar onClose={() => setIsMobileMenuOpen(false)} />
         </aside>

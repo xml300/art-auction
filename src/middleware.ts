@@ -15,5 +15,11 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/artist-dashboard/:path*",
+    "/api/profile/:path*",
+    "/api/bid/:path*",
+    "/api/deposit/:path*",
+    "/api/transactions/:path*",
+    "/api/notifications/:path*",
+    "/api/auth/me",
   ],
 };

@@ -94,7 +94,7 @@ export default function ClientMarketplacePage({
       </div>
 
       {/* Search Bar & Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
           <input
@@ -106,18 +106,20 @@ export default function ClientMarketplacePage({
           />
         </div>
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <Button
             variant={isFilterMenuOpen ? "primary" : "secondary"}
             onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-            leftIcon={<ListFilter className="w-4 h-4" />}
+            aria-label="Filter"
+            title="Filter"
+            className="px-3 sm:px-3.5"
           >
-            Filters
+            <ListFilter className="w-4 h-4" />
           </Button>
 
           {/* Filter Popover */}
           {isFilterMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl bg-surface border border-border-subtle shadow-2xl p-5 z-50 animate-scale-in text-left space-y-4">
+            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-2xl bg-surface border border-border-subtle shadow-2xl p-5 z-50 animate-scale-in text-left space-y-4">
               <div className="flex items-center justify-between border-b border-border-subtle pb-3">
                 <span className="font-semibold text-sm text-text">Refine Results</span>
                 <button

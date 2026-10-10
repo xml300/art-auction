@@ -3,30 +3,60 @@
 import Link from "next/link";
 import { Eye, EyeOff, User, Lock, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useError } from "@/hooks/useErrors";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { error } = useError();
+  const { error, setError } = useError();
 
   const isFormValid = username.trim() !== "" && password.trim() !== "";
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid || isSubmitting) return;
+
+    setError(null);
     setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        setError(data.error || "Invalid username or password.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const redirectPath = data.redirectUrl || (data.user?.roleId === 1 ? "/artist-dashboard" : "/dashboard");
+      router.push(redirectPath);
+      router.refresh();
+    } catch {
+      setError("An unexpected network error occurred. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <form
-      className="space-y-4 text-left"
-      action="/api/auth/login"
-      method="post"
-      onSubmit={handleSubmit}
-    >
+    <form className="space-y-4 text-left" onSubmit={handleSubmit}>
       <div className="text-center mb-6">
         <h3 className="text-xl font-bold tracking-tight text-text">Welcome Back</h3>
         <p className="text-xs text-text-muted mt-1">Sign in to your Artsyl collector account</p>
@@ -52,7 +82,10 @@ export default function LoginForm() {
           autoComplete="username"
           required
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setUsername(e.target.value);
+          }}
           leftIcon={<User className="w-4 h-4" />}
         />
 
@@ -66,7 +99,10 @@ export default function LoginForm() {
             autoComplete="current-password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setError(null);
+              setPassword(e.target.value);
+            }}
             leftIcon={<Lock className="w-4 h-4" />}
             rightIcon={
               <button

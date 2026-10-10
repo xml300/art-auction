@@ -85,9 +85,9 @@ export async function subscribeUserToPush(): Promise<{ success: boolean; error?:
     }
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Failed to subscribe user to push:", err);
-    return { success: false, error: err?.message || "Failed to subscribe" };
+    return { success: false, error: (err as Error)?.message || "Failed to subscribe" };
   }
 }
 
