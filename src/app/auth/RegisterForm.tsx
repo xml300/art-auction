@@ -18,11 +18,12 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { error, setError } = useError();
 
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isPasswordMatch = password === confirmPassword || confirmPassword === "";
   const isPasswordValid = password.length >= 8;
   const isFormValid =
-    username.trim() !== "" &&
-    email.trim() !== "" &&
+    username.trim().length >= 3 &&
+    isEmailValid &&
     isPasswordValid &&
     password === confirmPassword;
 
@@ -123,6 +124,7 @@ export default function RegisterForm() {
             setError(null);
             setEmail(e.target.value);
           }}
+          error={email && !isEmailValid ? "Please enter a valid email address" : undefined}
           leftIcon={<Mail className="w-4 h-4" />}
         />
 

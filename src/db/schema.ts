@@ -12,11 +12,11 @@ const timestamps = {
 
 const users = pgTable('users', {
     id: serial('id').primaryKey(),
-    username: varchar('username', { length: 255 }).notNull(),
+    username: varchar('username', { length: 255 }).notNull().unique(),
     surname: varchar('surname', { length: 255 }),
     firstName: varchar('first_name', { length: 255 }),
     bio: varchar('bio', { length: 255 }),
-    email: varchar('email', { length: 100 }).notNull(),
+    email: varchar('email', { length: 100 }).notNull().unique(),
     password: varchar('password', { length: 255 }).notNull(),
     roleId: integer('role_id').references(() => roles.id).notNull(),
     wallet: integer('wallet').default(0).notNull(),

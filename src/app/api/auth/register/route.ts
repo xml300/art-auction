@@ -76,6 +76,27 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error: unknown) {
     console.error("Register route error:", error);
+    const pgError = error as { code?: string; detail?: string; message?: string };
+    if (pgError.code === "23505") {
+      const detail = (pgError.detail || pgError.message || "").toLowerCase();
+      if (detail.includes("email")) {
+        return NextResponse.json(
+          { success: false, error: "An account with this email already exists." },
+          { status: 409 }
+        );
+      }
+      if (detail.includes("username")) {
+        return NextResponse.json(
+          { success: false, error: "Username is already taken." },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json(
+        { success: false, error: "Username or email is already taken." },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: "An unexpected error occurred during registration." },
       { status: 500 }
