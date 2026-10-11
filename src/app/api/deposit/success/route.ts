@@ -1,4 +1,4 @@
-import { getUser, updateTransaction, createTransaction, updateUser, getTransactionByReference } from "@/data/queries";
+import { updateTransaction, createTransaction, getTransactionByReference, recordLedgerDeposit } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { db } from "@/data/db";
@@ -67,12 +67,17 @@ export async function GET(request: NextRequest) {
             }, tx);
         }
 
-        const user = await getUser(session.userId, tx);
-        if (user) {
-            await updateUser(user.id, {
-                wallet: user.wallet + amountInKobo
-            }, tx);
-        }
+        // Authoritative Double-Entry Ledger Posting:
+        // Debit: asset:gateway:paystack | Credit: liability:collector:available:{userId}
+        await recordLedgerDeposit(
+            {
+                userId: session.userId,
+                amountKobo: amountInKobo,
+                reference: paymentData.data.reference,
+                idempotencyKey: `DEP-LEDGER-${paymentData.data.reference}`,
+            },
+            tx
+        );
     });
 
     notifyUser({

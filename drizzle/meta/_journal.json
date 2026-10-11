@@ -15,6 +15,13 @@
       "when": 1768611863814,
       "tag": "0001_tearful_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768612900000,
+      "tag": "0002_ledger_architecture",
+      "breakpoints": true
     }
   ]
 }

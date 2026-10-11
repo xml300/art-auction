@@ -1,9 +1,12 @@
-import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum, boolean, bigint } from "drizzle-orm/pg-core";
 
 
 export const transactionStatusEnum = pgEnum('transaction_status_enum', ["pending", "completed", "failed", "refunded"]);
 export const transactionTypeEnum = pgEnum('transaction_type_enum', ["deposit", "withdrawal", "bid_payment", "refund", "platform_fee"]);
 export const notificationTypeEnum = pgEnum('notification_type_enum', ["outbid", "auction_won", "auction_ending_soon", "deposit_success", "watchlist_reminder", "system"]);
+export const ledgerAccountTypeEnum = pgEnum('ledger_account_type_enum', ["asset", "liability", "equity", "revenue", "expense"]);
+export const ledgerPostingDirectionEnum = pgEnum('ledger_posting_direction_enum', ["debit", "credit"]);
+export const ledgerEntryTypeEnum = pgEnum('ledger_entry_type_enum', ["deposit", "withdrawal", "bid_hold", "bid_release", "auction_settlement", "refund", "platform_fee", "adjustment"]);
 
 const timestamps = {
     createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -131,4 +134,49 @@ const pushSubscriptions = pgTable('push_subscriptions', {
     ...timestamps
 });
 
-export { users, roles, userRoles, permissions, rolePermissions, artworks, transactions, bids, activities, watchlists, notifications, pushSubscriptions };
+const ledgerAccounts = pgTable('ledger_accounts', {
+    id: serial('id').primaryKey(),
+    accountNumber: varchar('account_number', { length: 100 }).notNull().unique(),
+    userId: integer('user_id').references(() => users.id),
+    name: varchar('name', { length: 255 }).notNull(),
+    type: ledgerAccountTypeEnum('type').notNull(),
+    currency: varchar('currency', { length: 10 }).default('NGN').notNull(),
+    ...timestamps
+});
+
+const ledgerJournalEntries = pgTable('ledger_journal_entries', {
+    id: serial('id').primaryKey(),
+    idempotencyKey: varchar('idempotency_key', { length: 255 }).notNull().unique(),
+    entryType: ledgerEntryTypeEnum('entry_type').notNull(),
+    reference: varchar('reference', { length: 255 }).notNull(),
+    description: varchar('description', { length: 500 }).notNull(),
+    metadata: varchar('metadata', { length: 2000 }),
+    ...timestamps
+});
+
+const ledgerPostings = pgTable('ledger_postings', {
+    id: serial('id').primaryKey(),
+    journalEntryId: integer('journal_entry_id').references(() => ledgerJournalEntries.id).notNull(),
+    accountId: integer('account_id').references(() => ledgerAccounts.id).notNull(),
+    amount: bigint('amount', { mode: 'number' }).notNull(), // amount in kobo (always strictly positive)
+    direction: ledgerPostingDirectionEnum('direction').notNull(), // 'debit' | 'credit'
+    ...timestamps
+});
+
+export { 
+    users, 
+    roles, 
+    userRoles, 
+    permissions, 
+    rolePermissions, 
+    artworks, 
+    transactions, 
+    bids, 
+    activities, 
+    watchlists, 
+    notifications, 
+    pushSubscriptions,
+    ledgerAccounts,
+    ledgerJournalEntries,
+    ledgerPostings
+};

@@ -12,6 +12,7 @@ import {
   Activities,
   Notifications,
   PushSubscriptions,
+  Ledger,
 } from "@/models";
 
 // User models
@@ -45,6 +46,7 @@ export const createTransaction = Transactions.create;
 // Watchlist & Activity models
 export const getWatchlist = Watchlists.get;
 export const getActivity = Activities.get;
+export const createActivity = Activities.create;
 
 // Notification models
 export const createNotification = Notifications.create;
@@ -59,3 +61,11 @@ export const savePushSubscription = PushSubscriptions.createOrUpdate;
 export const getPushSubscriptionsByUser = PushSubscriptions.getByUserId;
 export const deletePushSubscriptionByEndpoint = PushSubscriptions.deleteByEndpoint;
 export const deletePushSubscriptionsByUser = PushSubscriptions.deleteByUserId;
+
+// Ledger models
+export const recordLedgerDeposit = Ledger.recordDeposit;
+export const recordLedgerBidHold = Ledger.recordBidHold;
+export const recordLedgerBidRelease = Ledger.recordBidRelease;
+export const recordLedgerAuctionSettlement = Ledger.recordAuctionSettlement;
+export const getLedgerUserBalances = Ledger.getUserBalances;
+export const getLedgerAccountBalance = Ledger.getAccountBalance;

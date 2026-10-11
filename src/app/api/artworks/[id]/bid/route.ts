@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getArtworkById, getUser, createTransaction, getBids, updateArtwork, createBid, updateUser } from '@/data/queries';
+import { getArtworkById, getUser, createTransaction, getBids, updateArtwork, createBid, recordLedgerBidHold, recordLedgerBidRelease } from '@/data/queries';
 import { JoinedReturnType } from '@/types';
 import { getSession } from '@/lib/auth';
 import { notifyUser } from '@/lib/notifications';
@@ -93,9 +93,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await createTransaction(user.id, reference, transDescription, 'bid_payment', amountToPayNaira.toFixed(2), 'completed', artworkId, tx);
         await createBid(artworkId, user.id, bidAmount, tx);
         await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
-        await updateUser(user.id, { wallet: user.wallet - amountToPayKobo }, tx);
 
-        // If another collector was the highest bidder, refund their bid to their wallet
+        // Double-Entry Ledger: Lock funds into Escrow Hold
+        // Debit: liability:collector:available:{userId} | Credit: liability:collector:escrow:{userId}
+        await recordLedgerBidHold(
+            {
+                userId: user.id,
+                amountKobo: amountToPayKobo,
+                artworkId,
+                reference,
+                idempotencyKey: `HOLD-LEDGER-${reference}`,
+            },
+            tx
+        );
+
+        // If another collector was the highest bidder, release their escrow hold back to available balance
         if (highestBid && highestBid.bidderId !== user.id) {
             const previousBidder = await getUser(highestBid.bidderId, tx);
             if (previousBidder) {
@@ -103,7 +115,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 const refundRef = `REF-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
                 const refundDesc = `Refund for outbid on ${artwork.title}`;
                 await createTransaction(previousBidder.id, refundRef, refundDesc, 'refund', highestBid.bidAmount.toFixed(2), 'completed', artworkId, tx);
-                await updateUser(previousBidder.id, { wallet: previousBidder.wallet + refundKobo }, tx);
+
+                // Double-Entry Ledger: Release funds from Escrow back to Available
+                // Debit: liability:collector:escrow:{previousBidderId} | Credit: liability:collector:available:{previousBidderId}
+                await recordLedgerBidRelease(
+                    {
+                        userId: previousBidder.id,
+                        amountKobo: refundKobo,
+                        artworkId,
+                        reference: refundRef,
+                        idempotencyKey: `REL-LEDGER-${refundRef}`,
+                    },
+                    tx
+                );
             }
         }
     });

@@ -1,4 +1,4 @@
-import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum } from "./db/schema";
+import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings } from "./db/schema";
 
 export enum Roles {
     Admin,
@@ -77,3 +77,16 @@ export interface CollectorProfile {
     watchlist: Artwork[];
     activity: Activity[];
 }
+
+export type LedgerAccountType = typeof ledgerAccountTypeEnum.enumValues[number];
+export type LedgerPostingDirection = typeof ledgerPostingDirectionEnum.enumValues[number];
+export type LedgerEntryType = typeof ledgerEntryTypeEnum.enumValues[number];
+
+export type LedgerAccount = typeof ledgerAccounts.$inferSelect;
+export type NewLedgerAccount = typeof ledgerAccounts.$inferInsert;
+
+export type LedgerJournalEntry = typeof ledgerJournalEntries.$inferSelect;
+export type NewLedgerJournalEntry = typeof ledgerJournalEntries.$inferInsert;
+
+export type LedgerPosting = typeof ledgerPostings.$inferSelect;
+export type NewLedgerPosting = typeof ledgerPostings.$inferInsert;
