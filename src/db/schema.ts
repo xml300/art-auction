@@ -1,4 +1,4 @@
-import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum, boolean, bigint } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, timestamp, primaryKey, serial, decimal, pgEnum, boolean, bigint, index } from "drizzle-orm/pg-core";
 
 
 export const transactionStatusEnum = pgEnum('transaction_status_enum', ["pending", "completed", "failed", "refunded"]);
@@ -99,11 +99,15 @@ const bids = pgTable('bids', {
 const activities = pgTable('activities', {
     id: serial('id').primaryKey(),
     userId: integer('user_id').references(() => users.id).notNull(),
+    artworkId: integer('artwork_id').references(() => artworks.id),
     type: varchar('type', { length: 50 }).notNull(),
-    artworkTitle: varchar('artwork_title', { length: 255 }).notNull(),
-    amount: integer('amount').notNull(),
+    artworkTitle: varchar('artwork_title', { length: 255 }),
+    amount: integer('amount'),
     ...timestamps
-});
+}, (table) => ({
+    userIdIdx: index('idx_activities_user_id').on(table.userId),
+    userCreatedAtIdx: index('idx_activities_user_created_at').on(table.userId, table.createdAt),
+}));
 
 const watchlists = pgTable('watchlists', {
     id: serial('id').primaryKey(),

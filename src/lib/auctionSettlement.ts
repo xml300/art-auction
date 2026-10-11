@@ -105,10 +105,13 @@ export async function settleExpiredAuctions(): Promise<SettlementResult[]> {
 
         // 4. Record collector activity
         await Activities.create(
-          winningBid.bidderId,
-          "auction_won",
-          artwork.title,
-          winningBid.bidAmount,
+          {
+            userId: winningBid.bidderId,
+            type: "won",
+            artworkId: artwork.id,
+            artworkTitle: artwork.title,
+            amount: winningBid.bidAmount,
+          },
           tx
         );
       });

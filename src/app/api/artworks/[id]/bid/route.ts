@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getArtworkById, getUser, createTransaction, getBids, updateArtwork, createBid, recordLedgerBidHold, recordLedgerBidRelease } from '@/data/queries';
+import { getArtworkById, getUser, createTransaction, getBids, updateArtwork, createBid, recordLedgerBidHold, recordLedgerBidRelease, createActivity } from '@/data/queries';
 import { JoinedReturnType } from '@/types';
 import { getSession } from '@/lib/auth';
 import { notifyUser } from '@/lib/notifications';
@@ -93,6 +93,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await createTransaction(user.id, reference, transDescription, 'bid_payment', amountToPayNaira.toFixed(2), 'completed', artworkId, tx);
         await createBid(artworkId, user.id, bidAmount, tx);
         await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
+        await createActivity(
+            {
+                userId: user.id,
+                type: 'bid',
+                artworkId,
+                artworkTitle: artwork.title,
+                amount: bidAmount,
+            },
+            tx
+        );
 
         // Double-Entry Ledger: Lock funds into Escrow Hold
         // Debit: liability:collector:available:{userId} | Credit: liability:collector:escrow:{userId}

@@ -22,6 +22,13 @@
       "when": 1768612900000,
       "tag": "0002_ledger_architecture",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768613500000,
+      "tag": "0003_activity_stream_enhancements",
+      "breakpoints": true
     }
   ]
 }
