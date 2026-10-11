@@ -29,6 +29,7 @@ const PROTECTED_API_PREFIXES = [
   "/api/transactions",
   "/api/notifications",
   "/api/auth/me",
+  "/api/audit-logs",
 ];
 
 export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {

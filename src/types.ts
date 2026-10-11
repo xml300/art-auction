@@ -1,4 +1,4 @@
-import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings } from "./db/schema";
+import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings, auditLogs } from "./db/schema";
 
 export enum Roles {
     Admin,
@@ -26,6 +26,9 @@ export type Permission = typeof permissions.$inferSelect;
 
 export type Activity = typeof activities.$inferSelect;
 export type NewActivity = typeof activities.$inferInsert;
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type NewAuditLog = typeof auditLogs.$inferInsert;
 
 export type Watchlist = typeof watchlists.$inferSelect;
 export type NewWatchlist = typeof watchlists.$inferInsert;

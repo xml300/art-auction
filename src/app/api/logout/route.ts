@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clearAuthCookies } from "@/lib/auth";
+import { clearAuthCookies, getSession } from "@/lib/auth";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {
+  const [session] = await getSession();
+  if (session) {
+    await logAuditEvent(request, {
+      actorId: session.userId,
+      actorType: "user",
+      action: "auth.logout",
+      resourceType: "user",
+      resourceId: String(session.userId),
+      status: "success",
+    });
+  }
+
   const isJson = request.headers.get("accept")?.includes("application/json") ||
                  request.headers.get("content-type")?.includes("application/json");
 

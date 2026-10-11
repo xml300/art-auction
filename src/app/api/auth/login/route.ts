@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken, setAuthCookies } from "@/lib/auth";
 import { validateRequest, loginSchema } from "@/lib/validation";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {
   const validation = await validateRequest(request, loginSchema);
@@ -19,6 +20,16 @@ export async function POST(request: NextRequest) {
     const user = matchedUsers.at(0);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
+      await logAuditEvent(request, {
+        actorId: user?.id ?? null,
+        actorType: "guest",
+        action: "auth.login.failed",
+        resourceType: "user",
+        resourceId: username,
+        status: "failure",
+        metadata: { attemptedUsername: username, reason: "invalid_credentials" },
+      });
+
       return NextResponse.json(
         { success: false, error: "Invalid username or password" },
         { status: 401 }
@@ -32,6 +43,16 @@ export async function POST(request: NextRequest) {
     } catch {
       roleName = user.roleId === 1 ? "Artist" : "Collector";
     }
+
+    await logAuditEvent(request, {
+      actorId: user.id,
+      actorType: roleName.toLowerCase(),
+      action: "auth.login.success",
+      resourceType: "user",
+      resourceId: String(user.id),
+      status: "success",
+      metadata: { roleName },
+    });
 
     const redirectPath = roleName === "Artist" ? "/artist-dashboard" : "/dashboard";
 

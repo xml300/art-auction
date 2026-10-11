@@ -167,6 +167,25 @@ const ledgerPostings = pgTable('ledger_postings', {
     ...timestamps
 });
 
+const auditLogs = pgTable('audit_logs', {
+    id: serial('id').primaryKey(),
+    actorId: integer('actor_id').references(() => users.id, { onDelete: 'set null' }),
+    actorType: varchar('actor_type', { length: 50 }).default('user').notNull(),
+    action: varchar('action', { length: 100 }).notNull(),
+    resourceType: varchar('resource_type', { length: 50 }),
+    resourceId: varchar('resource_id', { length: 100 }),
+    status: varchar('status', { length: 20 }).default('success').notNull(),
+    ipAddress: varchar('ip_address', { length: 100 }),
+    userAgent: varchar('user_agent', { length: 500 }),
+    metadata: varchar('metadata', { length: 4000 }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+    actorIdIdx: index('idx_audit_logs_actor_id').on(table.actorId),
+    actionIdx: index('idx_audit_logs_action').on(table.action),
+    createdAtIdx: index('idx_audit_logs_created_at').on(table.createdAt),
+    resourceIdx: index('idx_audit_logs_resource').on(table.resourceType, table.resourceId),
+}));
+
 export { 
     users, 
     roles, 
@@ -182,5 +201,6 @@ export {
     pushSubscriptions,
     ledgerAccounts,
     ledgerJournalEntries,
-    ledgerPostings
+    ledgerPostings,
+    auditLogs
 };

@@ -2,6 +2,7 @@ import { createUser, getUsers } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { signAccessToken, signRefreshToken, setAuthCookies } from "@/lib/auth";
 import { validateRequest, registerSchema } from "@/lib/validation";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {
   const validation = await validateRequest(request, registerSchema);
@@ -42,6 +43,16 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    await logAuditEvent(request, {
+      actorId: user.id,
+      actorType: accountType === 1 ? "artist" : "collector",
+      action: "auth.register.success",
+      resourceType: "user",
+      resourceId: String(user.id),
+      status: "success",
+      metadata: { username: user.username, email: user.email, roleId: user.roleId },
+    });
 
     const redirectPath = accountType === 1 ? "/artist-dashboard" : "/dashboard";
 

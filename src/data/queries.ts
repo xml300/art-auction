@@ -13,6 +13,7 @@ import {
   Notifications,
   PushSubscriptions,
   Ledger,
+  AuditLogs,
 } from "@/models";
 
 // User models
@@ -69,3 +70,7 @@ export const recordLedgerBidRelease = Ledger.recordBidRelease;
 export const recordLedgerAuctionSettlement = Ledger.recordAuctionSettlement;
 export const getLedgerUserBalances = Ledger.getUserBalances;
 export const getLedgerAccountBalance = Ledger.getAccountBalance;
+
+// Audit log models
+export const createAuditLog = AuditLogs.create;
+export const getAuditLogs = AuditLogs.get;

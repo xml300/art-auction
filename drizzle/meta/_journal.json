@@ -29,6 +29,13 @@
       "when": 1768613500000,
       "tag": "0003_activity_stream_enhancements",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1768614200000,
+      "tag": "0004_security_audit_logs",
+      "breakpoints": true
     }
   ]
 }

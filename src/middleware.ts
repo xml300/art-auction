@@ -21,5 +21,7 @@ export const config = {
     "/api/transactions/:path*",
     "/api/notifications/:path*",
     "/api/auth/me",
+    "/api/audit-logs/:path*",
+    "/api/audit-logs",
   ],
 };

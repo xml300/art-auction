@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import bcrypt from "bcrypt";
 import { validateRequest, passwordChangeSchema } from "@/lib/validation";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {
   const [session, authError] = await getSession();
@@ -27,6 +28,16 @@ export async function POST(request: NextRequest) {
 
     // FIXED: Properly verify current password using !bcrypt.compare
     if (!user || !(await bcrypt.compare(current_password, user.password))) {
+      await logAuditEvent(request, {
+        actorId: userId,
+        actorType: "user",
+        action: "auth.password.change_failed",
+        resourceType: "user",
+        resourceId: String(userId),
+        status: "failure",
+        metadata: { reason: "invalid_current_password" },
+      });
+
       return NextResponse.json(
         { success: false, error: "Invalid current password" },
         { status: 400 }
@@ -42,6 +53,15 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    await logAuditEvent(request, {
+      actorId: userId,
+      actorType: "user",
+      action: "auth.password.changed",
+      resourceType: "user",
+      resourceId: String(userId),
+      status: "success",
+    });
 
     return NextResponse.json({
       success: true,
