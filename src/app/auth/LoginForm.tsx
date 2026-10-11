@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useError } from "@/hooks/useErrors";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Roles } from "@/enums";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function LoginForm() {
         return;
       }
 
-      const redirectPath = data.redirectUrl || (data.user?.roleId === 1 ? "/artist-dashboard" : "/dashboard");
+      const redirectPath = data.redirectUrl || (data.user?.roleId === Roles.Artist ? "/artist-dashboard" : "/dashboard");
       router.push(redirectPath);
       router.refresh();
     } catch {

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { signAccessToken, signRefreshToken, setAuthCookies } from "@/lib/auth";
 import { validateRequest, registerSchema } from "@/lib/validation";
 import { logAuditEvent } from "@/lib/audit";
+import { Roles } from "@/enums";
 
 export async function POST(request: NextRequest) {
   const validation = await validateRequest(request, registerSchema);
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     await logAuditEvent(request, {
       actorId: user.id,
-      actorType: accountType === 1 ? "artist" : "collector",
+      actorType: accountType === Roles.Artist ? "artist" : "collector",
       action: "auth.register.success",
       resourceType: "user",
       resourceId: String(user.id),
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       metadata: { username: user.username, email: user.email, roleId: user.roleId },
     });
 
-    const redirectPath = accountType === 1 ? "/artist-dashboard" : "/dashboard";
+    const redirectPath = accountType === Roles.Artist ? "/artist-dashboard" : "/dashboard";
 
     const accessToken = signAccessToken({
       userId: user.id,

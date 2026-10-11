@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getUser, getUserRole } from "@/data/queries";
+import { Roles } from "@/enums";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export async function GET() {
       const role = await getUserRole(user.id);
       roleName = role.name;
     } catch {
-      roleName = user.roleId === 1 ? "Artist" : "Collector";
+      roleName = user.roleId === Roles.Artist ? "Artist" : "Collector";
     }
 
     return NextResponse.json({

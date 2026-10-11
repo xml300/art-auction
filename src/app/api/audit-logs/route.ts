@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getUserRole, getAuditLogs } from "@/data/queries";
+import { Roles } from "@/enums";
 
 export async function GET(request: NextRequest) {
   const [session, authError] = await getSession();
@@ -13,11 +14,11 @@ export async function GET(request: NextRequest) {
   }
 
   // Authorize: Only Admins can inspect security audit logs
-  let isAdmin = session.roleId === 0;
+  let isAdmin = session.roleId === Roles.Admin;
   if (!isAdmin) {
     try {
       const userRole = await getUserRole(session.userId);
-      if (userRole && (userRole.id === 0 || userRole.name.toLowerCase() === "admin")) {
+      if (userRole && (userRole.id === Roles.Admin || userRole.name.toLowerCase() === "admin")) {
         isAdmin = true;
       }
     } catch {

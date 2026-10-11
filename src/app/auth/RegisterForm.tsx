@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Roles } from "@/enums";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function RegisterForm() {
           username: username.trim(),
           email: email.trim(),
           password,
-          accountType: 2, // Collector default
+          accountType: Roles.Collector, // Collector default
         }),
       });
 

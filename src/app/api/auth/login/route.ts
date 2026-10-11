@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken, setAuthCookies } from "@/lib/auth";
 import { validateRequest, loginSchema } from "@/lib/validation";
 import { logAuditEvent } from "@/lib/audit";
+import { Roles } from "@/enums";
 
 export async function POST(request: NextRequest) {
   const validation = await validateRequest(request, loginSchema);
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       const role = await getUserRole(user.id);
       roleName = role.name;
     } catch {
-      roleName = user.roleId === 1 ? "Artist" : "Collector";
+      roleName = user.roleId === Roles.Artist ? "Artist" : "Collector";
     }
 
     await logAuditEvent(request, {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
+import { Roles } from "@/enums";
 
 export const loginSchema = z.object({
   username: z.string().trim().min(1, "Username is required"),
@@ -24,10 +25,10 @@ export const registerSchema = z.object({
   accountType: z
     .union([z.string(), z.number()])
     .transform((val) => Number(val))
-    .refine((val) => val === 1 || val === 2, {
-      message: "Invalid account type. Only Collector (2) or Artist (1) is allowed.",
+    .refine((val) => val === Roles.Artist || val === Roles.Collector, {
+      message: `Invalid account type. Only Collector (${Roles.Collector}) or Artist (${Roles.Artist}) is allowed.`,
     })
-    .default(2),
+    .default(Roles.Collector),
 });
 
 export const passwordChangeSchema = z

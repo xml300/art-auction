@@ -1,10 +1,6 @@
 import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings, auditLogs } from "./db/schema";
 
-export enum Roles {
-    Admin,
-    Artist,
-    Collector
-}
+export { Roles, RoleNames } from "./enums";
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
