@@ -186,6 +186,38 @@ const auditLogs = pgTable('audit_logs', {
     resourceIdx: index('idx_audit_logs_resource').on(table.resourceType, table.resourceId),
 }));
 
+export const fileAccessEnum = pgEnum('file_access_enum', ['public', 'private', 'confidential']);
+export const fileCategoryEnum = pgEnum('file_category_enum', [
+    'avatar',
+    'artwork_image',
+    'artwork_document',
+    'kyc_document',
+    'transaction_receipt'
+]);
+export const fileStatusEnum = pgEnum('file_status_enum', ['pending', 'ready', 'failed', 'deleted']);
+
+const files = pgTable('files', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id').references(() => users.id).notNull(),
+    category: fileCategoryEnum('category').notNull(),
+    accessLevel: fileAccessEnum('access_level').notNull().default('public'),
+    status: fileStatusEnum('status').notNull().default('pending'),
+    storageBucket: varchar('storage_bucket', { length: 255 }).notNull(),
+    storageKey: varchar('storage_key', { length: 1000 }).notNull(),
+    publicUrl: varchar('public_url', { length: 1000 }),
+    originalFilename: varchar('original_filename', { length: 255 }).notNull(),
+    mimeType: varchar('mime_type', { length: 100 }).notNull(),
+    sizeBytes: bigint('size_bytes', { mode: 'number' }).notNull(),
+    sha256Hash: varchar('sha256_hash', { length: 64 }),
+    entityType: varchar('entity_type', { length: 50 }),
+    entityId: integer('entity_id'),
+    ...timestamps
+}, (table) => ({
+    userIdIdx: index('idx_files_user_id').on(table.userId),
+    entityIdx: index('idx_files_entity').on(table.entityType, table.entityId),
+    statusIdx: index('idx_files_status').on(table.status),
+}));
+
 export { 
     users, 
     roles, 
@@ -202,5 +234,6 @@ export {
     ledgerAccounts,
     ledgerJournalEntries,
     ledgerPostings,
-    auditLogs
+    auditLogs,
+    files
 };

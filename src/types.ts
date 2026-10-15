@@ -1,4 +1,4 @@
-import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings, auditLogs } from "./db/schema";
+import { artworks, bids, permissions, roles, transactions, users, activities, watchlists, notifications, pushSubscriptions, transactionTypeEnum, transactionStatusEnum, notificationTypeEnum, ledgerAccountTypeEnum, ledgerPostingDirectionEnum, ledgerEntryTypeEnum, ledgerAccounts, ledgerJournalEntries, ledgerPostings, auditLogs, files, fileAccessEnum, fileCategoryEnum, fileStatusEnum } from "./db/schema";
 
 export { Roles, RoleNames } from "./enums";
 
@@ -89,3 +89,9 @@ export type NewLedgerJournalEntry = typeof ledgerJournalEntries.$inferInsert;
 
 export type LedgerPosting = typeof ledgerPostings.$inferSelect;
 export type NewLedgerPosting = typeof ledgerPostings.$inferInsert;
+
+export type FileRecord = typeof files.$inferSelect;
+export type NewFileRecord = typeof files.$inferInsert;
+export type FileAccess = typeof fileAccessEnum.enumValues[number];
+export type FileCategory = typeof fileCategoryEnum.enumValues[number];
+export type FileStatus = typeof fileStatusEnum.enumValues[number];

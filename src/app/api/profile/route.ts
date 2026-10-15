@@ -31,8 +31,8 @@ async function saveFile(file: File, userId: number){
         return "";
     }
     const filePath = `uploads/${userId}/`;
-    const path = await writeFile(file, filePath);
-    if(path instanceof Error || path === null || path === undefined){
+    const path = await writeFile(file, filePath, userId);
+    if(!path){
         return "";
     }
     return path;

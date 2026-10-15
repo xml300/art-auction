@@ -1,57 +1,37 @@
-import { adminStorage } from "./firebaseAdmin";
+import { getStorageService } from "@/lib/storage";
 
-const storageClient = adminStorage; 
+export async function writeFile(file: File, path?: string, userId = 0): Promise<string> {
+  if (!file || file.size <= 0) return "";
 
-export async function writeFile(file: File, path: string) {
-  if (!file) return null;
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const blob = storageClient.bucket().file(`${path}/${file.name}`);
-  const blobStream = blob.createWriteStream({
-    resumable: false,
-    metadata: {
-      contentType: file.type,
-    },
-  });
+  try {
+    const storage = getStorageService();
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  return new Promise<Error | string | undefined>((resolve, reject) => {
-    blobStream.on('error', (err) => {
-      console.error("Error uploading file:", err);
-      reject(err);
+    const saved = await storage.saveFile({
+      userId,
+      category: "avatar",
+      originalFilename: file.name,
+      mimeType: file.type || "image/jpeg",
+      buffer,
     });
 
-    blobStream.on('finish', async () => {
-      console.log('Uploaded a blob or file!');
-      resolve((await blob.getSignedUrl({
-        action: 'read',
-        expires: '03-09-2491', 
-      })).at(0));
-    });
-
-    blobStream.end(fileBuffer);
-  });
+    return saved.publicUrl || `/api/storage/files/${saved.id}`;
+  } catch (error) {
+    console.error("Error writing file via storage service:", error);
+    return "";
+  }
 }
 
-export async function readFile(filePath: string) {
-  const file = storageClient.bucket().file(filePath);
+export async function readFile(fileIdOrPath: string | number, requestingUserId = 0) {
   try {
-    const [exists] = await file.exists();
-    if (!exists) {
-      console.warn('File does not exist at path:', filePath);
-      return null;
+    const storage = getStorageService();
+    if (typeof fileIdOrPath === "number") {
+      const target = await storage.getReadTarget(fileIdOrPath, requestingUserId);
+      return target;
     }
-
-    const [url] = await file.getSignedUrl({
-      action: 'read',
-      expires: '03-09-2491',  
-    });
-    const response = await fetch(url);
-    const json = await response.json();
-    return json;
+    return null;
   } catch (error) {
-    console.error("Error getting download URL:", error); 
-    if (error instanceof Error && error.message.includes('unauthorized')) {
-      console.warn('User does not have permission to access this file.');
-    }
+    console.error("Error reading file via storage service:", error);
     return null;
   }
 }
