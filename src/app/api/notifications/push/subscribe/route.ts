@@ -16,10 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const [session] = await getSession();
 
   try {
     const body = await request.json();
@@ -35,7 +32,7 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get("user-agent") || undefined;
 
     const saved = await savePushSubscription(
-      session.userId,
+      session!.userId,
       endpoint,
       keys.p256dh,
       keys.auth,
@@ -57,11 +54,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const body = await request.json();
     const { endpoint } = body;

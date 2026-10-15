@@ -6,14 +6,7 @@ import { validateRequest, passwordChangeSchema } from "@/lib/validation";
 import { logAuditEvent } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {
-  const [session, authError] = await getSession();
-
-  if (authError || !session) {
-    return NextResponse.json(
-      { success: false, error: authError || "User unauthorized" },
-      { status: 401 }
-    );
-  }
+  const [session] = await getSession();
 
   const validation = await validateRequest(request, passwordChangeSchema);
   if (!validation.success) {
@@ -21,7 +14,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { current_password, new_password } = validation.data;
-  const userId = session.userId;
+  const userId = session!.userId;
 
   try {
     const user = await getUser(userId);

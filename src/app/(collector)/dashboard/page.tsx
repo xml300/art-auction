@@ -22,7 +22,7 @@ import Link from "next/link";
 
 export default async function DashboardPage() {
   const [session] = await getSession();
-  const userProfile = await getUsersProfile(session?.userId || null);
+  const userProfile = await getUsersProfile(session!.userId);
   const artworks = await api.get<{ artworks: Artwork[]; totalPages: number }>("/artworks/marketplace");
 
   if (!userProfile) {

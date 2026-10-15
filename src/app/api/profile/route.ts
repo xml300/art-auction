@@ -6,16 +6,8 @@ import { writeFile } from "@/lib/fileSys";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-    const [session, error] = await getSession();
-
-    if (error || session === null) {
-        return NextResponse.json(
-            { success: false, error: error || "User unauthorized" },
-            { status: 401 }
-        );
-    }
-
-    const user = await getUsersProfile(session.userId);
+    const [session] = await getSession();
+    const user = await getUsersProfile(session!.userId);
     if (user) {
         return NextResponse.json(user);
     }
@@ -39,20 +31,10 @@ async function saveFile(file: File, userId: number){
 }
 
 export async function POST(request: NextRequest) {
-    const [session, error] = await getSession();
+    const [session] = await getSession();
     const isJson = request.headers.get("accept")?.includes("application/json");
     const redirectURL = new URL('/dashboard/settings', request.url);
-
-    if (error || session === null) {
-        if (isJson) {
-            return NextResponse.json({ success: false, error: error || "Unauthorized" }, { status: 401 });
-        }
-        const response = NextResponse.redirect(redirectURL, {status: 303});
-        response.cookies.set('errors', error || "Unauthorized", { maxAge: 10, path: '/' });
-        return response;
-    }
-
-    const userId = session.userId;
+    const userId = session!.userId;
     const body = await request.formData();
     const profilePicture = body.get('profile_picture') as unknown as File;
 

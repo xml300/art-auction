@@ -11,10 +11,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const [session] = await getSession();
 
   const { searchParams } = request.nextUrl;
   const unreadOnly = searchParams.get("unreadOnly") === "true";
@@ -23,8 +20,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const [items, unreadCount] = await Promise.all([
-      getNotifications(session.userId, { unreadOnly, limit, offset }),
-      getUnreadNotificationsCount(session.userId),
+      getNotifications(session!.userId, { unreadOnly, limit, offset }),
+      getUnreadNotificationsCount(session!.userId),
     ]);
 
     return NextResponse.json({
@@ -41,17 +38,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const [session] = await getSession();
 
   const { searchParams } = request.nextUrl;
   const markAll = searchParams.get("all") === "true";
 
   try {
     if (markAll) {
-      await markAllNotificationsAsRead(session.userId);
+      await markAllNotificationsAsRead(session!.userId);
       return NextResponse.json({ success: true, message: "All notifications marked as read" });
     }
 
@@ -62,7 +56,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Notification ID is required" }, { status: 400 });
     }
 
-    const updated = await markNotificationAsRead(id, session.userId);
+    const updated = await markNotificationAsRead(id, session!.userId);
     if (!updated) {
       return NextResponse.json({ error: "Notification not found" }, { status: 404 });
     }
@@ -78,10 +72,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const [session] = await getSession();
 
   try {
     const body = await request.json().catch(() => ({}));
@@ -91,7 +82,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Notification ID is required" }, { status: 400 });
     }
 
-    const deleted = await deleteNotification(id, session.userId);
+    const deleted = await deleteNotification(id, session!.userId);
     return NextResponse.json({ success: deleted });
   } catch (err) {
     console.error("Failed to delete notification:", err);

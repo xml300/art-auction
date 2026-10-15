@@ -4,13 +4,9 @@ import { getSession } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest){
-    const [session, error] = await getSession();
+    const [session] = await getSession();
     const searchParams = request.nextUrl.searchParams;
     const artworkId = searchParams.get('artworkId');
-
-    if(error || session == null){
-        return NextResponse.json({message: "User unauthorized"}, {status: 401});
-    }
     const user = await getUser(session!.userId) as User;
     if(artworkId){
         const artId = parseInt(artworkId);

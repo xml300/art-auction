@@ -4,17 +4,10 @@ import { getUserRole, getAuditLogs } from "@/data/queries";
 import { Roles } from "@/enums";
 
 export async function GET(request: NextRequest) {
-  const [session, authError] = await getSession();
-
-  if (authError || !session) {
-    return NextResponse.json(
-      { success: false, error: authError || "Authentication required" },
-      { status: 401 }
-    );
-  }
+  const [session] = await getSession();
 
   // Authorize: Only Admins can inspect security audit logs
-  let isAdmin = session.roleId === Roles.Admin;
+  let isAdmin = session!.roleId === Roles.Admin;
   if (!isAdmin) {
     try {
       const userRole = await getUserRole(session.userId);

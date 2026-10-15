@@ -5,13 +5,13 @@ import { db } from "@/data/db";
 import { notifyUser } from "@/lib/notifications";
 
 export async function GET(request: NextRequest) {
-    const [session, error] = await getSession();
+    const [session] = await getSession();
     const reference = request.nextUrl.searchParams.get('reference');
     const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
 
-    if (error || session === null || !reference) {
+    if (!reference) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
-        response.cookies.set('errors', 'User unauthorized', {
+        response.cookies.set('errors', 'Transaction reference is required', {
             maxAge: 10,
             path: '/'
         });

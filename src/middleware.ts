@@ -23,5 +23,6 @@ export const config = {
     "/api/auth/me",
     "/api/audit-logs/:path*",
     "/api/audit-logs",
+    "/api/artworks/:id/bid",
   ],
 };

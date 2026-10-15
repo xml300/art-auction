@@ -4,17 +4,9 @@ import { getUser } from "@/data/queries";
 
 
 export async function POST(req: NextRequest) {
-    const [session, error] = await getSession();
+    const [session] = await getSession();
     const redirectUrl = new URL('/dashboard/deposit', req.nextUrl.origin);
-    if (error || !session) {
-        const response = NextResponse.redirect(redirectUrl, {status: 303});
-        response.cookies.set('errors', 'Unauthorized', {
-            maxAge: 10,
-            path: '/'
-        });
-        return response;
-    }
-    const userId = session.userId;
+    const userId = session!.userId;
     const formData = await req.formData();
     const amount = parseInt(formData.get('amount')!.toString());
 

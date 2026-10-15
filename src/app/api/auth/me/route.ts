@@ -6,17 +6,10 @@ import { Roles } from "@/enums";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [session, error] = await getSession();
-
-  if (error || !session) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized", code: "UNAUTHORIZED" },
-      { status: 401 }
-    );
-  }
+  const [session] = await getSession();
 
   try {
-    const user = await getUser(session.userId);
+    const user = await getUser(session!.userId);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },

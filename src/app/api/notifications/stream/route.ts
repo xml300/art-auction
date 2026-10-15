@@ -5,12 +5,8 @@ import { getNotifications, getUnreadNotificationsCount } from "@/data/queries";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const userId = session.userId;
+  const [session] = await getSession();
+  const userId = session!.userId;
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

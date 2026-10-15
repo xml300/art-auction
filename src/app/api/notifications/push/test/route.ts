@@ -5,13 +5,10 @@ import { notifyUser } from "@/lib/notifications";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const [session, error] = await getSession();
-  if (error || !session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const [session] = await getSession();
 
   const result = await notifyUser({
-    userId: session.userId,
+    userId: session!.userId,
     type: "system",
     title: "Artsyl Test Notification",
     body: "Your web push alert integration is working properly!",

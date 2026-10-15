@@ -47,7 +47,9 @@ export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {
 
     const { pathname } = request.nextUrl;
     const isProtectedPage = PROTECTED_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-    const isProtectedApi = PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+    const isProtectedApi =
+      PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+      /^\/api\/artworks\/[^/]+\/bid/.test(pathname);
 
     if (!isProtectedPage && !isProtectedApi) {
       return next(new NextRequest(request, { headers: requestHeaders }), event);
