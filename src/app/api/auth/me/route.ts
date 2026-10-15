@@ -22,7 +22,7 @@ export async function GET() {
       const role = await getUserRole(user.id);
       roleName = role.name;
     } catch {
-      roleName = user.roleId === Roles.Artist ? "Artist" : "Collector";
+      roleName = user.roleId === Roles.Admin ? "Admin" : user.roleId === Roles.Artist ? "Artist" : "Collector";
     }
 
     return NextResponse.json({

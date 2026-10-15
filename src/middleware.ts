@@ -15,6 +15,8 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/artist-dashboard/:path*",
+    "/admin/:path*",
+    "/api/admin/:path*",
     "/api/profile/:path*",
     "/api/bid/:path*",
     "/api/deposit/:path*",

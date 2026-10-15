@@ -47,7 +47,13 @@ export default function LoginForm() {
         return;
       }
 
-      const redirectPath = data.redirectUrl || (data.user?.roleId === Roles.Artist ? "/artist-dashboard" : "/dashboard");
+      const redirectPath =
+        data.redirectUrl ||
+        (data.user?.roleId === Roles.Admin
+          ? "/admin"
+          : data.user?.roleId === Roles.Artist
+          ? "/artist-dashboard"
+          : "/dashboard");
       router.push(redirectPath);
       router.refresh();
     } catch {

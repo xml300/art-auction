@@ -10,3 +10,4 @@ export * from "./pushSubscription.model";
 export * from "./ledger.model";
 export * from "./auditLog.model";
 export * from "./file.model";
+export * from "./admin.model";

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       const role = await getUserRole(user.id);
       roleName = role.name;
     } catch {
-      roleName = user.roleId === Roles.Artist ? "Artist" : "Collector";
+      roleName = user.roleId === Roles.Admin ? "Admin" : user.roleId === Roles.Artist ? "Artist" : "Collector";
     }
 
     await logAuditEvent(request, {
@@ -55,7 +55,12 @@ export async function POST(request: NextRequest) {
       metadata: { roleName },
     });
 
-    const redirectPath = roleName === "Artist" ? "/artist-dashboard" : "/dashboard";
+    const redirectPath =
+      roleName.toLowerCase() === "admin" || user.roleId === Roles.Admin
+        ? "/admin"
+        : roleName.toLowerCase() === "artist" || user.roleId === Roles.Artist
+        ? "/artist-dashboard"
+        : "/dashboard";
 
     const accessToken = await signAccessToken({
       userId: user.id,

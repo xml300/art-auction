@@ -25,7 +25,7 @@ async function verifyJwtPayload(token: string): Promise<TokenPayload | null> {
   }
 }
 
-const PROTECTED_PAGE_PREFIXES = ["/dashboard", "/artist-dashboard"];
+const PROTECTED_PAGE_PREFIXES = ["/dashboard", "/artist-dashboard", "/admin"];
 const PROTECTED_API_PREFIXES = [
   "/api/profile",
   "/api/bid",
@@ -34,6 +34,7 @@ const PROTECTED_API_PREFIXES = [
   "/api/notifications",
   "/api/auth/me",
   "/api/audit-logs",
+  "/api/admin",
 ];
 
 export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {
