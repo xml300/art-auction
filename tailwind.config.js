@@ -2,7 +2,7 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    "./src/**/*.{jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -15,8 +15,13 @@ module.exports = {
         'border-subtle': 'var(--border-subtle)',
         'primary': 'var(--primary)',
         'primary-hover': 'var(--primary-hover)',
+        'primary-foreground': 'var(--primary-foreground)',
         'secondary': 'var(--secondary)',
         'accent': 'var(--accent)',
+        'destructive': 'var(--destructive)',
+        'destructive-hover': 'var(--destructive-hover)',
+        'success': 'var(--success)',
+        'warning': 'var(--warning)',
       },
     },
   },

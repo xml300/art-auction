@@ -86,7 +86,7 @@ export default function ActivityFeed({ activity, emptyMessage }: ActivityFeedPro
         activity.map((item) => (
           <div
             key={item.id}
-            className="bg-surface rounded-xl border border-border-subtle p-4 flex items-center gap-4 transition-all hover:border-border"
+            className="bg-surface rounded-xl border border-border-subtle p-4 flex items-center gap-4 transition-all hover:border-primary/40"
           >
             <div className="p-2.5 rounded-xl bg-surface-elevated shrink-0">
               {renderIcon(item.type)}

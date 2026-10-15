@@ -1,30 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useTheme, Theme } from "@/contexts/ThemeContext";
 
 export default function ThemeSettings() {
-  const [theme, setTheme] = useState("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("theme");
-    const isDark =
-      stored === "dark" ||
-      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    const currentTheme = isDark ? "dark" : "light";
-    setTheme(currentTheme);
-  }, []);
+  const { theme, setTheme, mounted } = useTheme();
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const next = e.target.value;
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    if (next === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    setTheme(e.target.value as Theme);
   };
 
   if (!mounted) {
@@ -47,6 +29,7 @@ export default function ThemeSettings() {
           value={theme}
           onChange={handleChange}
         >
+          <option value="system">System Default (Automatic Sync)</option>
           <option value="light">Light Theme (Classic Ivory)</option>
           <option value="dark">Dark Theme (Deep Midnight Navy)</option>
         </select>

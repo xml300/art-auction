@@ -4,6 +4,7 @@ import { ErrorProvider } from "@/components/ErrorProvider";
 import { ErrorBoundary } from "./ErrorBoundary";
 import Error from "./Error";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import "./globals.css"; 
 
 const openSans = Open_Sans({
@@ -22,7 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");var isDark=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(isDark){document.documentElement.classList.add("dark");document.documentElement.style.colorScheme="dark";}else{document.documentElement.classList.remove("dark");document.documentElement.style.colorScheme="light";}}catch(_){}})();`,
+          }}
+        />
+      </head>
       <body
         className={`${openSans.className} antialiased h-screen bg-background text-text`}
       >
@@ -30,7 +38,9 @@ export default function RootLayout({
           <ErrorBoundary fallback={Error}>
             <ErrorProvider>
               <ToastProvider>
-                {children}
+                <ThemeProvider>
+                  {children}
+                </ThemeProvider>
               </ToastProvider>
             </ErrorProvider>
           </ErrorBoundary>

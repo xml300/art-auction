@@ -1,8 +1,8 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function ThemeToggle({
   className,
@@ -11,34 +11,7 @@ export default function ThemeToggle({
   className?: string;
   switchToggle?: boolean;
 }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("theme");
-    const isDark =
-      stored === "dark" ||
-      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    const resolvedTheme = isDark ? "dark" : "light";
-    setTheme(resolvedTheme);
-    if (resolvedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    if (next === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const { resolvedTheme, toggleTheme, mounted } = useTheme();
 
   if (!mounted) {
     return (
@@ -51,21 +24,21 @@ export default function ThemeToggle({
       <button
         type="button"
         role="switch"
-        aria-checked={theme === "dark"}
+        aria-checked={resolvedTheme === "dark"}
         aria-label="Toggle dark mode"
         onClick={toggleTheme}
         className={cn(
           "w-11 h-6 rounded-full transition-colors relative flex items-center p-0.5 border border-border-subtle",
-          theme === "dark" ? "bg-primary" : "bg-slate-300 dark:bg-slate-700"
+          resolvedTheme === "dark" ? "bg-primary" : "bg-slate-300 dark:bg-slate-700"
         )}
       >
         <span
           className={cn(
             "w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 flex items-center justify-center text-slate-800",
-            theme === "dark" ? "translate-x-5" : "translate-x-0"
+            resolvedTheme === "dark" ? "translate-x-5" : "translate-x-0"
           )}
         >
-          {theme === "dark" ? <Moon className="w-3 h-3 text-primary" /> : <Sun className="w-3 h-3 text-amber-500" />}
+          {resolvedTheme === "dark" ? <Moon className="w-3 h-3 text-primary" /> : <Sun className="w-3 h-3 text-amber-500" />}
         </span>
       </button>
     );
@@ -81,7 +54,7 @@ export default function ThemeToggle({
         className
       )}
     >
-      {theme === "dark" ? (
+      {resolvedTheme === "dark" ? (
         <Sun className="w-4 h-4 text-amber-400" />
       ) : (
         <Moon className="w-4 h-4 text-text-muted" />
