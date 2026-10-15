@@ -49,6 +49,46 @@ export interface JoinedReturnType extends Artwork {
     relatedWorks?: Artwork[];
 }
 
+export interface ArtistRecentBid {
+    id: number;
+    artworkId: number;
+    artworkTitle: string;
+    bidderUsername: string;
+    bidAmount: number;
+    bidTime: Date | null;
+}
+
+export interface ArtistProfile {
+    id: number;
+    name: string;
+    username: string;
+    firstName: string;
+    surname: string;
+    bio: string;
+    email: string;
+    wallet: number;
+    payableBalance: number;
+    profilePicture: string;
+    socialMedia: {
+        twitter?: string;
+        instagram?: string;
+    };
+    stats: {
+        totalArtworks: number;
+        activeAuctions: number;
+        soldArtworks: number;
+        totalRevenue: number;
+        highestBid: number;
+        avgSellingPrice: number;
+        memberSince: number;
+    };
+    activeArtworks: Artwork[];
+    soldArtworks: Artwork[];
+    allArtworks: Artwork[];
+    recentBids: ArtistRecentBid[];
+    recentTransactions: Transaction[];
+}
+
 export interface CollectorProfile {
     name: string;
     username: string;

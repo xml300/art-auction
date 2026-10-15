@@ -4,6 +4,7 @@ import { Bid } from "@/types";
 export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export interface ArtworkFilterOptions {
+  artistId?: number;
   withBids?: boolean;
   withArtist?: boolean;
   withRelatedWorks?: boolean;

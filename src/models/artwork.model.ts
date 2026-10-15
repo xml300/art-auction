@@ -102,7 +102,12 @@ export const Artworks = {
     let offset = 0;
 
     const conditions = [];
-    if (userId) {
+    if (options?.artistId) {
+      conditions.push(eq(artworks.artistId, options.artistId));
+      if (userId) {
+        conditions.push(eq(artworks.ownerId, userId));
+      }
+    } else if (userId) {
       conditions.push(eq(artworks.ownerId, userId));
     } else {
       conditions.push(isNull(artworks.ownerId));
@@ -189,5 +194,12 @@ export const Artworks = {
 
     const artworks_: Artwork[] = Array.from(aggregated.values());
     return artworks_.slice(offset, offset + limit);
+  },
+
+  getByArtist: async (
+    artistId: number,
+    options?: ArtworkFilterOptions
+  ): Promise<Artwork[]> => {
+    return Artworks.getAll(undefined, { ...options, artistId });
   },
 };

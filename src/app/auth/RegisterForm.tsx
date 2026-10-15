@@ -16,6 +16,7 @@ export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [accountType, setAccountType] = useState<Roles>(Roles.Collector);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { error, setError } = useError();
 
@@ -46,7 +47,7 @@ export default function RegisterForm() {
           username: username.trim(),
           email: email.trim(),
           password,
-          accountType: Roles.Collector, // Collector default
+          accountType,
         }),
       });
 
@@ -58,7 +59,7 @@ export default function RegisterForm() {
         return;
       }
 
-      const redirectPath = data.redirectUrl || "/dashboard";
+      const redirectPath = data.redirectUrl || (accountType === Roles.Artist ? "/artist-dashboard" : "/dashboard");
       router.push(redirectPath);
       router.refresh();
     } catch {
@@ -71,7 +72,7 @@ export default function RegisterForm() {
     <form className="space-y-4 text-left" onSubmit={handleSubmit}>
       <div className="text-center mb-6">
         <h3 className="text-xl font-bold tracking-tight text-text">Create Account</h3>
-        <p className="text-xs text-text-muted mt-1">Join the Artsyl collector community</p>
+        <p className="text-xs text-text-muted mt-1">Join the Artsyl art and auction community</p>
       </div>
 
       {error && (
@@ -84,15 +85,37 @@ export default function RegisterForm() {
         </div>
       )}
 
-      {/* Role Pill - Collectors only */}
-      <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-xs">
-        <div className="flex items-center gap-2 text-text">
-          <ShieldCheck className="w-4 h-4 text-primary" />
-          <span className="font-semibold">Account Type</span>
+      {/* Account Type Selector: Collector vs Artist */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
+          I want to register as
+        </label>
+        <div className="grid grid-cols-2 gap-2 p-1 bg-surface-elevated rounded-xl border border-border-subtle">
+          <button
+            type="button"
+            onClick={() => setAccountType(Roles.Collector)}
+            className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              accountType === Roles.Collector
+                ? "bg-primary text-white shadow-xs"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Collector
+          </button>
+          <button
+            type="button"
+            onClick={() => setAccountType(Roles.Artist)}
+            className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              accountType === Roles.Artist
+                ? "bg-primary text-white shadow-xs"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Artist
+          </button>
         </div>
-        <span className="font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px]">
-          Collector
-        </span>
       </div>
 
       <div className="space-y-4">

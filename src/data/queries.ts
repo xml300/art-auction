@@ -26,12 +26,14 @@ export const getUserRole = Users.getRole;
 export const getPermissions = Users.getPermissions;
 export const getUserPermissions = Users.getUserPermissions;
 export const getUsersProfile = Users.getProfile;
+export const getArtistProfile = Users.getArtistProfile;
 
 // Artwork models
 export const createArtwork = Artworks.create;
 export const updateArtwork = Artworks.update;
 export const getArtworkById = Artworks.getById;
 export const getArtworks = Artworks.getAll;
+export const getArtworksByArtist = Artworks.getByArtist;
 
 // Bid models
 export const getBids = Bids.get;

@@ -42,9 +42,21 @@ export const passwordChangeSchema = z
     path: ["confirm_new_password"],
   });
 
+export const createArtworkSchema = z.object({
+  title: z.string().trim().min(2, "Title must be at least 2 characters").max(255, "Title cannot exceed 255 characters"),
+  description: z.string().trim().max(1000, "Description cannot exceed 1000 characters").optional().default(""),
+  imageUrl: z.string().trim().min(1, "Artwork image is required").max(500, "Image URL is too long"),
+  startingBid: z.coerce.number().positive("Starting bid must be greater than zero"),
+  durationDays: z.coerce.number().min(1, "Auction duration must be at least 1 day").max(30, "Auction duration cannot exceed 30 days").default(7),
+  medium: z.string().trim().min(2, "Medium is required (e.g., Oil on Canvas)").max(50, "Medium cannot exceed 50 characters"),
+  dimensions: z.string().trim().min(2, "Dimensions are required (e.g., 24 x 36 in)").max(50, "Dimensions cannot exceed 50 characters"),
+  year: z.coerce.number().int().min(1000, "Invalid year").max(new Date().getFullYear() + 1, "Year cannot be in the future").default(new Date().getFullYear()),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
+export type CreateArtworkInput = z.infer<typeof createArtworkSchema>;
 
 export async function parseRequestBody(request: NextRequest): Promise<Record<string, unknown>> {
   const contentType = request.headers.get("content-type") || "";

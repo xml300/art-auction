@@ -1,13 +1,23 @@
-import { getUsersProfile, updateUser } from "@/data/queries";
+import { getUsersProfile, getArtistProfile, updateUser } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth"; 
 import { writeFile } from "@/lib/fileSys";
+import { Roles } from "@/enums";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
     const [session] = await getSession();
-    const user = await getUsersProfile(session!.userId);
+    if (!session) {
+        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (session.roleId === Roles.Artist) {
+        const artist = await getArtistProfile(session.userId);
+        if (artist) return NextResponse.json(artist);
+    }
+
+    const user = await getUsersProfile(session.userId);
     if (user) {
         return NextResponse.json(user);
     }
@@ -33,7 +43,8 @@ async function saveFile(file: File, userId: number){
 export async function POST(request: NextRequest) {
     const [session] = await getSession();
     const isJson = request.headers.get("accept")?.includes("application/json");
-    const redirectURL = new URL('/dashboard/settings', request.url);
+    const redirectPath = session?.roleId === Roles.Artist ? '/artist-dashboard/settings' : '/dashboard/settings';
+    const redirectURL = new URL(redirectPath, request.url);
     const userId = session!.userId;
     const body = await request.formData();
     const profilePicture = body.get('profile_picture') as unknown as File;

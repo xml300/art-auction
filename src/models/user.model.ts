@@ -1,13 +1,14 @@
 import bcrypt from "bcrypt";
 import { db } from "@/data/db";
 import { users, roles, rolePermissions, permissions, bids, artworks } from "@/db/schema";
-import { eq, or, gt, lt, sql, getTableColumns, SQL } from "drizzle-orm";
-import { User, Roles, Role, Permission, CollectorProfile, Artwork, Transaction } from "@/types";
+import { eq, or, gt, lt, sql, getTableColumns, SQL, desc } from "drizzle-orm";
+import { User, Roles, Role, Permission, CollectorProfile, ArtistProfile, Artwork, Transaction } from "@/types";
 import { Tx } from "./types";
 import { Artworks } from "./artwork.model";
 import { Watchlists } from "./watchlist.model";
 import { Activities } from "./activity.model";
 import { Transactions } from "./transaction.model";
+import { Ledger } from "./ledger.model";
 
 export const Users = {
   hashPassword: async (str: string): Promise<string> => {
@@ -203,6 +204,105 @@ export const Users = {
       ownedArtworks,
       watchlist,
       activity,
+    };
+
+    return profileData;
+  },
+
+  getArtistProfile: async (artistId: number | null): Promise<ArtistProfile | null> => {
+    if (!artistId) return null;
+
+    const user = await Users.get(artistId);
+    if (!user) return null;
+
+    const allArtworks = await db
+      .select()
+      .from(artworks)
+      .where(eq(artworks.artistId, artistId))
+      .orderBy(desc(artworks.createdAt));
+
+    const now = new Date();
+    const activeArtworks = allArtworks.filter(
+      (a) => a.ownerId === null && new Date(a.auctionEndTime) > now
+    );
+    const soldArtworks = allArtworks.filter((a) => a.ownerId !== null);
+
+    // Ledger payable earnings
+    let payableBalance = 0;
+    try {
+      const artistAccount = await Ledger.getArtistPayableAccount(artistId);
+      const balanceKobo = await Ledger.getAccountBalance(artistAccount.id);
+      payableBalance = balanceKobo / 100;
+    } catch {
+      payableBalance = 0;
+    }
+
+    const { transactions: artistTransactions } = await Transactions.get(artistId);
+    const completedSales = artistTransactions.filter(
+      (t: Transaction) =>
+        t.status === "completed" &&
+        (t.type === "deposit" || t.description?.toLowerCase().includes("sale payout"))
+    );
+    const totalRevenue = completedSales.reduce(
+      (acc: number, t: Transaction) => acc + parseFloat(t.amount),
+      0
+    );
+
+    const highestBid = activeArtworks.reduce(
+      (max: number, a: Artwork) => Math.max(max, a.currentBid || 0, a.startingBid || 0),
+      0
+    );
+    const avgSellingPrice =
+      soldArtworks.length > 0 ? totalRevenue / soldArtworks.length : 0;
+    const memberSinceYears =
+      (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 365);
+
+    // Recent bids on this artist's artworks
+    const recentBids = await db
+      .select({
+        id: bids.id,
+        artworkId: bids.artworkId,
+        artworkTitle: artworks.title,
+        bidderUsername: users.username,
+        bidAmount: bids.bidAmount,
+        bidTime: bids.bidTime,
+      })
+      .from(bids)
+      .innerJoin(artworks, eq(bids.artworkId, artworks.id))
+      .innerJoin(users, eq(bids.bidderId, users.id))
+      .where(eq(artworks.artistId, artistId))
+      .orderBy(desc(bids.bidTime))
+      .limit(10);
+
+    const profileData: ArtistProfile = {
+      id: user.id,
+      name: `${user.firstName || ""} ${user.surname || ""}`.trim() || user.username,
+      username: user.username,
+      firstName: user.firstName || "",
+      surname: user.surname || "",
+      email: user.email,
+      wallet: user.wallet / 100,
+      payableBalance,
+      profilePicture: user.profilePicture || "/logo.png",
+      bio: user.bio || "No bio provided.",
+      socialMedia: {
+        twitter: "https://twitter.com/",
+        instagram: "https://instagram.com/",
+      },
+      stats: {
+        totalArtworks: allArtworks.length,
+        activeAuctions: activeArtworks.length,
+        soldArtworks: soldArtworks.length,
+        totalRevenue: parseFloat(totalRevenue.toFixed(2)),
+        highestBid,
+        avgSellingPrice: parseFloat(avgSellingPrice.toFixed(2)),
+        memberSince: parseFloat(memberSinceYears.toFixed(1)),
+      },
+      activeArtworks,
+      soldArtworks,
+      allArtworks,
+      recentBids,
+      recentTransactions: artistTransactions.slice(0, 10),
     };
 
     return profileData;

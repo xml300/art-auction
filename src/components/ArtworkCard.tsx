@@ -10,13 +10,14 @@ interface ArtworkCardProps {
   artwork: Artwork;
   index?: number;
   owned?: boolean;
+  customHref?: string;
 }
 
-export default function ArtworkCard({ artwork, index = 0, owned }: ArtworkCardProps) {
+export default function ArtworkCard({ artwork, index = 0, owned, customHref }: ArtworkCardProps) {
   const isMarketplace = owned === false;
-  const targetHref = isMarketplace
+  const targetHref = customHref || (isMarketplace
     ? `/dashboard/marketplace/place-bid/${artwork.id}`
-    : `/dashboard/my-artworks/${artwork.id}`;
+    : `/dashboard/my-artworks/${artwork.id}`);
 
   const displayPrice = artwork.currentBid && artwork.currentBid > 0
     ? artwork.currentBid

@@ -13,8 +13,11 @@ export default chainMiddlewares([
 
 export const config = {
   matcher: [
+    "/dashboard",
     "/dashboard/:path*",
+    "/artist-dashboard",
     "/artist-dashboard/:path*",
+    "/admin",
     "/admin/:path*",
     "/api/admin/:path*",
     "/api/profile/:path*",

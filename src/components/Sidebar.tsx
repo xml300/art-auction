@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Home, ShoppingCart, User, Settings, UserCircle, LogOut, DollarSign, X } from "lucide-react";
+import { Home, ShoppingCart, User, Settings, UserCircle, LogOut, DollarSign, X, Palette, PlusCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   onClose?: () => void;
+  role?: "collector" | "artist";
 }
 
-export default function Sidebar({ onClose }: SidebarProps) {
+export default function Sidebar({ onClose, role = "collector" }: SidebarProps) {
   const pathname = usePathname();
 
-  const sidebarLinks = [
+  const collectorLinks = [
     { href: "/dashboard", content: "Overview", icon: <Home className="w-4 h-4 shrink-0" /> },
     { href: "/dashboard/marketplace", content: "Marketplace", icon: <ShoppingCart className="w-4 h-4 shrink-0" /> },
     { href: "/dashboard/my-artworks", content: "My Artworks", icon: <User className="w-4 h-4 shrink-0" /> },
@@ -19,15 +20,29 @@ export default function Sidebar({ onClose }: SidebarProps) {
     { href: "/dashboard/settings", content: "Settings", icon: <Settings className="w-4 h-4 shrink-0" /> },
   ];
 
+  const artistLinks = [
+    { href: "/artist-dashboard", content: "Overview", icon: <Home className="w-4 h-4 shrink-0" /> },
+    { href: "/artist-dashboard/artworks", content: "My Artworks", icon: <Palette className="w-4 h-4 shrink-0" /> },
+    { href: "/artist-dashboard/artworks/new", content: "List Artwork", icon: <PlusCircle className="w-4 h-4 shrink-0" /> },
+    { href: "/artist-dashboard/earnings", content: "Sales & Earnings", icon: <DollarSign className="w-4 h-4 shrink-0" /> },
+    { href: "/artist-dashboard/settings", content: "Settings", icon: <Settings className="w-4 h-4 shrink-0" /> },
+  ];
+
+  const isArtist = role === "artist";
+  const sidebarLinks = isArtist ? artistLinks : collectorLinks;
+  const brandHref = isArtist ? "/artist-dashboard" : "/";
+  const profileHref = isArtist ? "/artist-dashboard/profile" : "/dashboard/profile";
+  const roleLabel = isArtist ? "Artist" : "Collector";
+
   return (
     <div className="h-full max-h-full w-64 border-r border-border-subtle p-3.5 sm:p-4 flex flex-col justify-between bg-surface text-text">
       <div className="flex flex-col min-h-0 flex-1">
         {/* Brand Header */}
         <div className="flex items-center justify-between mb-4 px-2 shrink-0">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={brandHref} className="flex items-center gap-2">
             <span className="font-bold text-lg tracking-tight text-primary">Artsyl</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              Collector
+              {roleLabel}
             </span>
           </Link>
           {onClose && (
@@ -67,10 +82,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {/* Account Footer (Pinned, always visible without scrolling) */}
       <div className="pt-3 border-t border-border-subtle space-y-0.5 shrink-0 mt-2">
         <Link
-          href="/dashboard/profile"
+          href={profileHref}
           onClick={onClose}
           className={`flex items-center gap-2.5 text-xs sm:text-sm px-3 py-2 rounded-xl font-medium transition-all duration-150 ${
-            pathname === "/dashboard/profile"
+            pathname === profileHref
               ? "bg-primary text-white shadow-xs font-semibold"
               : "text-text-muted hover:text-text hover:bg-surface-elevated"
           }`}
