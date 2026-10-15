@@ -57,13 +57,13 @@ export async function POST(request: NextRequest) {
 
     const redirectPath = accountType === Roles.Artist ? "/artist-dashboard" : "/dashboard";
 
-    const accessToken = signAccessToken({
+    const accessToken = await signAccessToken({
       userId: user.id,
       roleId: user.roleId,
       username: user.username,
       profilePicture: user.profilePicture,
     });
-    const refreshToken = signRefreshToken({
+    const refreshToken = await signRefreshToken({
       userId: user.id,
       roleId: user.roleId,
       username: user.username,

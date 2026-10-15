@@ -6,6 +6,7 @@ interface TokenPayload {
   userId?: number;
   roleId?: number;
   username?: string;
+  tokenType?: string;
   exp?: number;
 }
 
@@ -14,8 +15,11 @@ async function verifyJwtPayload(token: string): Promise<TokenPayload | null> {
     const secret = new TextEncoder().encode(
       process.env.JWT_SECRET_KEY || "artsyl_secure_default_secret_key_change_in_prod"
     );
-    const { payload } = await jwtVerify(token, secret);
-    return payload as TokenPayload;
+    const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
+    if (payload.tokenType !== "access") {
+      return null;
+    }
+    return payload as unknown as TokenPayload;
   } catch {
     return null;
   }
@@ -34,12 +38,19 @@ const PROTECTED_API_PREFIXES = [
 
 export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {
   return async (request: NextRequest, event: NextFetchEvent) => {
+    // Strip client-supplied headers to prevent spoofing
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.delete("x-user-id");
+    requestHeaders.delete("x-user-role");
+    requestHeaders.delete("x-username");
+    requestHeaders.delete("x-auth-verified");
+
     const { pathname } = request.nextUrl;
     const isProtectedPage = PROTECTED_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
     const isProtectedApi = PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
     if (!isProtectedPage && !isProtectedApi) {
-      return next(request, event);
+      return next(new NextRequest(request, { headers: requestHeaders }), event);
     }
 
     const authCookie = request.cookies.get("auth")?.value;
@@ -71,16 +82,12 @@ export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {
       return response;
     }
 
-    // Clone request headers to forward user info downstream
-    const requestHeaders = new Headers(request.headers);
-    if (payload.userId) {
+    // Set verified headers downstream only when all required properties exist (no dummy defaults)
+    if (payload.userId !== undefined && payload.roleId !== undefined && payload.username) {
       requestHeaders.set("x-user-id", String(payload.userId));
-    }
-    if (payload.roleId !== undefined) {
       requestHeaders.set("x-user-role", String(payload.roleId));
-    }
-    if (payload.username) {
       requestHeaders.set("x-username", payload.username);
+      requestHeaders.set("x-auth-verified", "true");
     }
 
     const mutatedRequest = new NextRequest(request, {

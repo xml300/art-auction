@@ -1,5 +1,5 @@
-import * as jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
+import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export interface SessionPayload {
@@ -17,40 +17,52 @@ export type Payload = SessionPayload;
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "artsyl_secure_default_secret_key_change_in_prod";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET_KEY || `${JWT_SECRET}_refresh_key`;
 
+const accessSecretKey = new TextEncoder().encode(JWT_SECRET);
+const refreshSecretKey = new TextEncoder().encode(JWT_REFRESH_SECRET);
+
 export const ACCESS_TOKEN_MAX_AGE = 15 * 60; // 15 minutes (in seconds)
 export const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 days (in seconds)
 
-export function signAccessToken(payload: Omit<SessionPayload, "tokenType" | "iat" | "exp">): string {
-    return jwt.sign(
-        { ...payload, tokenType: "access" },
-        JWT_SECRET,
-        { expiresIn: `${ACCESS_TOKEN_MAX_AGE}s` }
-    );
+export async function signAccessToken(payload: Omit<SessionPayload, "tokenType" | "iat" | "exp">): Promise<string> {
+    return await new SignJWT({ ...payload, tokenType: "access" })
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime(`${ACCESS_TOKEN_MAX_AGE}s`)
+        .sign(accessSecretKey);
 }
 
-export function signRefreshToken(payload: Omit<SessionPayload, "tokenType" | "iat" | "exp">): string {
-    return jwt.sign(
-        { userId: payload.userId, roleId: payload.roleId, username: payload.username, tokenType: "refresh" },
-        JWT_REFRESH_SECRET,
-        { expiresIn: `${REFRESH_TOKEN_MAX_AGE}s` }
-    );
+export async function signRefreshToken(payload: Omit<SessionPayload, "tokenType" | "iat" | "exp">): Promise<string> {
+    return await new SignJWT({
+        userId: payload.userId,
+        roleId: payload.roleId,
+        username: payload.username,
+        tokenType: "refresh",
+    })
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime(`${REFRESH_TOKEN_MAX_AGE}s`)
+        .sign(refreshSecretKey);
 }
 
-export function verifyAccessToken(token: string): SessionPayload | null {
+export async function verifyAccessToken(token: string): Promise<SessionPayload | null> {
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as SessionPayload;
-        if (decoded.tokenType && decoded.tokenType !== "access") return null;
-        return decoded;
+        const { payload } = await jwtVerify(token, accessSecretKey, {
+            algorithms: ["HS256"],
+        });
+        if (payload.tokenType !== "access") return null;
+        return payload as unknown as SessionPayload;
     } catch {
         return null;
     }
 }
 
-export function verifyRefreshToken(token: string): SessionPayload | null {
+export async function verifyRefreshToken(token: string): Promise<SessionPayload | null> {
     try {
-        const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as SessionPayload;
-        if (decoded.tokenType && decoded.tokenType !== "refresh") return null;
-        return decoded;
+        const { payload } = await jwtVerify(token, refreshSecretKey, {
+            algorithms: ["HS256"],
+        });
+        if (payload.tokenType !== "refresh") return null;
+        return payload as unknown as SessionPayload;
     } catch {
         return null;
     }
@@ -77,7 +89,7 @@ export function setAuthCookies(
             httpOnly: true,
             secure: isProd,
             sameSite: "lax",
-            path: "/",
+            path: "/api",
         });
     }
 }
@@ -96,11 +108,47 @@ export function clearAuthCookies(response: NextResponse) {
         httpOnly: true,
         secure: isProd,
         sameSite: "lax",
+        path: "/api",
+    });
+    response.cookies.set("refreshToken", "", {
+        maxAge: 0,
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
         path: "/",
     });
 }
 
 export async function getSession(): Promise<[ SessionPayload | null, string | null]> {
+    // Fast path: check if Next.js middleware already verified this request
+    try {
+        const headerList = await headers();
+        const isVerified = headerList.get("x-auth-verified") === "true";
+        const userIdStr = headerList.get("x-user-id");
+        const roleIdStr = headerList.get("x-user-role");
+        const username = headerList.get("x-username");
+
+        // NO defaults for roleId or username: all must be valid and present
+        if (isVerified && userIdStr && roleIdStr && username) {
+            const userId = Number(userIdStr);
+            const roleId = Number(roleIdStr);
+            if (!Number.isNaN(userId) && !Number.isNaN(roleId)) {
+                return [
+                    {
+                        userId,
+                        roleId,
+                        username,
+                        tokenType: "access",
+                    },
+                    null,
+                ];
+            }
+        }
+    } catch {
+        // Fallback if headers() cannot be called
+    }
+
+    // Fallback: Verify access token directly from cookie
     const cookieStore = await cookies();
     const authCookie = cookieStore.get("auth")?.value || "";
 
@@ -108,7 +156,7 @@ export async function getSession(): Promise<[ SessionPayload | null, string | nu
         return [null, "User unauthorized"];
     }
 
-    const payload = verifyAccessToken(authCookie);
+    const payload = await verifyAccessToken(authCookie);
     if (!payload) {
         return [null, "Token is invalid or expired"];
     }

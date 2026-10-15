@@ -22,7 +22,7 @@ export async function POST() {
     );
   }
 
-  const payload = verifyRefreshToken(refreshToken);
+  const payload = await verifyRefreshToken(refreshToken);
   if (!payload) {
     const response = NextResponse.json(
       { success: false, error: "Invalid or expired refresh token", code: "INVALID_REFRESH_TOKEN" },
@@ -45,13 +45,13 @@ export async function POST() {
     }
 
     // Issue refreshed token pair (Refresh Token Rotation)
-    const newAccessToken = signAccessToken({
+    const newAccessToken = await signAccessToken({
       userId: user.id,
       roleId: user.roleId,
       username: user.username,
       profilePicture: user.profilePicture,
     });
-    const newRefreshToken = signRefreshToken({
+    const newRefreshToken = await signRefreshToken({
       userId: user.id,
       roleId: user.roleId,
       username: user.username,
