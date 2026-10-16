@@ -4,10 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { Artwork } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
 
 interface ArtworkCardProps {
-  artwork: Artwork;
+  artwork: Artwork & {
+    artist?: {
+      username?: string;
+    } | null;
+  };
   index?: number;
   owned?: boolean;
   customHref?: string;
@@ -25,57 +28,56 @@ export default function ArtworkCard({ artwork, index = 0, owned, customHref }: A
 
   return (
     <div
-      className="group rounded-2xl border border-border-subtle bg-surface overflow-hidden shadow-xs hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+      className="group flex flex-col bg-surface border border-border-subtle p-3.5 transition-all duration-300 hover:border-accent/40 rounded-card shadow-gallery hover:shadow-gallery-elevated"
       style={{ animationDelay: `${index * 0.05}s` }}
     >
-      <div className="relative w-full h-56 sm:h-64 overflow-hidden bg-surface-elevated">
+      {/* Sacred Canvas Framing: 4:5 Aspect Ratio, object-contain, zero overlay pills */}
+      <Link href={targetHref} className="relative w-full aspect-[4/5] bg-surface-elevated/40 flex items-center justify-center p-3 overflow-hidden rounded-gallery">
         <Image
           src={artwork.imageUrl}
-          width={600}
-          height={600}
           alt={artwork.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         />
-        <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-medium px-2.5 py-1 rounded-full border border-white/10">
-          {artwork.title}
-        </div>
-        {displayPrice > 0 && (
-          <div className="absolute top-3 right-3 bg-primary/90 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-xs">
-            {formatCurrency(displayPrice)}
-          </div>
-        )}
-      </div>
+      </Link>
 
-      <div className="p-4 flex flex-col flex-1 justify-between gap-3">
+      {/* Exhibition Placard Below Art */}
+      <div className="pt-3.5 pb-1 px-1 flex flex-col gap-2 flex-1 justify-between">
         <div>
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-text text-base line-clamp-1 group-hover:text-primary transition-colors">
+          <div className="flex items-baseline justify-between text-[11px] uppercase tracking-catalog text-text-muted">
+            <span className="font-medium truncate max-w-[160px]">{artwork.artist?.username || "Consigned Lot"}</span>
+            <span className="font-mono tabular-nums">Lot #{String(artwork.id).padStart(3, '0')}</span>
+          </div>
+
+          <Link href={targetHref}>
+            <h3 className="font-serif italic text-base sm:text-lg text-text line-clamp-1 group-hover:text-accent transition-colors mt-0.5">
               {artwork.title}
             </h3>
-          </div>
+          </Link>
           {artwork.description && (
-            <p className="text-xs text-text-muted line-clamp-2 mt-1">
+            <p className="text-xs text-text-muted line-clamp-2 mt-1 font-light leading-relaxed">
               {artwork.description}
             </p>
           )}
         </div>
 
-        <div className="pt-2 border-t border-border-subtle flex items-center justify-between">
+        <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
           <div>
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-text-muted block">
-              {isMarketplace ? "Current Bid" : "Estimated Value"}
+            <span className="block text-[10px] uppercase tracking-catalog text-text-muted font-medium">
+              {isMarketplace ? "Current Estimate" : "Acquisition Value"}
             </span>
-            <span className="text-sm font-bold text-text">
+            <span className="font-mono text-sm sm:text-base font-semibold tabular-nums text-text">
               {formatCurrency(displayPrice)}
             </span>
           </div>
 
           <Link
             href={targetHref}
-            className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
+            className="text-[11px] uppercase tracking-catalog font-semibold text-text hover:text-accent transition-colors flex items-center gap-1 group/btn py-2 px-3 rounded-card bg-surface-elevated border border-border-subtle hover:border-accent/40"
           >
-            {isMarketplace ? "Place Bid" : "Details"}
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span>{isMarketplace ? "Bid" : "View"}</span>
+            <span className="transition-transform group-hover/btn:translate-x-0.5">→</span>
           </Link>
         </div>
       </div>

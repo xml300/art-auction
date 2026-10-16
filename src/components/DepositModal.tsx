@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/Input";
 interface DepositModalProps {
   isOpen: boolean;
   onClose: () => void;
+  returnUrl?: string;
 }
 
-export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
+export default function DepositModal({ isOpen, onClose, returnUrl }: DepositModalProps) {
   const [amount, setAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -35,27 +36,29 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
       role="dialog"
       aria-modal="true"
       onClick={() => !isProcessing && onClose()}
-      className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex justify-center items-center p-4 animate-fade-in"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 animate-fade-in"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-surface rounded-2xl shadow-2xl border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-5"
+        className="bg-surface rounded-card shadow-gallery-elevated border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-5"
       >
         <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
           <div>
-            <h2 className="text-lg font-bold tracking-tight text-text">Deposit Funds</h2>
-            <p className="text-xs text-text-muted">Instant credit to your bidding balance</p>
+            <h2 className="text-lg font-serif italic text-text">Deposit Funds</h2>
+            <p className="text-xs text-text-muted font-light">Instant credit to your bidding balance</p>
           </div>
           <button
             onClick={() => !isProcessing && onClose()}
             aria-label="Close modal"
-            className="p-1.5 rounded-xl text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+            className="p-1.5 rounded-gallery text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form method="POST" action="/api/deposit" onSubmit={handleDeposit} className="space-y-4">
+          {returnUrl && <input type="hidden" name="returnUrl" value={returnUrl} />}
+
           <Input
             label="Amount (₦)"
             type="number"
@@ -77,7 +80,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 key={preset}
                 type="button"
                 onClick={() => setAmount(preset.toString())}
-                className="flex-1 py-1.5 px-2 rounded-lg text-xs font-medium border border-border-subtle bg-surface-elevated text-text hover:border-primary/40 transition-colors"
+                className="flex-1 py-1.5 px-2 rounded-gallery text-xs font-mono font-medium border border-border-subtle bg-surface-elevated text-text hover:border-accent/40 transition-colors"
               >
                 +₦{preset.toLocaleString()}
               </button>

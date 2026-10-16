@@ -29,25 +29,25 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none";
+      "inline-flex items-center justify-center font-medium rounded-card transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none";
 
     const variantStyles = {
       primary:
-        "bg-primary text-white hover:bg-primary-hover focus:ring-primary/40 shadow-sm shadow-primary/20 active:scale-[0.98]",
+        "bg-primary text-primary-foreground hover:bg-primary-hover border border-border-strong shadow-gallery active:scale-[0.99]",
       secondary:
-        "bg-surface-elevated text-text hover:bg-secondary border border-border-subtle focus:ring-primary/20 active:scale-[0.98]",
+        "bg-surface-elevated text-text hover:bg-surface border border-border-subtle active:scale-[0.99]",
       outline:
-        "border border-border-subtle bg-transparent text-text hover:bg-surface-elevated focus:ring-primary/20 active:scale-[0.98]",
+        "border border-border-subtle bg-transparent text-text hover:bg-surface-elevated hover:border-border-strong active:scale-[0.99]",
       ghost:
-        "text-text hover:bg-surface-elevated focus:ring-primary/20",
+        "text-text hover:bg-surface-elevated",
       danger:
-        "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500/30 shadow-sm active:scale-[0.98]",
+        "bg-destructive text-white hover:bg-destructive-hover border border-destructive/20 shadow-sm active:scale-[0.99]",
     };
 
     const sizeStyles = {
-      sm: "text-xs px-3 py-1.5 gap-1.5 rounded-lg",
-      md: "text-sm px-4 py-2.5 gap-2 rounded-xl",
-      lg: "text-base px-6 py-3.5 gap-2.5 rounded-xl font-semibold",
+      sm: "text-xs px-3.5 py-2.5 min-h-[44px] gap-1.5 rounded-gallery",
+      md: "text-xs uppercase tracking-wider font-semibold px-4 py-3 min-h-[44px] gap-2 rounded-card",
+      lg: "text-sm uppercase tracking-wider font-semibold px-6 py-3.5 min-h-[48px] gap-2.5 rounded-card",
     };
 
     return (

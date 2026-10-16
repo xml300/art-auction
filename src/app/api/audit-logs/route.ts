@@ -6,8 +6,15 @@ import { Roles } from "@/enums";
 export async function GET(request: NextRequest) {
   const [session] = await getSession();
 
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized. Authentication required." },
+      { status: 401 }
+    );
+  }
+
   // Authorize: Only Admins can inspect security audit logs
-  let isAdmin = session!.roleId === Roles.Admin;
+  let isAdmin = session.roleId === Roles.Admin;
   if (!isAdmin) {
     try {
       const userRole = await getUserRole(session.userId);

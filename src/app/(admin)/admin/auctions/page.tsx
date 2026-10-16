@@ -285,13 +285,13 @@ export default function AdminAuctionsPage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <a
-                          href={`/dashboard/marketplace`}
+                          href={`/dashboard/marketplace/place-bid/${art.id}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent hover:underline min-h-[44px] px-2"
                         >
-                          View Lot
-                          <ExternalLink className="w-3 h-3" />
+                          View Lot #{art.id}
+                          <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       </td>
                     </tr>
@@ -299,6 +299,31 @@ export default function AdminAuctionsPage() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {totalCount > 20 && (
+          <div className="flex items-center justify-between p-4 border-t border-border-subtle bg-surface text-xs">
+            <span className="text-text-muted">
+              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, totalCount)} of {totalCount} lots
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Previous
+              </button>
+              <span className="px-2 font-semibold text-text">Page {page} of {Math.ceil(totalCount / 20) || 1}</span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page * 20 >= totalCount}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

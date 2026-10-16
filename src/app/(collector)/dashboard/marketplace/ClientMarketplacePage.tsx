@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { ListFilter, Search, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import { MarketplaceGrid } from "@/components/MarketplaceGrid";
 import { Artwork } from "@/types";

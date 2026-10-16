@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { JoinedReturnType, Bid } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { api } from "@/lib/api";
@@ -14,7 +13,6 @@ import {
   Gavel,
   Wallet,
   PlusCircle,
-  Clock,
   ShieldCheck,
   ChevronDown,
   ChevronUp,
@@ -39,6 +37,10 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
 
   const [currentBid, setCurrentBid] = useState(0);
   const [bidAmount, setBidAmount] = useState<number>(minBid);
+  const [rawBidInput, setRawBidInput] = useState<string>(String(minBid));
+  const [isAuctionEnded, setIsAuctionEnded] = useState<boolean>(
+    () => new Date(artwork.auctionEndTime).getTime() <= Date.now()
+  );
   const [error, setError] = useState<string | null>(errors || null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +53,15 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
 
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+
+  // Read success cookie if redirected from successful bid
+  useEffect(() => {
+    const match = document.cookie.match(/success=([^;]+)/);
+    if (match) {
+      setSuccessMessage(decodeURIComponent(match[1]));
+      document.cookie = "success=; max-age=0; path=/";
+    }
+  }, []);
 
   // Load user wallet
   useEffect(() => {
@@ -93,19 +103,22 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
       .finally(() => setIsLoadingHistory(false));
   }, [artwork.id]);
 
-  const parseNumber = (str: string) => {
-    const cleaned = str.replace(/[^0-9.]/g, "");
-    return Number(cleaned);
-  };
-
   const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    const newRawValue = parseNumber(inputValue);
-    setBidAmount(newRawValue);
+    const val = e.target.value.replace(/[^0-9.]/g, "");
+    setRawBidInput(val);
+    const parsed = parseFloat(val);
+    setBidAmount(isNaN(parsed) ? 0 : parsed);
   };
 
   const handlePredefinedBid = (amount: number) => {
-    setBidAmount((prevAmount) => prevAmount + amount);
+    const nextAmount = (bidAmount || minBid) + amount;
+    setBidAmount(nextAmount);
+    setRawBidInput(String(nextAmount));
+  };
+
+  const handleResetToMin = () => {
+    setBidAmount(minBid);
+    setRawBidInput(String(minBid));
   };
 
   const validateBid = (): boolean => {
@@ -161,27 +174,26 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
     return formatCurrency(bidAmount);
   }, [bidAmount]);
 
-  const isAuctionEnded = new Date(artwork.auctionEndTime).getTime() <= Date.now();
   const hasSufficientFunds = walletBalance >= minBid;
 
   return (
     <>
-      <div className="w-full rounded-2xl md:rounded-3xl border border-border-subtle bg-surface p-5 sm:p-7 shadow-xs flex flex-col gap-6 text-left">
+      <div className="w-full rounded-card border border-border-subtle bg-surface p-5 sm:p-7 shadow-gallery flex flex-col gap-6 text-left">
         {/* Top Lot Summary & Live Ticker */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border-subtle">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-accent/10 text-accent border border-accent/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
                 Live Auction Lot #{artwork.id}
               </span>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-text mt-1">
-              Bidding Hub
+            <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-text mt-1">
+              Bidding Room
             </h2>
           </div>
 
-          <CountdownTimer endTime={artwork.auctionEndTime} />
+          <CountdownTimer endTime={artwork.auctionEndTime} onExpire={() => setIsAuctionEnded(true)} />
         </div>
 
         {/* Current Bid & Pricing Banner */}
@@ -286,16 +298,20 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
               </span>
             </div>
 
-            <div className="relative">
+            <div className="relative flex items-center">
+              <span className="absolute left-4 text-text-muted font-mono font-bold text-lg pointer-events-none select-none">
+                ₦
+              </span>
               <input
                 type="text"
                 id="bidAmount"
                 name="bidAmount"
                 ref={inputRef}
-                value={formattedBidAmount}
+                value={rawBidInput}
                 onChange={handleBidChange}
                 disabled={isAuctionEnded}
-                className="w-full py-3.5 px-4 rounded-xl border border-border-subtle bg-surface text-center text-2xl sm:text-3xl font-extrabold text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
+                placeholder={String(minBid)}
+                className="w-full py-3.5 pl-10 pr-4 rounded-card border border-border-subtle bg-surface text-center font-mono tabular-nums text-2xl sm:text-3xl font-extrabold text-text focus-visible:outline-none focus-visible:border-accent focus-visible:ring-1 focus-visible:ring-accent transition-all disabled:opacity-50"
                 required
               />
             </div>
@@ -304,16 +320,25 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
           {/* Quick Increment Chips */}
           {!isAuctionEnded && (
             <div>
-              <span className="block text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-2">
-                Quick Increment Pills
-              </span>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold uppercase tracking-catalog text-text-muted">
+                  Quick Increment Chips
+                </span>
+                <button
+                  type="button"
+                  onClick={handleResetToMin}
+                  className="text-[11px] text-text-muted hover:text-accent font-semibold tracking-wider transition-colors"
+                >
+                  Reset to Min (₦{minBid.toLocaleString()})
+                </button>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {predefinedOptions.map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => handlePredefinedBid(option)}
-                    className="py-2 px-2.5 rounded-xl border border-border-subtle bg-surface-elevated text-xs font-semibold text-text hover:border-primary/40 hover:bg-surface transition-colors active:scale-95"
+                    className="py-2.5 px-3 rounded-card border border-border-subtle bg-surface-elevated text-xs font-mono font-semibold text-text hover:border-accent/40 hover:bg-surface transition-colors active:scale-95 min-h-[44px]"
                   >
                     +₦{option.toLocaleString()}
                   </button>
@@ -406,50 +431,72 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          aria-labelledby="confirm-bid-title"
+          className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
           onClick={() => !isSubmitting && setIsConfirmModalOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" && !isSubmitting) setIsConfirmModalOpen(false);
+          }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-surface rounded-3xl shadow-2xl border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-5"
+            className="bg-surface rounded-card shadow-gallery-elevated border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-5"
           >
             <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <div className="w-8 h-8 rounded-card bg-accent/10 text-accent flex items-center justify-center">
                   <Gavel className="w-4 h-4" />
                 </div>
-                <h3 className="text-lg font-bold text-text">Confirm Your Bid</h3>
+                <h3 id="confirm-bid-title" className="font-serif text-lg font-bold text-text">
+                  Confirm Binding Bid
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => !isSubmitting && setIsConfirmModalOpen(false)}
-                className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+                aria-label="Close dialog"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-card text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-3 text-sm">
-              <p className="text-text-muted text-xs">
-                You are about to place an active binding bid on:
-              </p>
-              <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle">
-                <h4 className="font-bold text-text">{artwork.title}</h4>
-                <p className="text-xs text-text-muted mt-0.5">
-                  Artist: {artwork.artist?.username || "Verified Artist"}
-                </p>
-                <div className="mt-3 pt-2 border-t border-border-subtle flex justify-between items-center">
-                  <span className="text-xs uppercase font-semibold text-text-muted">
-                    Your Bid Offer
-                  </span>
-                  <span className="text-xl font-extrabold text-primary">
+              <div className="p-3.5 rounded-card bg-surface-elevated border border-border-subtle space-y-2">
+                <div className="flex justify-between text-xs text-text-muted">
+                  <span>Artwork Lot</span>
+                  <span className="font-semibold text-text">{artwork.title}</span>
+                </div>
+                <div className="flex justify-between text-xs text-text-muted">
+                  <span>Hammer Offer</span>
+                  <span className="font-mono tabular-nums font-semibold text-text">{formattedBidAmount}</span>
+                </div>
+                <div className="flex justify-between text-xs text-text-muted">
+                  <span>Buyer&apos;s Premium</span>
+                  <span className="font-semibold text-success">0% (₦0.00)</span>
+                </div>
+                <div className="pt-2 border-t border-border-subtle flex justify-between items-center">
+                  <span className="text-xs uppercase font-bold text-text">Total Escrow Hold</span>
+                  <span className="font-mono tabular-nums text-xl font-black text-primary">
                     {formattedBidAmount}
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs">
-                Once confirmed, this amount is committed to the auction escrow until you are outbid or the lot concludes.
+              {/* Escrow Balance Transparency */}
+              <div className="p-3 rounded-card bg-surface border border-border-subtle text-xs space-y-1">
+                <div className="flex justify-between text-text-muted">
+                  <span>Current Available Balance:</span>
+                  <span className="font-mono font-medium">{formatCurrency(walletBalance)}</span>
+                </div>
+                <div className="flex justify-between font-semibold text-text">
+                  <span>Remaining After Bid:</span>
+                  <span className="font-mono">{formatCurrency(walletBalance - bidAmount)}</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-card bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
+                Bids are legally binding. Funds are locked in escrow and returned immediately if you are outbid.
               </div>
             </div>
 
@@ -481,6 +528,7 @@ export function PlaceBidForm({ artwork, errors }: PlaceBidFormProps) {
       <DepositModal
         isOpen={isDepositOpen}
         onClose={() => setIsDepositOpen(false)}
+        returnUrl={`/dashboard/marketplace/place-bid/${artwork.id}`}
       />
     </>
   );

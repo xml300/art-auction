@@ -7,10 +7,23 @@ import { notifyUser } from "@/lib/notifications";
 export async function GET(request: NextRequest) {
     const [session] = await getSession();
     const reference = request.nextUrl.searchParams.get('reference');
-    const redirectUrl = new URL('/dashboard/deposit', process.env.SITE_BASE_URL || "");
+    const returnUrlCookie = request.cookies.get('deposit_return_url')?.value;
+    const finalPath = returnUrlCookie && returnUrlCookie.startsWith('/') ? returnUrlCookie : '/dashboard/deposit';
+    const redirectUrl = new URL(finalPath, process.env.SITE_BASE_URL || request.nextUrl.origin);
+
+    if (!session) {
+        const response = NextResponse.redirect(redirectUrl, { status: 303 });
+        response.cookies.delete('deposit_return_url');
+        response.cookies.set('errors', 'Session expired. Please log in.', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
 
     if (!reference) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
+        response.cookies.delete('deposit_return_url');
         response.cookies.set('errors', 'Transaction reference is required', {
             maxAge: 10,
             path: '/'
@@ -21,7 +34,9 @@ export async function GET(request: NextRequest) {
     // Prevent duplicate processing if reference was already completed
     const existingTx = await getTransactionByReference(reference);
     if (existingTx && existingTx.status === 'completed') {
-        return NextResponse.redirect(redirectUrl, { status: 303 });
+        const response = NextResponse.redirect(redirectUrl, { status: 303 });
+        response.cookies.delete('deposit_return_url');
+        return response;
     }
 
     const res = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
@@ -90,5 +105,6 @@ export async function GET(request: NextRequest) {
     }).catch(err => console.error("Deposit notification error:", err));
 
     const response = NextResponse.redirect(redirectUrl, { status: 303 });
+    response.cookies.delete('deposit_return_url');
     return response;
 }

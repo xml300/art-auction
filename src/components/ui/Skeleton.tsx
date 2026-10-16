@@ -7,7 +7,7 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        "animate-pulse rounded-xl bg-slate-200/80 dark:bg-slate-800/60",
+        "animate-pulse rounded-card bg-stone-200/70 dark:bg-stone-800/70",
         className
       )}
       {...props}
@@ -17,14 +17,14 @@ export function Skeleton({
 
 export function ArtworkCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-border-subtle bg-surface p-3 space-y-3 shadow-xs">
-      <Skeleton className="w-full h-56 rounded-xl" />
+    <div className="rounded-card border border-border-subtle bg-surface p-3.5 space-y-3 shadow-gallery">
+      <Skeleton className="w-full aspect-[4/5] rounded-gallery" />
       <div className="space-y-2 p-1">
-        <Skeleton className="h-5 w-3/4 rounded-lg" />
-        <Skeleton className="h-4 w-1/2 rounded-lg" />
-        <div className="pt-2 flex items-center justify-between">
-          <Skeleton className="h-6 w-24 rounded-lg" />
-          <Skeleton className="h-8 w-24 rounded-xl" />
+        <Skeleton className="h-4 w-1/3 rounded-gallery" />
+        <Skeleton className="h-5 w-3/4 rounded-gallery" />
+        <div className="pt-2 flex items-center justify-between border-t border-border-subtle">
+          <Skeleton className="h-5 w-24 rounded-gallery" />
+          <Skeleton className="h-8 w-20 rounded-card" />
         </div>
       </div>
     </div>
@@ -33,13 +33,13 @@ export function ArtworkCardSkeleton() {
 
 export function StatsCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-border-subtle bg-surface p-5 space-y-3 shadow-xs">
+    <div className="rounded-card border border-border-subtle bg-surface p-5 space-y-3 shadow-gallery">
       <div className="flex items-center justify-between">
-        <Skeleton className="h-10 w-10 rounded-xl" />
-        <Skeleton className="h-4 w-16 rounded-md" />
+        <Skeleton className="h-10 w-10 rounded-card" />
+        <Skeleton className="h-4 w-16 rounded-card" />
       </div>
-      <Skeleton className="h-7 w-28 rounded-lg" />
-      <Skeleton className="h-3.5 w-20 rounded-md" />
+      <Skeleton className="h-7 w-28 rounded-card" />
+      <Skeleton className="h-3.5 w-20 rounded-card" />
     </div>
   );
 }

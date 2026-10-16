@@ -195,20 +195,46 @@ export default function AdminAuditLogsPage() {
             </table>
           </div>
         )}
+
+        {totalCount > 30 && (
+          <div className="flex items-center justify-between p-4 border-t border-border-subtle bg-surface text-xs">
+            <span className="text-text-muted">
+              Showing {(page - 1) * 30 + 1}–{Math.min(page * 30, totalCount)} of {totalCount} logs
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Previous
+              </button>
+              <span className="px-2 font-semibold text-text">Page {page} of {Math.ceil(totalCount / 30) || 1}</span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page * 30 >= totalCount}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Metadata Detail Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-surface rounded-2xl border border-border-subtle shadow-2xl max-w-lg w-full p-5 space-y-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-card border border-border-subtle shadow-gallery-elevated max-w-lg w-full p-5 space-y-4 animate-fade-in">
             <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
               <div className="flex items-center gap-2">
-                <Code className="w-4 h-4 text-primary" />
-                <h3 className="font-bold text-sm text-text">Audit Event #{selectedLog.id}</h3>
+                <Code className="w-4 h-4 text-accent" />
+                <h3 className="font-serif font-bold text-sm text-text">Audit Event #{selectedLog.id}</h3>
               </div>
               <button
                 onClick={() => setSelectedLog(null)}
-                className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+                aria-label="Close dialog"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-card text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -242,10 +268,15 @@ export default function AdminAuditLogsPage() {
 
               <div className="pt-2">
                 <span className="text-text-muted font-semibold block mb-1">Event Metadata:</span>
-                <pre className="p-3 rounded-xl bg-surface-elevated border border-border-subtle font-mono text-[11px] overflow-x-auto text-text max-h-48">
-                  {selectedLog.metadata
-                    ? JSON.stringify(JSON.parse(selectedLog.metadata), null, 2)
-                    : "No metadata recorded."}
+                <pre className="p-3 rounded-card bg-surface-elevated border border-border-subtle font-mono text-[11px] overflow-x-auto text-text max-h-48 whitespace-pre-wrap break-all">
+                  {(() => {
+                    if (!selectedLog.metadata) return "No metadata recorded.";
+                    try {
+                      return JSON.stringify(JSON.parse(selectedLog.metadata), null, 2);
+                    } catch {
+                      return selectedLog.metadata;
+                    }
+                  })()}
                 </pre>
               </div>
             </div>
@@ -253,7 +284,7 @@ export default function AdminAuditLogsPage() {
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setSelectedLog(null)}
-                className="px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 min-h-[44px] rounded-card bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition-colors shadow-gallery"
               >
                 Close
               </button>

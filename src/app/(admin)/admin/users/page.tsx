@@ -35,6 +35,8 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{ user: AdminUser; targetRoleId: number } | null>(null);
+  const [adminConfirmUsername, setAdminConfirmUsername] = useState("");
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -265,8 +267,14 @@ export default function AdminUsersPage() {
                         ) : (
                           <select
                             value={user.roleId}
-                            onChange={(e) => handleRoleChange(user.id, Number(e.target.value))}
-                            className="bg-surface-elevated border border-border-subtle rounded-lg px-2 py-1 text-xs text-text focus:outline-hidden focus:border-primary cursor-pointer"
+                            onChange={(e) => {
+                              const target = Number(e.target.value);
+                              if (target !== user.roleId) {
+                                setPendingRoleChange({ user, targetRoleId: target });
+                                setAdminConfirmUsername("");
+                              }
+                            }}
+                            className="bg-surface-elevated border border-border-subtle rounded-card px-2.5 py-1.5 text-xs text-text focus-visible:outline-none focus-visible:border-accent cursor-pointer min-h-[36px]"
                           >
                             <option value={Roles.Collector}>Collector</option>
                             <option value={Roles.Artist}>Artist</option>
@@ -281,7 +289,108 @@ export default function AdminUsersPage() {
             </table>
           </div>
         )}
+
+        {totalCount > 25 && (
+          <div className="flex items-center justify-between p-4 border-t border-border-subtle bg-surface text-xs">
+            <span className="text-text-muted">
+              Showing {(page - 1) * 25 + 1}–{Math.min(page * 25, totalCount)} of {totalCount} users
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Previous
+              </button>
+              <span className="px-2 font-semibold text-text">Page {page} of {Math.ceil(totalCount / 25) || 1}</span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page * 25 >= totalCount}
+                className="px-3 py-1.5 min-h-[44px] rounded-card border border-border-subtle text-xs font-semibold disabled:opacity-40 hover:bg-surface-elevated transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Role Change Security Confirmation Modal */}
+      {pendingRoleChange && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+        >
+          <div className="bg-surface rounded-card shadow-gallery-elevated border border-border-subtle p-6 max-w-md w-full animate-scale-in text-left space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-card bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-serif font-bold text-base text-text">Confirm Role Modification</h3>
+                <p className="text-xs text-text-muted">High-privilege authorization control</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-text leading-relaxed">
+              Are you sure you want to change role for user{" "}
+              <strong className="text-text font-semibold">@{pendingRoleChange.user.username}</strong> from{" "}
+              <span className="text-text-muted font-medium">
+                {pendingRoleChange.user.roleId === Roles.Admin
+                  ? "Administrator"
+                  : pendingRoleChange.user.roleId === Roles.Artist
+                  ? "Artist"
+                  : "Collector"}
+              </span>{" "}
+              to{" "}
+              <strong className="text-accent font-bold">
+                {pendingRoleChange.targetRoleId === Roles.Admin ? "Administrator" : pendingRoleChange.targetRoleId === Roles.Artist ? "Artist" : "Collector"}
+              </strong>?
+            </p>
+
+            {pendingRoleChange.targetRoleId === Roles.Admin && (
+              <div className="p-3 rounded-card bg-destructive/10 border border-destructive/20 text-destructive text-xs space-y-2">
+                <p className="font-bold">⚠️ Warning: Administrator Privileges</p>
+                <p className="text-[11px] leading-relaxed">
+                  Admins have unrestricted financial ledger and settlement control. Type{" "}
+                  <code className="font-mono font-bold bg-surface px-1 py-0.5 rounded">{pendingRoleChange.user.username}</code> below to confirm:
+                </p>
+                <input
+                  type="text"
+                  value={adminConfirmUsername}
+                  onChange={(e) => setAdminConfirmUsername(e.target.value)}
+                  placeholder={`Type ${pendingRoleChange.user.username}`}
+                  className="w-full px-3 py-2 rounded-card border border-destructive/30 bg-surface text-text text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-destructive min-h-[44px]"
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-border-subtle">
+              <button
+                type="button"
+                onClick={() => setPendingRoleChange(null)}
+                className="px-4 py-2 min-h-[44px] rounded-card text-xs font-semibold text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={pendingRoleChange.targetRoleId === Roles.Admin && adminConfirmUsername !== pendingRoleChange.user.username}
+                onClick={async () => {
+                  const { user, targetRoleId } = pendingRoleChange;
+                  setPendingRoleChange(null);
+                  await handleRoleChange(user.id, targetRoleId);
+                }}
+                className="px-4 py-2 min-h-[44px] rounded-card text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-gallery"
+              >
+                Confirm & Apply Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

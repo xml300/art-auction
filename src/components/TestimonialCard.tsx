@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Star } from "lucide-react";
 
 interface Testimonial {
   id: number;
@@ -13,34 +12,31 @@ interface Testimonial {
 
 export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <div className="rounded-2xl bg-surface p-6 border border-border-subtle shadow-xs hover:border-primary/40 hover:shadow-md transition-all duration-200 flex flex-col justify-between text-left">
+    <div className="rounded-card bg-surface p-7 border border-border-subtle shadow-gallery hover:border-accent/40 transition-all duration-300 flex flex-col justify-between text-left">
       <div>
-        <div className="flex gap-1 mb-3">
-          {[...Array(testimonial.rating)].map((_, i) => (
-            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-          ))}
-        </div>
-        <p className="text-xs text-text-muted leading-relaxed line-clamp-4 italic">
-          &ldquo;{testimonial.comment}&rdquo;
+        {/* Curatorial Quote Glyph */}
+        <span className="font-serif text-3xl text-accent/50 leading-none select-none block mb-1">“</span>
+        <p className="text-xs sm:text-sm text-text font-serif italic leading-relaxed text-text/90">
+          {testimonial.comment}
         </p>
       </div>
 
-      <div className="pt-4 mt-4 border-t border-border-subtle flex items-center justify-between">
+      <div className="pt-5 mt-5 border-t border-border-subtle flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
             src={testimonial.image}
             alt={testimonial.name}
-            width={40}
-            height={40}
-            className="rounded-full object-cover ring-2 ring-primary/20"
+            width={38}
+            height={38}
+            className="rounded-full object-cover ring-1 ring-border-strong"
           />
           <div>
-            <p className="font-semibold text-text text-xs">{testimonial.name}</p>
-            <p className="text-[11px] text-text-muted">{testimonial.position}</p>
+            <p className="font-medium text-text text-xs tracking-wide">{testimonial.name}</p>
+            <p className="text-[11px] text-text-muted font-light">{testimonial.position}</p>
           </div>
         </div>
 
-        <span className="text-[10px] text-text-muted">
+        <span className="text-[10px] font-mono text-text-muted/75 uppercase tracking-wider">
           {new Date(testimonial.date).toLocaleDateString("en-US", {
             month: "short",
             year: "numeric",

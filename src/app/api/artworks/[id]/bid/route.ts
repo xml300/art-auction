@@ -48,6 +48,25 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return response;
     }
 
+    // Enforce strict auction expiration
+    const now = Date.now();
+    const auctionEnd = new Date(artwork.auctionEndTime).getTime();
+    if (auctionEnd <= now) {
+        const response = NextResponse.redirect(redirectUrl, { status: 303 });
+        response.cookies.set('errors', 'This auction has concluded. Further bids are rejected.', {
+            maxAge: 10,
+            path: '/'
+        });
+        return response;
+    }
+
+    // Anti-Sniping Soft Close: If bid placed in final 120s, extend auction by 120s
+    const SNIPING_WINDOW_MS = 2 * 60 * 1000;
+    let newAuctionEndTime: Date | undefined;
+    if (auctionEnd - now < SNIPING_WINDOW_MS) {
+        newAuctionEndTime = new Date(now + SNIPING_WINDOW_MS);
+    }
+
     if (artwork.currentBid && bidAmount <= artwork.currentBid) {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.set('errors', 'Bid amount must be higher than current bid', {
@@ -83,7 +102,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     await db.transaction(async (tx) => {
         await createTransaction(user.id, reference, transDescription, 'bid_payment', amountToPayNaira.toFixed(2), 'completed', artworkId, tx);
         await createBid(artworkId, user.id, bidAmount, tx);
-        await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
+        if (newAuctionEndTime) {
+            await updateArtwork(artworkId, { currentBid: bidAmount, auctionEndTime: newAuctionEndTime }, tx);
+        } else {
+            await updateArtwork(artworkId, { currentBid: bidAmount }, tx);
+        }
         await createActivity(
             {
                 userId: user.id,
@@ -156,5 +179,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const resp = NextResponse.redirect(redirectUrl, { status: 303 });
+    resp.cookies.set('success', `Bid of ₦${bidAmount.toLocaleString()} placed successfully!`, {
+        maxAge: 10,
+        path: '/'
+    });
     return resp;
 }

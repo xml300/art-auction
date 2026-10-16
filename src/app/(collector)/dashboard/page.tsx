@@ -1,5 +1,4 @@
 import { getUsersProfile } from "@/data/queries";
-import { ArtworkCarousel } from "@/components/ArtworksCarousel";
 import ArtworkCard from "@/components/ArtworkCard";
 import EmptyState from "@/components/EmptyState";
 import StatsCard from "@/components/StatsCard";
@@ -13,6 +12,7 @@ import {
   Target,
   Activity,
   ArrowRight,
+  UserX,
 } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
       <EmptyState
         title="User Not Found"
         message="The requested collector profile could not be loaded."
-        iconSrc="/icons/user.svg"
+        icon={<UserX className="w-8 h-8" />}
       />
     );
   }
@@ -101,20 +101,39 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {/* My Artworks (Now responsive across mobile & desktop) */}
+      {/* My Vault Artworks */}
       <section className="pt-4 border-t border-border-subtle">
-        {userProfile.ownedArtworks.length === 0 ? (
-          <div className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text">
-              My Collection
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <span className="text-[11px] uppercase tracking-catalog font-medium text-text-muted">
+              Private Vault
+            </span>
+            <h2 className="text-xl sm:text-2xl font-serif italic text-text">
+              Acquired Collection
             </h2>
-            <EmptyState
-              title="Vault is Empty"
-              message="You haven't acquired any artworks yet. Explore active auctions in the marketplace to place your first bid!"
-            />
           </div>
+          {userProfile.ownedArtworks.length > 0 && (
+            <Link
+              href="/dashboard/my-artworks"
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-catalog font-semibold text-text hover:text-accent transition-colors"
+            >
+              <span>View Vault ({userProfile.ownedArtworks.length})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
+        </div>
+
+        {userProfile.ownedArtworks.length === 0 ? (
+          <EmptyState
+            title="Vault is Empty"
+            message="You haven't acquired any artworks yet. Explore active auctions in the marketplace to place your first bid!"
+          />
         ) : (
-          <ArtworkCarousel artworks={userProfile.ownedArtworks} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {userProfile.ownedArtworks.slice(0, 3).map((art, index) => (
+              <ArtworkCard key={art.id} artwork={art} index={index} owned={true} />
+            ))}
+          </div>
         )}
       </section>
 
@@ -122,19 +141,19 @@ export default async function DashboardPage() {
       <section className="pt-4 border-t border-border-subtle">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <span className="text-xs uppercase font-bold tracking-wider text-primary">
+            <span className="text-[11px] uppercase tracking-catalog font-medium text-text-muted">
               Live Auctions
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text">
-              Active Marketplace
+            <h2 className="text-xl sm:text-2xl font-serif italic text-text">
+              Current Marketplace
             </h2>
           </div>
           <Link
             href="/dashboard/marketplace"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-catalog font-semibold text-text hover:text-accent transition-colors"
           >
-            View All Lots
-            <ArrowRight className="w-4 h-4" />
+            <span>View All Lots</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 

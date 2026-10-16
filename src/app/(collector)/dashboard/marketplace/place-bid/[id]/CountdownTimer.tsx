@@ -5,16 +5,12 @@ import { Clock } from "lucide-react";
 
 interface CountdownTimerProps {
   endTime: string | Date;
+  onExpire?: () => void;
 }
 
-export function CountdownTimer({ endTime }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-    isEnded: boolean;
-  }>({
+export function CountdownTimer({ endTime, onExpire }: CountdownTimerProps) {
+  const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
@@ -23,20 +19,16 @@ export function CountdownTimer({ endTime }: CountdownTimerProps) {
   });
 
   useEffect(() => {
+    setMounted(true);
     const target = new Date(endTime).getTime();
 
     const calculateTime = () => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const difference = target - now;
 
       if (difference <= 0) {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          isEnded: true,
-        });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isEnded: true });
+        if (onExpire) onExpire();
         return;
       }
 
@@ -51,41 +43,55 @@ export function CountdownTimer({ endTime }: CountdownTimerProps) {
     calculateTime();
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, [endTime]);
+  }, [endTime, onExpire]);
+
+  if (!mounted) {
+    return (
+      <div className="min-w-[140px] h-[36px] rounded-card bg-surface-elevated animate-pulse border border-border-subtle" />
+    );
+  }
 
   if (timeLeft.isEnded) {
     return (
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-bold uppercase tracking-wider">
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-card bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold uppercase tracking-wider min-h-[36px]"
+      >
         <Clock className="w-3.5 h-3.5" />
         <span>Auction Concluded</span>
       </div>
     );
   }
 
+  const isCritical = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes < 5;
   const isUrgent = timeLeft.days === 0 && timeLeft.hours < 2;
 
   return (
     <div
-      className={`flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
-        isUrgent
-          ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 animate-pulse"
+      aria-label={`Time remaining: ${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, ${timeLeft.seconds} seconds`}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-card border text-xs font-semibold min-h-[36px] ${
+        isCritical
+          ? "bg-destructive/10 border-destructive/30 text-destructive motion-safe:animate-pulse"
+          : isUrgent
+          ? "bg-warning/10 border-warning/30 text-warning motion-safe:animate-pulse"
           : "bg-surface-elevated border-border-subtle text-text"
       }`}
     >
-      <Clock className={`w-3.5 h-3.5 shrink-0 ${isUrgent ? "text-amber-500" : "text-primary"}`} />
-      <div className="flex items-center gap-1 font-mono tracking-tight text-xs sm:text-sm">
+      <Clock className={`w-3.5 h-3.5 shrink-0 ${isCritical ? "text-destructive" : isUrgent ? "text-warning" : "text-accent"}`} />
+      <div className="flex items-center font-mono font-bold tracking-normal tabular-nums text-xs sm:text-sm">
         {timeLeft.days > 0 && (
           <>
-            <span className="font-bold">{timeLeft.days}</span>
-            <span className="text-[10px] text-text-muted font-sans mr-0.5">d</span>
+            <span className="w-5 text-right">{String(timeLeft.days).padStart(2, "0")}</span>
+            <span className="text-[10px] text-text-muted font-sans px-0.5">d</span>
           </>
         )}
-        <span className="font-bold">{String(timeLeft.hours).padStart(2, "0")}</span>
-        <span className="text-[10px] text-text-muted font-sans mr-0.5">h</span>
-        <span className="font-bold">{String(timeLeft.minutes).padStart(2, "0")}</span>
-        <span className="text-[10px] text-text-muted font-sans mr-0.5">m</span>
-        <span className="font-bold">{String(timeLeft.seconds).padStart(2, "0")}</span>
-        <span className="text-[10px] text-text-muted font-sans">s</span>
+        <span className="w-5 text-right">{String(timeLeft.hours).padStart(2, "0")}</span>
+        <span className="text-[10px] text-text-muted font-sans px-0.5">h</span>
+        <span className="w-5 text-right">{String(timeLeft.minutes).padStart(2, "0")}</span>
+        <span className="text-[10px] text-text-muted font-sans px-0.5">m</span>
+        <span className="w-5 text-right">{String(timeLeft.seconds).padStart(2, "0")}</span>
+        <span className="text-[10px] text-text-muted font-sans pl-0.5">s</span>
       </div>
     </div>
   );

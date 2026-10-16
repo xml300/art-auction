@@ -50,12 +50,12 @@ export default function ThemeToggle({
       aria-label="Toggle theme"
       onClick={toggleTheme}
       className={cn(
-        "p-2 rounded-xl border border-border-subtle bg-surface text-text hover:bg-surface-elevated transition-colors shadow-xs active:scale-95 flex items-center justify-center",
+        "min-w-[44px] min-h-[44px] p-2.5 rounded-card border border-border-subtle bg-surface text-text hover:bg-surface-elevated transition-colors shadow-gallery active:scale-95 flex items-center justify-center",
         className
       )}
     >
       {resolvedTheme === "dark" ? (
-        <Sun className="w-4 h-4 text-amber-400" />
+        <Sun className="w-4 h-4 text-accent" />
       ) : (
         <Moon className="w-4 h-4 text-text-muted" />
       )}

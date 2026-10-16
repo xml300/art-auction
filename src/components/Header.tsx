@@ -14,13 +14,20 @@ export function Header() {
   };
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
     } else {
       document.body.style.overflow = "unset";
     }
     return () => {
       document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isMobileMenuOpen]);
 
@@ -35,32 +42,34 @@ export function Header() {
                 alt="Artsyl Logo"
                 width={36}
                 height={36}
-                className="rounded-full shadow-xs group-hover:scale-105 transition-transform"
+                className="rounded-full shadow-gallery ring-1 ring-border-subtle group-hover:scale-105 transition-transform"
               />
-              <span className="font-bold text-lg tracking-tight text-text">Artsyl</span>
+              <span className="font-serif text-xl tracking-wider text-text font-semibold uppercase">
+                Artsyl
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex gap-6 items-center text-sm font-medium text-text">
+          <ul className="hidden md:flex gap-8 items-center text-xs uppercase tracking-catalog font-medium text-text/75">
             <li>
-              <Link href="/" className="hover:text-primary transition-colors">
+              <Link href="/" className="hover:text-text transition-colors py-1 border-b border-transparent hover:border-accent">
                 Home
               </Link>
             </li>
             <li>
-              <Link href="#about" className="hover:text-primary transition-colors">
-                About
+              <Link href="#about" className="hover:text-text transition-colors py-1 border-b border-transparent hover:border-accent">
+                The Gallery
               </Link>
             </li>
             <li>
-              <Link href="#features" className="hover:text-primary transition-colors">
-                Features
+              <Link href="#features" className="hover:text-text transition-colors py-1 border-b border-transparent hover:border-accent">
+                Curatorial
               </Link>
             </li>
             <li>
-              <Link href="#testimonials" className="hover:text-primary transition-colors">
-                Reviews
+              <Link href="#testimonials" className="hover:text-text transition-colors py-1 border-b border-transparent hover:border-accent">
+                Patrons
               </Link>
             </li>
             <li className="flex items-center pl-2">
@@ -69,7 +78,7 @@ export function Header() {
             <li>
               <Link
                 href="/auth"
-                className="inline-flex items-center text-xs font-semibold px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
+                className="inline-flex items-center text-xs uppercase tracking-wider font-semibold px-4 py-2.5 rounded-card bg-primary text-primary-foreground hover:bg-primary-hover border border-border-strong transition-all shadow-gallery"
               >
                 Enter Gallery
               </Link>
@@ -82,7 +91,7 @@ export function Header() {
             <button
               onClick={toggleMobileMenu}
               aria-label="Toggle navigation menu"
-              className="p-2 rounded-xl text-text hover:bg-surface-elevated transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-card text-text hover:bg-surface-elevated transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -93,13 +102,16 @@ export function Header() {
       {/* Mobile Drawer Backdrop */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40 md:hidden"
           onClick={toggleMobileMenu}
         />
       )}
 
       {/* Mobile Navigation Drawer */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation drawer"
         className={`fixed top-0 right-0 w-72 h-full bg-surface border-l border-border-subtle shadow-2xl z-50 transform transition-all duration-200 ease-in-out md:hidden flex flex-col justify-between p-6 ${
           isMobileMenuOpen
             ? "translate-x-0 opacity-100 visible pointer-events-auto"
@@ -108,22 +120,22 @@ export function Header() {
       >
         <div>
           <div className="flex justify-between items-center pb-4 border-b border-border-subtle">
-            <span className="font-bold text-base text-text">Artsyl</span>
+            <span className="font-serif font-bold text-lg tracking-wider uppercase text-text">Artsyl</span>
             <button
               onClick={toggleMobileMenu}
               aria-label="Close navigation menu"
-              className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-card text-text-muted hover:text-text hover:bg-surface-elevated"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <ul className="space-y-2 mt-6 text-sm font-medium text-text">
+          <ul className="space-y-2 mt-6 text-xs uppercase tracking-catalog font-medium text-text">
             <li>
               <Link
                 href="/"
                 onClick={toggleMobileMenu}
-                className="block p-2.5 rounded-xl hover:bg-surface-elevated hover:text-primary transition-colors"
+                className="block p-3 rounded-card hover:bg-surface-elevated hover:text-accent transition-colors"
               >
                 Home
               </Link>
@@ -132,27 +144,27 @@ export function Header() {
               <Link
                 href="#about"
                 onClick={toggleMobileMenu}
-                className="block p-2.5 rounded-xl hover:bg-surface-elevated hover:text-primary transition-colors"
+                className="block p-3 rounded-card hover:bg-surface-elevated hover:text-accent transition-colors"
               >
-                About
+                The Gallery
               </Link>
             </li>
             <li>
               <Link
                 href="#features"
                 onClick={toggleMobileMenu}
-                className="block p-2.5 rounded-xl hover:bg-surface-elevated hover:text-primary transition-colors"
+                className="block p-3 rounded-card hover:bg-surface-elevated hover:text-accent transition-colors"
               >
-                Features
+                Curatorial
               </Link>
             </li>
             <li>
               <Link
                 href="#testimonials"
                 onClick={toggleMobileMenu}
-                className="block p-2.5 rounded-xl hover:bg-surface-elevated hover:text-primary transition-colors"
+                className="block p-3 rounded-card hover:bg-surface-elevated hover:text-accent transition-colors"
               >
-                Reviews
+                Patrons
               </Link>
             </li>
           </ul>
@@ -162,7 +174,7 @@ export function Header() {
           <Link
             href="/auth"
             onClick={toggleMobileMenu}
-            className="w-full block text-center text-sm font-semibold py-2.5 px-4 rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
+            className="w-full block text-center text-xs uppercase tracking-wider font-semibold py-3 px-4 rounded-card bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-gallery"
           >
             Sign In / Register
           </Link>

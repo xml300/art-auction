@@ -41,9 +41,9 @@ export function ArtworkViewer({ imageUrl, title, artistName }: ArtworkViewerProp
   return (
     <>
       {/* Primary Display Frame */}
-      <div className="relative group w-full rounded-2xl md:rounded-3xl overflow-hidden border border-border-subtle bg-surface-elevated/40 backdrop-blur-xs shadow-xs transition-all duration-300">
+      <div className="relative group w-full rounded-card overflow-hidden border border-border-subtle bg-surface-elevated/40 backdrop-blur-sm shadow-gallery transition-all duration-300">
         {/* Canvas Area: flexible height ensuring full artwork display without harsh crops */}
-        <div className="relative w-full h-[340px] sm:h-[440px] md:h-[520px] lg:h-[600px] flex items-center justify-center p-3 sm:p-6 bg-slate-950/5 dark:bg-slate-950/40">
+        <div className="relative w-full h-[340px] sm:h-[440px] md:h-[520px] lg:h-[600px] flex items-center justify-center p-3 sm:p-6 bg-surface-elevated/20">
           <Image
             src={imageUrl}
             alt={title}
@@ -58,9 +58,9 @@ export function ArtworkViewer({ imageUrl, title, artistName }: ArtworkViewerProp
             type="button"
             onClick={() => setIsLightboxOpen(true)}
             aria-label="Enlarge and inspect artwork"
-            className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/10 shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 active:scale-95"
+            className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-3 py-2 rounded-card bg-surface/90 hover:bg-surface text-text text-xs font-semibold backdrop-blur-md border border-border-subtle shadow-gallery-elevated opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 active:scale-95"
           >
-            <ZoomIn className="w-3.5 h-3.5" />
+            <ZoomIn className="w-3.5 h-3.5 text-accent" />
             <span className="hidden sm:inline">Inspect High-Res</span>
           </button>
         </div>

@@ -1,6 +1,4 @@
-"use client";
-
-import React from "react";
+import React, { useId } from "react";
 import { cn } from "@/lib/utils";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -25,14 +23,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const errorId = `${inputId}-error`;
+    const hintId = `${inputId}-hint`;
 
     return (
       <div className="w-full space-y-1.5 text-left">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold uppercase tracking-wider text-text-muted"
+            className="block text-xs font-semibold uppercase tracking-catalog text-text-muted"
           >
             {label}
           </label>
@@ -46,12 +47,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             id={inputId}
             ref={ref}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error ? errorId : hint ? hintId : undefined}
             className={cn(
-              "w-full rounded-xl border border-border-subtle bg-surface text-text text-sm py-2.5 px-3.5 transition-all duration-200 placeholder:text-text-muted/60",
-              "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+              "w-full min-h-[44px] rounded-input border border-border-subtle bg-surface text-text text-sm py-2.5 px-3.5 transition-all duration-200 placeholder:text-text-muted/70",
+              "focus-visible:outline-none focus-visible:border-accent focus-visible:ring-1 focus-visible:ring-accent",
               leftIcon && "pl-10",
               rightIcon && "pr-10",
-              error && "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20",
+              error && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive",
               className
             )}
             {...props}
@@ -63,9 +66,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error ? (
-          <p className="text-xs text-rose-500 font-medium animate-fade-in">{error}</p>
+          <p id={errorId} role="alert" className="text-xs text-destructive font-medium animate-fade-in">{error}</p>
         ) : hint ? (
-          <p className="text-xs text-text-muted">{hint}</p>
+          <p id={hintId} className="text-xs text-text-muted">{hint}</p>
         ) : null}
       </div>
     );

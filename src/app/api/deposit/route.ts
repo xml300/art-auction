@@ -5,9 +5,11 @@ import { getUser } from "@/data/queries";
 
 export async function POST(req: NextRequest) {
     const [session] = await getSession();
-    const redirectUrl = new URL('/dashboard/deposit', req.nextUrl.origin);
-    const userId = session!.userId;
     const formData = await req.formData();
+    const returnUrlParam = formData.get('returnUrl')?.toString();
+    const returnPath = returnUrlParam && returnUrlParam.startsWith('/') ? returnUrlParam : '/dashboard/deposit';
+    const redirectUrl = new URL(returnPath, req.nextUrl.origin);
+    const userId = session!.userId;
     const amount = parseInt(formData.get('amount')!.toString());
 
     if (typeof amount !== "number" || amount <= 0) {
@@ -53,7 +55,16 @@ export async function POST(req: NextRequest) {
             });
             return response;
         }
-        return NextResponse.redirect(paymentData.data.authorization_url, {status: 303});
+        const authResponse = NextResponse.redirect(paymentData.data.authorization_url, {status: 303});
+        if (returnUrlParam && returnUrlParam.startsWith('/')) {
+            authResponse.cookies.set('deposit_return_url', returnUrlParam, {
+                maxAge: 3600,
+                path: '/',
+                httpOnly: true,
+                sameSite: 'lax',
+            });
+        }
+        return authResponse;
     } catch (error) {
         console.error("API Deposit error:", error);
         const response = NextResponse.redirect(redirectUrl, {status: 303});

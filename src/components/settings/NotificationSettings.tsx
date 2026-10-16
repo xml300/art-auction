@@ -9,7 +9,7 @@ import {
   subscribeUserToPush,
   unsubscribeUserFromPush,
 } from "@/lib/pushClient";
-import { BellRing, Send } from "lucide-react";
+import { BellRing } from "lucide-react";
 
 export default function NotificationSettings() {
   const [isSaved, setIsSaved] = useState(false);

@@ -1,4 +1,4 @@
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { MiddlewareFactory, NextMiddlewareHandler } from "./types";
 
 /**

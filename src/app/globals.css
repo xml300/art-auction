@@ -4,38 +4,50 @@
 
 @layer base {
   :root {
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --background: #f8fafc;
+    --text: #111113;
+    --text-muted: #52525b;
+    --background: #faf8f5;
     --surface: #ffffff;
-    --surface-elevated: #f1f5f9;
-    --border-subtle: #e2e8f0;
-    --primary: #1d4ed8;
-    --primary-hover: #1e40af;
+    --surface-elevated: #f4f1ea;
+    --border-subtle: #d6d3d1;
+    --border-strong: #a8a29e;
+    --primary: #18181b;
+    --primary-hover: #27272a;
     --primary-foreground: #ffffff;
-    --secondary: #e2e8f0;
-    --accent: #2563eb;
-    --destructive: #e11d48;
-    --destructive-hover: #be123c;
-    --success: #059669;
-    --warning: #d97706;
+    --secondary: #f4f1ea;
+    --accent: #c5a059;
+    --accent-hover: #d4af37;
+    --destructive: #b91c1c;
+    --destructive-hover: #991b1b;
+    --success: #15803d;
+    --warning: #b45309;
   }
   .dark {
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
-    --background: #070d18;
-    --surface: #0f172a;
-    --surface-elevated: #172339;
-    --border-subtle: #1e293b;
-    --primary: #3b82f6;
-    --primary-hover: #2563eb;
-    --primary-foreground: #ffffff;
-    --secondary: #1e293b;
-    --accent: #60a5fa;
-    --destructive: #f43f5e;
-    --destructive-hover: #e11d48;
-    --success: #10b981;
-    --warning: #f59e0b;
+    --text: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --background: #0c0c0e;
+    --surface: #141417;
+    --surface-elevated: #1c1c21;
+    --border-subtle: #27272a;
+    --border-strong: #3f3f46;
+    --primary: #f4f4f5;
+    --primary-hover: #ffffff;
+    --primary-foreground: #0c0c0e;
+    --secondary: #1c1c21;
+    --accent: #d4af37;
+    --accent-hover: #e6ca65;
+    --destructive: #fb7185;
+    --destructive-hover: #f43f5e;
+    --success: #34d399;
+    --warning: #fbbf24;
+  }
+
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -102,7 +114,7 @@
   to {
     opacity: 0;
     transform: translateY(20px);
-    display:none
+    visibility: hidden;
   }
 }
 
@@ -177,7 +189,7 @@
   100%{
     opacity: 0;
     transform: translateX(100%);
-    display: none;
+    visibility: hidden;
   }
 }
 
