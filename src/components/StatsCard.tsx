@@ -26,7 +26,7 @@ export default function StatsCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border-subtle bg-surface p-5 shadow-xs transition-all duration-200 hover:shadow-md hover:border-primary/30 flex flex-col justify-between",
+        "rounded-2xl border border-border-subtle bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:shadow-gallery hover:border-accent/40 flex flex-col justify-between",
         className
       )}
     >
@@ -35,14 +35,14 @@ export default function StatsCard({
           {title}
         </span>
         {icon && (
-          <div className="p-2.5 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+          <div className="p-2.5 rounded-xl bg-surface-elevated border border-border-subtle flex items-center justify-center shadow-xs">
             {icon}
           </div>
         )}
       </div>
 
       <div>
-        <div className="text-2xl font-bold tracking-tight text-text">
+        <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text font-mono tabular-nums">
           {value}
         </div>
 

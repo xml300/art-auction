@@ -15,11 +15,13 @@
     --primary-hover: 39 39 42;
     --primary-foreground: 255 255 255;
     --secondary: 244 241 234;
-    --accent: 140 107 45;
-    --accent-hover: 121 90 34;
+    --accent: 180 115 15;
+    --accent-hover: 154 98 10;
+    --accent-foreground: 255 255 255;
+    --auction-live: 234 88 12;
     --destructive: 185 28 28;
     --destructive-hover: 153 27 27;
-    --success: 21 128 61;
+    --success: 16 149 97;
     --warning: 180 83 9;
   }
   .dark {
@@ -34,8 +36,10 @@
     --primary-hover: 255 255 255;
     --primary-foreground: 12 12 14;
     --secondary: 28 28 33;
-    --accent: 212 175 55;
-    --accent-hover: 230 202 101;
+    --accent: 234 179 8;
+    --accent-hover: 250 204 21;
+    --accent-foreground: 12 12 14;
+    --auction-live: 249 115 22;
     --destructive: 251 113 133;
     --destructive-hover: 244 63 94;
     --success: 52 211 153;

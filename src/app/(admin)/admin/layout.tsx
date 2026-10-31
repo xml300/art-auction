@@ -14,6 +14,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -68,42 +69,54 @@ export default function AdminLayout({
               <div className="flex items-center gap-2 sm:gap-3">
                 <NotificationBell />
 
-                <div className="group relative">
+                <div className="relative">
                   <button
                     type="button"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     aria-label="Admin quick settings"
+                    aria-expanded={isUserMenuOpen}
                     className="flex items-center justify-center p-2 rounded-xl text-text-muted hover:text-text hover:bg-surface-elevated transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                    <div className="w-7 h-7 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs">
                       A
                     </div>
                   </button>
 
-                  <div className="hidden group-hover:block absolute right-0 top-full pt-2 z-50 min-w-48 animate-fade-in">
-                    <div className="bg-surface rounded-2xl shadow-xl border border-border-subtle p-2 space-y-1">
-                      <div className="px-3 py-2 flex items-center justify-between text-xs text-text-muted">
-                        <span>Theme</span>
-                        <SwitchThemeToggle />
+                  {isUserMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      />
+                      <div className="absolute right-0 top-full pt-2 z-50 min-w-52 animate-fade-in">
+                        <div className="bg-surface rounded-2xl shadow-xl border border-border-subtle p-2 space-y-1">
+                          <div className="px-3 py-2 flex items-center justify-between text-xs text-text-muted">
+                            <span>Theme</span>
+                            <SwitchThemeToggle />
+                          </div>
+                          <div className="h-px bg-border-subtle my-1" />
+                          <Link
+                            href="/"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-text rounded-xl hover:bg-surface-elevated transition-colors"
+                          >
+                            <Home className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                            Main Site
+                          </Link>
+                          <form action="/api/logout" method="POST">
+                            <button
+                              type="submit"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-500 rounded-xl hover:bg-rose-500/10 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Log Out
+                            </button>
+                          </form>
+                        </div>
                       </div>
-                      <div className="h-px bg-border-subtle my-1" />
-                      <Link
-                        href="/"
-                        className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-text rounded-xl hover:bg-surface-elevated transition-colors"
-                      >
-                        <Home className="w-4 h-4 text-primary" />
-                        Main Site
-                      </Link>
-                      <form action="/api/logout" method="POST">
-                        <button
-                          type="submit"
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-500 rounded-xl hover:bg-rose-500/10 transition-colors"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Log Out
-                        </button>
-                      </form>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

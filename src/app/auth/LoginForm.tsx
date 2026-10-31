@@ -136,6 +136,7 @@ export default function LoginForm() {
       <div className="pt-2">
         <Button
           type="submit"
+          variant="accent"
           className="w-full"
           size="lg"
           disabled={!isFormValid || isSubmitting}

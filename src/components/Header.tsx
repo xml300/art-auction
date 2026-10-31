@@ -78,7 +78,7 @@ export function Header() {
             <li>
               <Link
                 href="/auth"
-                className="inline-flex items-center text-xs uppercase tracking-wider font-semibold px-4 py-2.5 rounded-card bg-primary text-primary-foreground hover:bg-primary-hover border border-border-strong transition-all shadow-gallery"
+                className="inline-flex items-center text-xs uppercase tracking-wider font-semibold px-4 py-2.5 rounded-card bg-accent text-accent-foreground hover:bg-accent-hover transition-all shadow-gallery"
               >
                 Enter Gallery
               </Link>
@@ -174,7 +174,7 @@ export function Header() {
           <Link
             href="/auth"
             onClick={toggleMobileMenu}
-            className="w-full block text-center text-xs uppercase tracking-wider font-semibold py-3 px-4 rounded-card bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-gallery"
+            className="w-full block text-center text-xs uppercase tracking-wider font-semibold py-3 px-4 rounded-card bg-accent text-accent-foreground hover:bg-accent-hover transition-colors shadow-gallery"
           >
             Sign In / Register
           </Link>

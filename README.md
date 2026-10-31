@@ -56,6 +56,8 @@ Artsyl is a premium, full-stack marketplace designed for the modern art world. I
    DATABASE_URL="your_neon_connection_string"
    JWT_SECRET_KEY="your_secret_key"
    SITE_BASE_URL="http://localhost:3000"
+   PAYSTACK_SECRET_KEY="sk_test_..."
+   NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY="pk_test_..."
    ```
 
 4. **Initialize Database**

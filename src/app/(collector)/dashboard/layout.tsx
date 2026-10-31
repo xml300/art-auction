@@ -15,6 +15,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -61,41 +62,53 @@ export default function DashboardLayout({
               <div className="flex items-center gap-2 sm:gap-3">
                 <NotificationBell />
 
-                <div className="group relative">
+                <div className="relative">
                   <button
                     type="button"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     aria-label="User account menu"
-                    className="flex items-center justify-center rounded-full ring-2 ring-transparent group-hover:ring-primary/30 transition-all"
+                    aria-expanded={isUserMenuOpen}
+                    className="flex items-center justify-center rounded-full ring-2 ring-transparent hover:ring-accent/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all p-0.5"
                   >
                     <ProfilePicture />
                   </button>
 
-                  <div className="hidden group-hover:block absolute right-0 top-full pt-2 z-50 min-w-48 animate-fade-in">
-                  <div className="bg-surface rounded-2xl shadow-xl border border-border-subtle p-2 space-y-1">
-                    <div className="px-3 py-2 flex items-center justify-between text-xs text-text-muted">
-                      <span>Dark Theme</span>
-                      <SwitchThemeToggle />
-                    </div>
-                    <div className="h-px bg-border-subtle my-1" />
-                    <Link
-                      href="/dashboard/profile"
-                      className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-text rounded-xl hover:bg-surface-elevated transition-colors"
-                    >
-                      <UserCircle className="w-4 h-4 text-primary" />
-                      View Profile
-                    </Link>
-                    <form action="/api/logout" method="POST">
-                      <button
-                        type="submit"
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-500 rounded-xl hover:bg-rose-500/10 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Log Out
-                      </button>
-                    </form>
-                  </div>
+                  {isUserMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      />
+                      <div className="absolute right-0 top-full pt-2 z-50 min-w-52 animate-fade-in">
+                        <div className="bg-surface rounded-2xl shadow-xl border border-border-subtle p-2 space-y-1">
+                          <div className="px-3 py-2 flex items-center justify-between text-xs text-text-muted">
+                            <span>Theme</span>
+                            <SwitchThemeToggle />
+                          </div>
+                          <div className="h-px bg-border-subtle my-1" />
+                          <Link
+                            href="/dashboard/profile"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-text rounded-xl hover:bg-surface-elevated transition-colors"
+                          >
+                            <UserCircle className="w-4 h-4 text-accent" />
+                            View Profile
+                          </Link>
+                          <form action="/api/logout" method="POST">
+                            <button
+                              type="submit"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-500 rounded-xl hover:bg-rose-500/10 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Log Out
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
             </div>
           </div>
         </header>

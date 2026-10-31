@@ -62,7 +62,8 @@ export const Transactions = {
     amount: string,
     status: TransactionStatus,
     artworkId?: number,
-    tx?: Tx
+    tx?: Tx,
+    currency: string = "NGN"
   ) => {
     const transaction: NewTransaction = {
       userId,
@@ -71,6 +72,7 @@ export const Transactions = {
       type: payType,
       amount,
       status,
+      currency,
     };
     if (artworkId) transaction.artworkId = artworkId;
 
@@ -80,9 +82,9 @@ export const Transactions = {
     return newTransaction;
   },
 
-  update: async <K extends keyof Transaction>(
+  update: async (
     id: number,
-    updates: { [key in K]: Transaction[K] },
+    updates: Partial<Transaction>,
     tx?: Tx
   ) => {
     if (tx) {

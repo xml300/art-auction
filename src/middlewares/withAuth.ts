@@ -1,6 +1,7 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { MiddlewareFactory, NextMiddlewareHandler } from "./types";
+import { Roles } from "@/enums";
 
 interface TokenPayload {
   userId?: number;
@@ -47,6 +48,26 @@ export const withAuth: MiddlewareFactory = (next: NextMiddlewareHandler) => {
     requestHeaders.delete("x-auth-verified");
 
     const { pathname } = request.nextUrl;
+
+    // Auto-redirect logged-in users visiting /auth to their respective role dashboard
+    if (pathname === "/auth" || pathname.startsWith("/auth/")) {
+      const authCookie = request.cookies.get("auth")?.value;
+      if (authCookie) {
+        const payload = await verifyJwtPayload(authCookie);
+        if (payload?.roleId !== undefined) {
+          const destination =
+            payload.roleId === Roles.Admin
+              ? "/admin"
+              : payload.roleId === Roles.Artist
+              ? "/artist-dashboard"
+              : "/dashboard";
+          const redirectUrl = new URL(destination, process.env.SITE_BASE_URL || request.url);
+          return NextResponse.redirect(redirectUrl, { status: 307 });
+        }
+      }
+      return next(new NextRequest(request, { headers: requestHeaders }), event);
+    }
+
     const isProtectedPage = PROTECTED_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
     const isProtectedApi =
       PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||

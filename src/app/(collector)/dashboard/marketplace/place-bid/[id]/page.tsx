@@ -200,7 +200,7 @@ export default async function PlaceBidPage({
         </div>
         <a
           href="#bidAmount"
-          className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold transition-all shadow-md shadow-primary/20 active:scale-95"
+          className="px-5 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-accent-foreground text-xs font-bold transition-all shadow-gallery active:scale-95"
         >
           Jump to Bid
         </a>

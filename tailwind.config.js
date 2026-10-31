@@ -33,6 +33,8 @@ module.exports = {
         'secondary': 'rgb(var(--secondary) / <alpha-value>)',
         'accent': 'rgb(var(--accent) / <alpha-value>)',
         'accent-hover': 'rgb(var(--accent-hover) / <alpha-value>)',
+        'accent-foreground': 'rgb(var(--accent-foreground) / <alpha-value>)',
+        'auction-live': 'rgb(var(--auction-live) / <alpha-value>)',
         'destructive': 'rgb(var(--destructive) / <alpha-value>)',
         'destructive-hover': 'rgb(var(--destructive-hover) / <alpha-value>)',
         'success': 'rgb(var(--success) / <alpha-value>)',

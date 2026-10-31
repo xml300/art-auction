@@ -210,12 +210,17 @@ export default function RegisterForm() {
       <div className="pt-2">
         <Button
           type="submit"
+          variant="accent"
           className="w-full"
           size="lg"
           disabled={!isFormValid || isSubmitting}
           isLoading={isSubmitting}
         >
-          {isSubmitting ? "Creating account..." : "Create Collector Account"}
+          {isSubmitting
+            ? "Creating account..."
+            : accountType === Roles.Artist
+            ? "Create Artist Studio Account"
+            : "Create Collector Account"}
         </Button>
       </div>
     </form>

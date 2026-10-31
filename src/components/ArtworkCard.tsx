@@ -74,7 +74,11 @@ export default function ArtworkCard({ artwork, index = 0, owned, customHref }: A
 
           <Link
             href={targetHref}
-            className="text-[11px] uppercase tracking-catalog font-semibold text-text hover:text-accent transition-colors flex items-center gap-1 group/btn py-2 px-3 rounded-card bg-surface-elevated border border-border-subtle hover:border-accent/40"
+            className={`text-[11px] uppercase tracking-catalog font-semibold transition-all flex items-center gap-1 group/btn py-2 px-3 rounded-card border ${
+              isMarketplace
+                ? "bg-accent/15 text-accent border-accent/30 hover:bg-accent hover:text-accent-foreground shadow-xs"
+                : "bg-surface-elevated text-text hover:text-accent border-border-subtle hover:border-accent/40"
+            }`}
           >
             <span>{isMarketplace ? "Bid" : "View"}</span>
             <span className="transition-transform group-hover/btn:translate-x-0.5">→</span>

@@ -1,110 +1,97 @@
-import { updateTransaction, createTransaction, getTransactionByReference, recordLedgerDeposit } from "@/data/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { db } from "@/data/db";
-import { notifyUser } from "@/lib/notifications";
+import { getTransactionByReference } from "@/data/queries";
+import { getBaseUrl, sanitizeReturnUrl, fulfillPaystackDeposit } from "@/lib/paystack";
 
 export async function GET(request: NextRequest) {
+    const baseUrl = getBaseUrl(request);
     const [session] = await getSession();
     const reference = request.nextUrl.searchParams.get('reference');
     const returnUrlCookie = request.cookies.get('deposit_return_url')?.value;
-    const finalPath = returnUrlCookie && returnUrlCookie.startsWith('/') ? returnUrlCookie : '/dashboard/deposit';
-    const redirectUrl = new URL(finalPath, process.env.SITE_BASE_URL || request.nextUrl.origin);
+    const finalPath = sanitizeReturnUrl(returnUrlCookie);
+    const redirectUrl = new URL(finalPath, baseUrl);
 
-    if (!session) {
+    // Build redirect helper that guarantees clearing the temporary return url cookie
+    const buildRedirect = (errorMessage?: string) => {
         const response = NextResponse.redirect(redirectUrl, { status: 303 });
         response.cookies.delete('deposit_return_url');
-        response.cookies.set('errors', 'Session expired. Please log in.', {
-            maxAge: 10,
-            path: '/'
-        });
+        if (errorMessage) {
+            response.cookies.set('errors', errorMessage, {
+                maxAge: 10,
+                path: '/'
+            });
+        }
         return response;
+    };
+
+    if (!session || !session.userId) {
+        return buildRedirect('Session expired. Please log in.');
     }
 
     if (!reference) {
-        const response = NextResponse.redirect(redirectUrl, { status: 303 });
-        response.cookies.delete('deposit_return_url');
-        response.cookies.set('errors', 'Transaction reference is required', {
-            maxAge: 10,
-            path: '/'
-        });
-        return response;
+        return buildRedirect('Transaction reference is required');
     }
 
-    // Prevent duplicate processing if reference was already completed
-    const existingTx = await getTransactionByReference(reference);
-    if (existingTx && existingTx.status === 'completed') {
-        const response = NextResponse.redirect(redirectUrl, { status: 303 });
-        response.cookies.delete('deposit_return_url');
-        return response;
-    }
+    try {
+        // Prevent duplicate processing or hijacking
+        const existingTx = await getTransactionByReference(reference);
 
-    const res = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-        }
-    });
-    const paymentData = await res.json();
-    if (!paymentData.data || paymentData.data.status !== 'success') {
-        const response = NextResponse.redirect(redirectUrl, { status: 303 });
-        response.cookies.set('errors', 'Payment verification failed', {
-            maxAge: 10,
-            path: '/'
-        });
-        return response;
-    }
-
-    // Paystack returns amount in kobo (e.g., 500,000 kobo for ₦5,000)
-    const amountInKobo = Math.round(Number(paymentData.data.amount));
-    const amountInNaira = (amountInKobo / 100).toFixed(2);
-    const formattedNaira = (amountInKobo / 100).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    await db.transaction(async (tx) => {
-        let transaction = existingTx;
-        if (!transaction) {
-            transaction = await createTransaction(
-                session.userId,
-                paymentData.data.reference,
-                `Deposit of ₦${formattedNaira}`,
-                "deposit",
-                amountInNaira,
-                "completed",
-                undefined,
-                tx
-            );
-        } else {
-            await updateTransaction(transaction.id, {
-                status: 'completed',
-                amount: amountInNaira,
-                description: `Deposit of ₦${formattedNaira}`
-            }, tx);
+        // Security check: ensure reference belongs to the currently logged in user
+        if (existingTx && existingTx.userId !== session.userId) {
+            console.error(`Security alert: User ${session.userId} attempted to verify transaction ${reference} belonging to user ${existingTx.userId}`);
+            return buildRedirect('Unauthorized transaction reference');
         }
 
-        // Authoritative Double-Entry Ledger Posting:
-        // Debit: asset:gateway:paystack | Credit: liability:collector:available:{userId}
-        await recordLedgerDeposit(
-            {
-                userId: session.userId,
-                amountKobo: amountInKobo,
-                reference: paymentData.data.reference,
-                idempotencyKey: `DEP-LEDGER-${paymentData.data.reference}`,
-            },
-            tx
-        );
-    });
+        // If reference is already completed (e.g. processed by webhook or previous callback), redirect cleanly
+        if (existingTx && existingTx.status === 'completed') {
+            return buildRedirect();
+        }
 
-    notifyUser({
-        userId: session.userId,
-        type: "deposit_success",
-        title: "Deposit Successful",
-        body: `Your deposit of ₦${formattedNaira} has been credited to your wallet.`,
-        data: { targetUrl: "/dashboard/deposit" },
-        channels: ["in_app", "push"],
-    }).catch(err => console.error("Deposit notification error:", err));
+        const paystackKey = process.env.PAYSTACK_SECRET_KEY;
+        if (!paystackKey) {
+            console.error("PAYSTACK_SECRET_KEY is not configured in environment variables");
+            return buildRedirect('Payment system temporarily unavailable');
+        }
 
-    const response = NextResponse.redirect(redirectUrl, { status: 303 });
-    response.cookies.delete('deposit_return_url');
-    return response;
+        // Verify with Paystack API
+        const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${paystackKey}`
+            }
+        });
+
+        const paymentData = await res.json();
+        if (!res.ok || !paymentData.data || paymentData.data.status !== 'success') {
+            return buildRedirect('Payment verification failed or payment was cancelled');
+        }
+
+        // Verify currency
+        if (paymentData.data.currency !== 'NGN') {
+            return buildRedirect(`Invalid transaction currency: ${paymentData.data.currency}`);
+        }
+
+        // Verify metadata userId if present
+        const metadataUserId = paymentData.data.metadata?.userId;
+        if (metadataUserId && Number(metadataUserId) !== session.userId) {
+            console.error(`Metadata userId mismatch: expected ${session.userId}, found ${metadataUserId}`);
+            return buildRedirect('Unauthorized transaction reference');
+        }
+
+        const amountInKobo = Math.round(Number(paymentData.data.amount));
+
+        // Authoritative atomic fulfillment (ledger, transaction status, notifications, audit log)
+        await fulfillPaystackDeposit({
+            reference: paymentData.data.reference,
+            amountInKobo,
+            userId: session.userId,
+            req: request,
+        });
+
+        return buildRedirect();
+    } catch (error) {
+        console.error("Deposit callback error:", error);
+        return buildRedirect('An unexpected error occurred while verifying your deposit');
+    }
 }

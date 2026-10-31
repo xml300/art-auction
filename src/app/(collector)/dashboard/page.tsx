@@ -3,16 +3,16 @@ import ArtworkCard from "@/components/ArtworkCard";
 import EmptyState from "@/components/EmptyState";
 import StatsCard from "@/components/StatsCard";
 import {
-  ImageIcon,
   Coins,
-  TrendingUp,
   Heart,
   Award,
-  Clock,
   Target,
-  Activity,
   ArrowRight,
   UserX,
+  Wallet,
+  PlusCircle,
+  Compass,
+  Sparkles,
 } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
@@ -35,68 +35,124 @@ export default async function DashboardPage() {
     );
   }
 
+  const displayName = userProfile.name || userProfile.username;
+
   return (
-    <div className="space-y-10 animate-fade-in">
-      {/* Statistics Overview */}
-      <section>
-        <div className="mb-4">
-          <span className="text-xs uppercase font-bold tracking-wider text-primary">
-            Metrics & Portfolio
-          </span>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text">
-            Statistics Overview
-          </h2>
+    <div className="space-y-8 animate-fade-in pb-12">
+      {/* Collector Welcome & Quick Wallet Strip */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-surface border border-border-subtle shadow-xs">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            Collector Suite
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text">
+            Welcome back, {displayName}
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            Explore curated auctions, monitor live lots, and manage your private art vault.
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-surface-elevated border border-border-subtle">
+            <Wallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <div className="text-left">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-text-muted block leading-none">
+                Wallet Balance
+              </span>
+              <span className="text-sm font-bold text-text tabular-nums font-mono">
+                {formatCurrency(userProfile.wallet)}
+              </span>
+            </div>
+          </div>
+
+          <Link
+            href="/dashboard/deposit"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-accent text-accent-foreground text-xs font-semibold hover:bg-accent-hover shadow-gallery transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <PlusCircle className="w-3.5 h-3.5" />
+            Deposit Funds
+          </Link>
+
+          <Link
+            href="/dashboard/marketplace"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-text text-xs font-semibold hover:bg-surface transition-all"
+          >
+            <Compass className="w-3.5 h-3.5 text-accent" />
+            Explore Lots
+          </Link>
+        </div>
+      </div>
+
+      {/* Primary KPI Grid: Consolidated from 8 cards to 4 High-Signal Modules */}
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <span className="text-xs uppercase font-bold tracking-wider text-accent">
+              Portfolio & Activity
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text">
+              Collector Overview
+            </h2>
+          </div>
+          <Link
+            href="/dashboard/profile"
+            className="text-xs font-medium text-text-muted hover:text-accent transition-colors hidden sm:inline-flex items-center gap-1"
+          >
+            Detailed Analytics
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {/* 1. Vault Portfolio Value */}
           <StatsCard
-            title="Artworks Owned"
-            value={userProfile.stats.artworksOwned}
-            subtitle="Pieces in vault"
-            icon={<ImageIcon className="w-5 h-5" />}
-          />
-          <StatsCard
-            title="Total Spent"
+            title="Vault Holdings"
             value={formatCurrency(userProfile.stats.totalSpent)}
-            subtitle="Lifetime volume"
-            icon={<Coins className="w-5 h-5" />}
+            subtitle={`${userProfile.stats.artworksOwned} artwork${userProfile.stats.artworksOwned === 1 ? "" : "s"} owned`}
+            icon={<Coins className="w-5 h-5 text-accent" />}
+            trend={{
+              value: `${userProfile.stats.artworksOwned} Pieces`,
+              isPositive: userProfile.stats.artworksOwned > 0,
+            }}
           />
+
+          {/* 2. Active Bids & Live Auctions */}
+          <StatsCard
+            title="Active Live Bids"
+            value={userProfile.stats.activeBids}
+            subtitle={
+              userProfile.stats.activeBids > 0
+                ? "Lots currently in progress"
+                : "No live bids in progress"
+            }
+            icon={<Target className="w-5 h-5 text-amber-500" />}
+            trend={
+              userProfile.stats.activeBids > 0
+                ? { value: "Live Auctions", isPositive: true }
+                : undefined
+            }
+          />
+
+          {/* 3. Auctions Won & Win Rate */}
           <StatsCard
             title="Auctions Won"
             value={userProfile.stats.auctionsWon}
-            subtitle="Successful lots"
-            icon={<Award className="w-5 h-5" />}
+            subtitle={`${userProfile.stats.successRate}% winning percentage`}
+            icon={<Award className="w-5 h-5 text-emerald-500" />}
+            trend={{
+              value: `${userProfile.stats.successRate}% Win Rate`,
+              isPositive: userProfile.stats.successRate >= 50,
+            }}
           />
+
+          {/* 4. Watchlist Items */}
           <StatsCard
-            title="Watchlist Items"
+            title="Watchlist Lots"
             value={userProfile.stats.watchlistItems}
-            subtitle="Tracking lots"
-            icon={<Heart className="w-5 h-5" />}
-          />
-          <StatsCard
-            title="Active Bids"
-            value={userProfile.stats.activeBids}
-            subtitle="In progress"
-            icon={<Target className="w-5 h-5" />}
-          />
-          <StatsCard
-            title="Avg. Bid Amount"
-            value={formatCurrency(userProfile.stats.avgBidAmount)}
-            subtitle="Historical average"
-            icon={<TrendingUp className="w-5 h-5" />}
-          />
-          <StatsCard
-            title="Collector Tenure"
-            value={`${userProfile.stats.memberSince} yrs`}
-            subtitle="Member since launch"
-            icon={<Clock className="w-5 h-5" />}
-          />
-          <StatsCard
-            title="Success Rate"
-            value={`${userProfile.stats.successRate}%`}
-            subtitle="Win percentage"
-            icon={<Activity className="w-5 h-5" />}
-            trend={{ value: `${userProfile.stats.successRate}% win`, isPositive: userProfile.stats.successRate >= 50 }}
+            subtitle="Tracking lots of interest"
+            icon={<Heart className="w-5 h-5 text-rose-500" />}
           />
         </div>
       </section>

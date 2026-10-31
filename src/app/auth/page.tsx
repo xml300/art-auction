@@ -1,10 +1,20 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import AuthSection from "./AuthSection";
 import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
+import { getSession } from "@/lib/auth";
+import { Roles } from "@/enums";
 
 export default async function AuthPage() {
+  const [session] = await getSession();
+  if (session && session.roleId !== undefined) {
+    if (session.roleId === Roles.Admin) redirect("/admin");
+    if (session.roleId === Roles.Artist) redirect("/artist-dashboard");
+    redirect("/dashboard");
+  }
+
   const cookieStore = await cookies();
   const error = cookieStore.get("errors")?.value;
 
