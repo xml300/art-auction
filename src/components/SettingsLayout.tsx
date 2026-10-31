@@ -39,7 +39,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                     className={cn(
                       "w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap text-left",
                       isActive
-                        ? "bg-primary text-white shadow-xs"
+                        ? "bg-primary text-primary-foreground shadow-xs"
                         : "text-text-muted hover:text-text hover:bg-surface"
                     )}
                   >

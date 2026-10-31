@@ -94,7 +94,7 @@ export default async function AdminDashboardPage() {
 
       {/* Primary KPI Grid */}
       <section className="space-y-4">
-        <h3 className="text-sm font-bold tracking-tight text-text uppercase text-text-muted">
+        <h3 className="text-sm font-bold tracking-tight uppercase text-text-muted">
           Platform Financial & Escrow Metrics
         </h3>
 
@@ -128,7 +128,7 @@ export default async function AdminDashboardPage() {
 
       {/* Auction Engine & User Governance Grid */}
       <section className="space-y-4">
-        <h3 className="text-sm font-bold tracking-tight text-text uppercase text-text-muted">
+        <h3 className="text-sm font-bold tracking-tight uppercase text-text-muted">
           Marketplace Activity & Demographics
         </h3>
 

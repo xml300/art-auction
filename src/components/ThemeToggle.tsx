@@ -38,7 +38,7 @@ export default function ThemeToggle({
             resolvedTheme === "dark" ? "translate-x-5" : "translate-x-0"
           )}
         >
-          {resolvedTheme === "dark" ? <Moon className="w-3 h-3 text-primary" /> : <Sun className="w-3 h-3 text-amber-500" />}
+          {resolvedTheme === "dark" ? <Moon className="w-3 h-3 text-primary-foreground" /> : <Sun className="w-3 h-3 text-amber-500" />}
         </span>
       </button>
     );

@@ -67,7 +67,7 @@ export default function Sidebar({ onClose, role = "collector" }: SidebarProps) {
                 onClick={onClose}
                 className={`flex items-center gap-2.5 text-xs sm:text-sm px-3 py-2 rounded-xl font-medium transition-all duration-150 ${
                   isActive
-                    ? "bg-primary text-white shadow-xs font-semibold"
+                    ? "bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-text-muted hover:text-text hover:bg-surface-elevated"
                 }`}
               >
@@ -86,7 +86,7 @@ export default function Sidebar({ onClose, role = "collector" }: SidebarProps) {
           onClick={onClose}
           className={`flex items-center gap-2.5 text-xs sm:text-sm px-3 py-2 rounded-xl font-medium transition-all duration-150 ${
             pathname === profileHref
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
               : "text-text-muted hover:text-text hover:bg-surface-elevated"
           }`}
         >

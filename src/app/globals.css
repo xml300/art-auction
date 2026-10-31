@@ -4,42 +4,42 @@
 
 @layer base {
   :root {
-    --text: #111113;
-    --text-muted: #52525b;
-    --background: #faf8f5;
-    --surface: #ffffff;
-    --surface-elevated: #f4f1ea;
-    --border-subtle: #d6d3d1;
-    --border-strong: #a8a29e;
-    --primary: #18181b;
-    --primary-hover: #27272a;
-    --primary-foreground: #ffffff;
-    --secondary: #f4f1ea;
-    --accent: #c5a059;
-    --accent-hover: #d4af37;
-    --destructive: #b91c1c;
-    --destructive-hover: #991b1b;
-    --success: #15803d;
-    --warning: #b45309;
+    --text: 17 17 19;
+    --text-muted: 82 82 91;
+    --background: 250 248 245;
+    --surface: 255 255 255;
+    --surface-elevated: 244 241 234;
+    --border-subtle: 214 211 209;
+    --border-strong: 168 162 158;
+    --primary: 24 24 27;
+    --primary-hover: 39 39 42;
+    --primary-foreground: 255 255 255;
+    --secondary: 244 241 234;
+    --accent: 140 107 45;
+    --accent-hover: 121 90 34;
+    --destructive: 185 28 28;
+    --destructive-hover: 153 27 27;
+    --success: 21 128 61;
+    --warning: 180 83 9;
   }
   .dark {
-    --text: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --background: #0c0c0e;
-    --surface: #141417;
-    --surface-elevated: #1c1c21;
-    --border-subtle: #27272a;
-    --border-strong: #3f3f46;
-    --primary: #f4f4f5;
-    --primary-hover: #ffffff;
-    --primary-foreground: #0c0c0e;
-    --secondary: #1c1c21;
-    --accent: #d4af37;
-    --accent-hover: #e6ca65;
-    --destructive: #fb7185;
-    --destructive-hover: #f43f5e;
-    --success: #34d399;
-    --warning: #fbbf24;
+    --text: 244 244 245;
+    --text-muted: 161 161 170;
+    --background: 12 12 14;
+    --surface: 20 20 23;
+    --surface-elevated: 28 28 33;
+    --border-subtle: 39 39 42;
+    --border-strong: 63 63 70;
+    --primary: 244 244 245;
+    --primary-hover: 255 255 255;
+    --primary-foreground: 12 12 14;
+    --secondary: 28 28 33;
+    --accent: 212 175 55;
+    --accent-hover: 230 202 101;
+    --destructive: 251 113 133;
+    --destructive-hover: 244 63 94;
+    --success: 52 211 153;
+    --warning: 251 191 36;
   }
 
   body {

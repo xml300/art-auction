@@ -96,7 +96,7 @@ export default function RegisterForm() {
             onClick={() => setAccountType(Roles.Collector)}
             className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               accountType === Roles.Collector
-                ? "bg-primary text-white shadow-xs"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-text-muted hover:text-text"
             }`}
           >
@@ -108,7 +108,7 @@ export default function RegisterForm() {
             onClick={() => setAccountType(Roles.Artist)}
             className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               accountType === Roles.Artist
-                ? "bg-primary text-white shadow-xs"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-text-muted hover:text-text"
             }`}
           >

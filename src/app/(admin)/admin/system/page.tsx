@@ -124,7 +124,7 @@ export default function AdminSystemPage() {
             <button
               onClick={handleSettle}
               disabled={isSettling}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary/90 disabled:opacity-50 transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all shadow-xs cursor-pointer"
             >
               {isSettling ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

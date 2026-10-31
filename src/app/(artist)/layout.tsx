@@ -82,7 +82,7 @@ export default function ArtistDashboardLayout({
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link
                   href="/artist-dashboard/artworks/new"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover shadow-xs transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover shadow-xs transition-colors"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   List Artwork

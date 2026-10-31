@@ -55,7 +55,7 @@ export default async function ArtistDashboardPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/artist-dashboard/artworks/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary-hover shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <PlusCircle className="w-4 h-4" />
             List New Artwork
@@ -146,7 +146,7 @@ export default async function ArtistDashboardPage() {
             </p>
             <Link
               href="/artist-dashboard/artworks/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover shadow-xs transition-colors"
             >
               <PlusCircle className="w-4 h-4" />
               List Artwork Now
@@ -227,7 +227,7 @@ export default async function ArtistDashboardPage() {
               className="flex items-center justify-between p-3 rounded-xl bg-surface-elevated hover:border-primary/40 border border-border-subtle transition-all group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <PlusCircle className="w-4 h-4" />
                 </div>
                 <div>

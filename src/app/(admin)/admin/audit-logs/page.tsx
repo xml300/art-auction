@@ -95,7 +95,7 @@ export default function AdminAuditLogsPage() {
               }}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 statusFilter === tab.id
-                  ? "bg-primary text-white shadow-xs"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-text-muted hover:text-text hover:bg-surface-elevated"
               }`}
             >
@@ -114,7 +114,7 @@ export default function AdminAuditLogsPage() {
               setActionSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface-elevated border border-border-subtle text-xs text-text focus:outline-hidden focus:border-primary transition-colors"
+            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface-elevated border border-border-subtle text-xs text-text focus:outline-none focus:border-primary transition-colors"
           />
         </div>
       </div>

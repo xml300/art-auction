@@ -16,7 +16,7 @@ export default function NotFound() {
       <div className="pt-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-colors shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition-colors shadow-xs"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Return to Gallery

@@ -82,7 +82,7 @@ export function ArtworkCarousel({
                   height={600}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-3 right-3 bg-primary/90 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-xs">
+                <div className="absolute top-3 right-3 bg-primary/90 backdrop-blur-md text-primary-foreground text-xs font-semibold px-2.5 py-1 rounded-full shadow-xs">
                   {formatCurrency(price)}
                 </div>
               </div>
@@ -109,7 +109,7 @@ export function ArtworkCarousel({
 
                   <Link
                     href={`/dashboard/marketplace/place-bid/${artwork.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs"
                   >
                     Bid Now
                     <ArrowUpRight className="w-3.5 h-3.5" />
